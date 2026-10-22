@@ -3,11 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>DuoSifir - Pengembaraan Matematik</title>
+  <title>DuoSifir - Pengembaraan Matematik & Kejohanan</title>
+  
+  <!-- Fonts, Tailwind, Confetti, SheetJS (XLSX) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   
   <style>
     body {
@@ -75,13 +78,31 @@
       100% { transform: scale(1); opacity: 1; }
     }
     .item-pop {
-      animation: popItem 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      animation: popItem 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes float3D {
+      0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+      50% { transform: translateY(-15px) rotate(2deg) scale(1.05); }
+    }
+    .badge-float-anim {
+      animation: float3D 3s ease-in-out infinite;
+    }
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .spin-sunburst {
+      animation: spinSlow 20s linear infinite;
+    }
+    .hologram-glow {
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.7);
     }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col justify-between">
 
-  <!-- TOP BAR DENGAN PROFIL LENGKAP & BUTANG LOGOUT -->
+  <!-- TOP BAR -->
   <header class="bg-white border-b-2 border-slate-200 sticky top-0 z-30 px-3 py-2 max-w-lg mx-auto w-full shadow-sm">
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-1.5 cursor-pointer" onclick="showScreenMap()">
@@ -89,73 +110,72 @@
         <span class="font-black text-lg text-green-600 tracking-tight">DuoSifir</span>
       </div>
       
-      <div id="statsBar" class="flex items-center space-x-2 text-xs font-bold hidden">
-        <!-- Badge Nama Pengguna -->
-        <div class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl border border-slate-300 font-black flex items-center space-x-1">
-          <span>👤</span>
-          <span id="topBarUser" class="max-w-[70px] truncate">Murid</span>
-        </div>
-        
-        <!-- Peringkat Burung -->
-        <div class="flex items-center space-x-1 bg-amber-50 text-amber-900 px-2 py-1 rounded-xl border border-amber-200">
-          <span id="rankBadgeIcon">🐣</span>
-          <span id="rankBadgeName" class="hidden sm:inline">Pipit</span>
+      <div id="statsBar" class="flex items-center space-x-1.5 text-xs font-bold hidden">
+        <!-- Pin Lencana Di Sebelah Username -->
+        <div class="flex items-center bg-slate-100 border border-slate-300 rounded-2xl p-0.5 pr-2 space-x-1.5 shadow-inner">
+          <div id="pinnedBadgeIconBox" class="h-6 px-1.5 rounded-xl flex items-center justify-center font-black text-[11px] shadow-sm hologram-glow text-amber-950 border border-amber-300 cursor-pointer" onclick="openBadgeGallery()" title="Lihat galeri lencana">
+            <span id="pinnedBadgeIcon">🐣</span>
+            <span id="pinnedBadgeTitle" class="ml-1 font-extrabold text-[10px]">Pipit</span>
+          </div>
+          <span id="topBarUser" class="max-w-[70px] truncate font-black text-slate-700">Murid</span>
         </div>
 
         <!-- Mata XP -->
-        <div class="flex items-center space-x-0.5 text-amber-500 font-black">
+        <div class="flex items-center space-x-0.5 text-amber-500 font-black px-1">
           <span>⚡</span>
           <span id="userXp">0</span>
         </div>
 
-        <!-- Butang Log Keluar -->
         <button onclick="logoutUser()" title="Log Keluar" class="bg-rose-50 text-rose-600 px-2 py-1 rounded-xl border border-rose-200 hover:bg-rose-100 font-extrabold text-[11px]">
-          🚪 Keluar
+          🚪
         </button>
       </div>
     </div>
 
-    <!-- Papan Maklumat Istimewa (Rekod Level Rahsia & Derma) -->
+    <!-- Papan Pintasan Khusus & Kapten Sifir -->
     <div id="secretSpecialBar" class="hidden mt-1.5 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-extrabold">
       <div id="badgeSecretStatus" class="flex items-center space-x-1 text-purple-700 bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-200">
         <span>👑</span>
         <span id="txtSecretTimeRecord">Rekod Rahsia: --:--</span>
       </div>
-      <div class="flex space-x-1.5">
-        <button onclick="openLeaderboardScreen()" class="text-purple-600 bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-200 hover:bg-purple-100">
-          🏆 Top 50 Master
+      <div class="flex space-x-1">
+        <!-- Butang Dashboard Kapten (Hanya Muncul jika role === 'kapten') -->
+        <button id="btnKaptenPanel" onclick="openKaptenDashboard()" class="hidden text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-lg border border-emerald-300 font-black">
+          ⭐ Bilik Kapten
         </button>
-        <button onclick="openDonateModal()" class="text-rose-600 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-200 hover:bg-rose-100">
-          💖 Derma
+        <button onclick="openUpgradeKaptenModal()" class="text-amber-800 bg-amber-100 px-2 py-0.5 rounded-lg border border-amber-300 hover:bg-amber-200">
+          🚀 Jadi Kapten
+        </button>
+        <button onclick="openBadgeGallery()" class="text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-lg border border-amber-300 hover:bg-amber-100">
+          🎖️ Lencana
+        </button>
+        <button onclick="openLeaderboardScreen()" class="text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-lg border border-purple-200 hover:bg-purple-100">
+          🏆 Top 50
         </button>
       </div>
     </div>
   </header>
 
-  <!-- KANDUNGAN UTAMA (CONTAINER) -->
+  <!-- KANDUNGAN UTAMA (SCREEN CONTAINER) -->
   <main class="flex-1 max-w-lg mx-auto w-full p-3 flex flex-col justify-center">
 
     <!-- 1. SCREEN: AUTH (LOG MASUK / DAFTAR) -->
     <div id="screenAuth" class="bg-white border-2 border-slate-200 p-5 rounded-3xl shadow-sm text-center">
       <div class="text-5xl mb-2 animate-bounce">🦉✨</div>
       <h2 class="text-2xl font-black text-slate-800 mb-0.5">DuoSifir Malaysia</h2>
-      <p class="text-slate-500 text-xs mb-3 font-bold">Kuasai sifir sehingga dinobatkan sebagai Burung Garuda!</p>
+      <p class="text-slate-500 text-xs mb-3 font-bold">Kuasai sifir, sertai kejohanan, dan julang Lencana Garuda!</p>
 
-      <!-- Peringatan Mesra Daftar Terlebih Dahulu (Link Aktif) -->
       <div id="authNoticeBanner" class="bg-amber-50 border-2 border-amber-300 p-2.5 rounded-2xl mb-4 text-left text-xs font-bold text-amber-900 leading-snug">
         📢 <span class="font-extrabold">Peringatan:</span> Sila daftar akaun terlebih dahulu sebelum log masuk. Jika belum mendaftar, 
         <a href="javascript:void(0)" onclick="switchAuthTab('register')" class="text-green-600 underline font-black hover:text-green-700">sila daftar di sini</a>.
       </div>
 
-      <!-- Tab Switcher -->
       <div class="flex bg-slate-100 p-1 rounded-2xl mb-4 border border-slate-200">
         <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-black text-xs rounded-xl bg-white shadow-sm text-green-600 transition">Log Masuk</button>
         <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 font-black text-xs rounded-xl text-slate-500 transition">Daftar Baharu</button>
       </div>
 
-      <!-- Borang Log Masuk / Daftar -->
       <div class="space-y-3 text-left">
-        <!-- Peringatan Khas semasa Daftar -->
         <div id="regWarningNotice" class="hidden bg-rose-50 border border-rose-300 p-2 rounded-xl text-[11px] font-bold text-rose-800 leading-tight">
           🔒 <span class="font-black">PENTING:</span> Username & kata laluan anda tidak dihantar ke mana-mana pihak. Sila catat atau screenshot maklumat anda selepas pendaftaran!
         </div>
@@ -177,24 +197,31 @@
         <button id="btnAuthSubmit" onclick="handleAuthSubmit()" class="w-full btn-duo-green text-white py-3 rounded-2xl font-black text-sm uppercase tracking-wider mt-2">
           Mula Belajar
         </button>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-[11px]">
+          <a href="javascript:void(0)" onclick="openUpgradeKaptenModal()" class="text-amber-600 font-bold hover:underline">⭐ Pakej Kapten Sifir (RM50)</a>
+          <a href="javascript:void(0)" onclick="openAdminLoginModal()" class="text-slate-400 font-bold hover:text-slate-600">⚙️ Portal Admin</a>
+        </div>
       </div>
     </div>
 
     <!-- 2. SCREEN: PETA LEVEL (PATH MAP) -->
     <div id="screenMap" class="hidden flex-col items-center space-y-4 pb-20">
-      <!-- Kad Profil & Peringkat Burung Banner -->
-      <div class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-3xl shadow-md border-b-4 border-emerald-700">
+      <div class="w-full bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-700 text-white p-4 rounded-3xl shadow-md border-b-4 border-emerald-800">
         <div class="flex justify-between items-center">
           <div>
-            <span class="text-[10px] font-black bg-emerald-700/60 px-2 py-0.5 rounded-full uppercase tracking-wider">Darjat Penguasaan</span>
-            <h3 id="bannerRankName" class="text-xl font-black mt-0.5">Burung Pipit</h3>
+            <div class="flex items-center space-x-1.5">
+              <span class="text-[10px] font-black bg-emerald-800/80 px-2 py-0.5 rounded-full uppercase tracking-wider">Pangkat Semasa</span>
+              <button onclick="openBadgeGallery()" class="text-[10px] font-black bg-yellow-400 text-yellow-950 px-2 py-0.5 rounded-full hover:bg-yellow-300">🎖️ Galeri Lencana</button>
+            </div>
+            <h3 id="bannerRankName" class="text-xl font-black mt-1">Burung Pipit</h3>
             <p id="bannerRankDesc" class="text-xs text-emerald-100 font-bold">Teruskan menjawab untuk naik taraf!</p>
           </div>
-          <div id="bannerBirdIcon" class="text-5xl">🐣</div>
+          <div id="bannerBirdIcon" class="text-5xl cursor-pointer" onclick="openBadgeGallery()">🐣</div>
         </div>
       </div>
 
-      <!-- KAD KHAS: LEVEL SIAPA RAHSIA (Terbuka Selepas Sifir 12) -->
+      <!-- KAD CABARAN MASTER: LEVEL SIAPA RAHSIA -->
       <div id="cardSecretLevel" class="w-full bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-4 rounded-3xl shadow-lg border-b-4 border-purple-900 flex items-center justify-between relative overflow-hidden">
         <div class="z-10">
           <div class="flex items-center space-x-1.5">
@@ -203,7 +230,7 @@
           </div>
           <h3 class="text-lg font-black mt-1">Level Siapa Rahsia</h3>
           <p id="secretCardSubtitle" class="text-[11px] text-purple-200 font-bold max-w-[210px] leading-tight">
-            25 soalan rawak terpantas (2 & 3 Digit). Buka selepas tamat Sifir 12!
+            25 soalan terpantas. Rebut lencana eksklusif Malaysia Top 10!
           </p>
         </div>
         <button id="btnPlaySecret" onclick="startSecretLevelCountdown()" disabled class="z-10 btn-duo-gray text-xs px-3.5 py-3 rounded-2xl font-black">
@@ -211,17 +238,15 @@
         </button>
       </div>
 
-      <!-- Laluan Sifir 1 hingga 12 -->
       <div class="w-full flex items-center justify-between px-2 pt-2">
         <span class="text-xs font-black text-slate-400 uppercase tracking-wider">Laluan Pembelajaran Sifir</span>
-        <button onclick="openLeaderboardScreen()" class="text-xs font-black text-purple-600 underline">🏆 Ranking Master</button>
+        <button onclick="openBadgeGallery()" class="text-xs font-black text-amber-600 underline">🎖️ Lihat Semua Badge</button>
       </div>
       <div id="levelsContainer" class="w-full flex flex-col items-center space-y-3"></div>
     </div>
 
-    <!-- 3. SCREEN: DEMO ANIMASI BERGANDA (RESPONSIF - ZERO SCROLL) -->
+    <!-- 3. SCREEN: DEMO PEMBELAJARAN (ZERO-SCROLL) -->
     <div id="screenDemo" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full overflow-hidden">
-      <!-- Demo Header -->
       <div class="flex items-center justify-between shrink-0 mb-1">
         <button onclick="exitToMap()" class="text-slate-400 font-black text-xl hover:text-slate-600">✕</button>
         <div class="w-2/3 bg-slate-200 h-3 rounded-full overflow-hidden border border-slate-300">
@@ -230,24 +255,17 @@
         <span id="demoStepIndicator" class="text-xs font-black text-slate-400">1 / 14</span>
       </div>
 
-      <!-- Kad Visual Animasi (Autoscale untuk elak scroll mobile) -->
       <div class="bg-white border-2 border-slate-200 p-3 rounded-3xl text-center flex-1 flex flex-col justify-between overflow-hidden shadow-sm my-1">
         <div class="shrink-0">
           <div id="demoConceptTitle" class="text-[10px] font-black text-sky-600 uppercase tracking-widest">KONSEP SIFIR BERGANDA</div>
           <div id="demoMathFormula" class="text-3xl font-black text-slate-800 tracking-tight">1 × 1 = 1</div>
         </div>
-
-        <!-- Kanvas Objek Animasi Menguncup Secara Automatik Mengikut Saiz -->
-        <div id="demoAnimationBox" class="flex-1 w-full bg-sky-50/70 border-2 border-dashed border-sky-200 rounded-2xl p-1.5 flex flex-wrap items-center justify-center content-center gap-1.5 my-1 overflow-hidden transition-all">
-          <!-- Objek animasi diisi secara dinamik -->
-        </div>
-
+        <div id="demoAnimationBox" class="flex-1 w-full bg-sky-50/70 border-2 border-dashed border-sky-200 rounded-2xl p-1.5 flex flex-wrap items-center justify-center content-center gap-1.5 my-1 overflow-hidden transition-all"></div>
         <p id="demoExplanation" class="text-xs font-bold text-slate-600 px-1 leading-snug shrink-0">
           Penerangan konsep sifir berganda.
         </p>
       </div>
 
-      <!-- Action Button -->
       <div class="shrink-0 pt-2">
         <button id="btnDemoNext" onclick="nextDemoStep()" class="w-full btn-duo-green text-white py-3.5 rounded-2xl font-black text-base uppercase tracking-wider">
           Faham, Teruskan! ➔
@@ -268,9 +286,7 @@
 
         <div class="text-center mt-2 mb-2">
           <h4 id="quizPromptTitle" class="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1">Tulis jawapan menggunakan keypad</h4>
-          
           <div id="quizVisualClue" class="hidden max-h-[80px] bg-amber-50 border border-amber-200 rounded-xl p-1.5 mb-2 flex flex-wrap items-center justify-center gap-1 overflow-hidden"></div>
-
           <div class="flex items-center justify-center space-x-3 text-3xl font-black text-slate-800">
             <span id="quizEquationText">1 × 4 =</span>
             <div class="min-w-[70px] h-12 bg-white border-b-4 border-2 border-sky-400 rounded-2xl flex items-center justify-center text-3xl text-sky-600 font-black px-2 shadow-inner">
@@ -280,7 +296,6 @@
         </div>
       </div>
 
-      <!-- Keypad Sentuh -->
       <div class="bg-slate-100 p-2.5 rounded-3xl border-2 border-slate-200 shadow-sm mt-auto shrink-0">
         <div class="grid grid-cols-3 gap-1.5 max-w-xs mx-auto">
           <button onclick="pressKey(1)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">1</button>
@@ -302,13 +317,12 @@
       </div>
     </div>
 
-    <!-- 5. SCREEN: LEVEL SIAPA RAHSIA (25 SOALAN SEIMBANG 2 & 3 DIGIT + PEMASA) -->
+    <!-- 5. SCREEN: LEVEL SIAPA RAHSIA / TOURNAMENT (25 SOALAN) -->
     <div id="screenSecretPlay" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
       <div class="shrink-0">
-        <!-- Top Status Bar Rahsia -->
         <div class="flex items-center justify-between bg-purple-900 text-white p-2.5 rounded-2xl border-b-2 border-purple-950 mb-2">
           <div class="flex items-center space-x-1.5">
-            <span class="text-sm font-black bg-yellow-400 text-purple-950 px-2 py-0.5 rounded-md">RAHSIA</span>
+            <span id="secretGameModeTag" class="text-sm font-black bg-yellow-400 text-purple-950 px-2 py-0.5 rounded-md">RAHSIA</span>
             <span id="secretLiveTimer" class="font-mono text-base font-black text-yellow-300">00:00.0</span>
           </div>
           <div class="text-xs font-black text-purple-200">
@@ -330,7 +344,6 @@
         </div>
       </div>
 
-      <!-- Keypad Khusus Level Rahsia -->
       <div class="bg-purple-50 p-2.5 rounded-3xl border-2 border-purple-200 shadow-sm mt-auto shrink-0">
         <div class="grid grid-cols-3 gap-1.5 max-w-xs mx-auto">
           <button onclick="pressSecretKey(1)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">1</button>
@@ -352,7 +365,159 @@
       </div>
     </div>
 
-    <!-- 6. SCREEN: RANKING LEVEL RAHSIA (TOP 50 MASTER MALAYSIA) -->
+    <!-- 6. SCREEN: DASHBOARD KAPTEN SIFIR (PENGURUSAN KELAS & TOURNAMENT) -->
+    <div id="screenKaptenDashboard" class="hidden flex-col h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
+      <div class="flex items-center justify-between mb-2 shrink-0">
+        <button onclick="showScreenMap()" class="text-slate-500 font-black text-xs bg-slate-100 px-3 py-1.5 rounded-xl border">
+          ← Peta Sifir
+        </button>
+        <h3 class="text-base font-black text-emerald-800 flex items-center space-x-1">
+          <span>⭐ Bilik Kapten Sifir</span>
+        </h3>
+        <span class="text-xl">🏆</span>
+      </div>
+
+      <!-- Tab Switcher Kapten -->
+      <div class="flex bg-slate-200 p-1 rounded-2xl mb-3 shrink-0">
+        <button id="tabKaptenTourney" onclick="switchKaptenTab('tourney')" class="flex-1 py-1.5 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-700">Tournament Sifir</button>
+        <button id="tabKaptenGroup" onclick="switchKaptenTab('group')" class="flex-1 py-1.5 font-black text-xs rounded-xl text-slate-600">Senarai Murid (Max 50)</button>
+      </div>
+
+      <!-- KANDUNGAN TAB 1: PENGANJURAN TOURNAMENT -->
+      <div id="kaptenTabContentTourney" class="flex-1 overflow-y-auto space-y-3 pr-1">
+        <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-3xl shadow-sm text-left">
+          <h4 class="font-black text-base">Cipta Tournament 25 Sifir</h4>
+          <p class="text-xs text-emerald-100 mt-1 leading-relaxed">
+            Peserta imbas Kod QR menggunakan kamera telefon untuk menyertai lobi. Kapten tekan mula serentak!
+          </p>
+          <div class="mt-3 flex space-x-2">
+            <input type="text" id="tourneyTitleInput" placeholder="Tajuk Cth: Sifir Champ 5 Bakawali" class="flex-1 bg-white text-slate-800 text-xs px-3 py-2 rounded-xl font-bold focus:outline-none">
+            <button onclick="handleCreateTournament()" class="btn-duo-yellow text-slate-950 px-3 py-2 rounded-xl text-xs font-black">
+              + Jana Bilik
+            </button>
+          </div>
+        </div>
+
+        <!-- Kad Bilik Tournament Aktif (Jika Dijana) -->
+        <div id="activeTourneyCard" class="hidden bg-white border-2 border-emerald-400 p-4 rounded-3xl shadow-sm text-center space-y-3">
+          <div class="flex justify-between items-center text-xs">
+            <span id="activeTourneyCode" class="bg-purple-100 text-purple-900 font-mono font-black px-2.5 py-1 rounded-lg">KOD: TRN-000000</span>
+            <span id="activeTourneyStatus" class="bg-amber-100 text-amber-900 font-black px-2.5 py-1 rounded-lg">Menunggu Peserta</span>
+          </div>
+
+          <h4 id="activeTourneyTitle" class="text-base font-black text-slate-800">Tajuk Kejohanan</h4>
+
+          <!-- QR Code Paparan Besar untuk Diimbas Kamera Peserta -->
+          <div class="bg-emerald-50 p-3 rounded-2xl border-2 border-dashed border-emerald-300 inline-block">
+            <img id="tourneyQrImage" src="" alt="QR Kod Tournament" class="w-48 h-48 mx-auto rounded-xl shadow-sm">
+            <p class="text-[10px] font-bold text-slate-500 mt-1">Imbas kamera untuk masuk terus ke tournament</p>
+          </div>
+
+          <!-- Senarai Peserta dalam Lobi -->
+          <div class="text-left bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-xs font-black text-slate-600">Peserta Bersedia:</span>
+              <span id="tourneyParticipantCount" class="text-xs font-black text-emerald-600">0 orang</span>
+            </div>
+            <div id="tourneyParticipantList" class="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+              <span class="text-[11px] text-slate-400 italic">Belum ada peserta masuk...</span>
+            </div>
+          </div>
+
+          <!-- Kawalan Mula Kapten -->
+          <button id="btnKaptenStartTourney" onclick="kaptenTriggerStartTournament()" class="w-full btn-duo-green text-white py-3 rounded-2xl font-black text-sm uppercase tracking-wider">
+            🚀 MULA TOURNAMENT SEKARANG!
+          </button>
+        </div>
+
+        <!-- Papan Keputusan Langsung Tournament -->
+        <div id="tourneyLeaderboardSection" class="hidden bg-white border-2 border-purple-200 p-3 rounded-3xl shadow-sm">
+          <h5 class="text-xs font-black text-purple-900 uppercase tracking-wider mb-2">Papan Markah Langsung Tournament</h5>
+          <div class="max-h-40 overflow-y-auto">
+            <table class="w-full text-left text-xs">
+              <thead><tr class="border-b text-slate-400 text-[10px]"><th>No</th><th>Nama Peserta</th><th class="text-right">Masa</th></tr></thead>
+              <tbody id="tourneyLeaderboardTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- KANDUNGAN TAB 2: PENGURUSAN SENARAI MURID (MAX 50) -->
+      <div id="kaptenTabContentGroup" class="hidden flex-1 overflow-y-auto space-y-3 pr-1 text-left">
+        <div class="bg-white border-2 border-slate-200 p-4 rounded-3xl shadow-sm space-y-3">
+          <h4 class="font-black text-sm text-slate-800">Cipta Kumpulan / Kelas (Maksimum 50 Murid)</h4>
+          
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-black text-slate-400 uppercase">Nama Kumpulan/Kelas</label>
+              <input type="text" id="grpNameInput" placeholder="Cth: 4 Amanah" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-3 py-2 rounded-xl font-bold">
+            </div>
+            <div>
+              <label class="text-[10px] font-black text-slate-400 uppercase">Jenis</label>
+              <select id="grpTypeSelect" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-2 py-2 rounded-xl font-bold">
+                <option value="Kelas">Kelas</option>
+                <option value="Kumpulan">Kumpulan / Kelab</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Muat Turun & Muat Naik XLSX -->
+          <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-xs font-black text-amber-900">Format Excel (XLSX)</p>
+              <p class="text-[10px] text-amber-700">Gunakan fail dummy ini untuk memuat naik nama murid.</p>
+            </div>
+            <button onclick="downloadDummyXlsxTemplate()" class="bg-amber-500 hover:bg-amber-600 text-white font-black text-[11px] px-2.5 py-1.5 rounded-xl shadow-xs">
+              📥 Muat Turun Template
+            </button>
+          </div>
+
+          <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase">Muat Naik Fail XLSX:</label>
+            <input type="file" id="xlsxFileInput" accept=".xlsx, .xls" onchange="handleXlsxUpload(event)" class="w-full mt-1 text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-emerald-100 file:text-emerald-800">
+          </div>
+
+          <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase">Atau Taip Nama Murid (Satu baris satu nama):</label>
+            <textarea id="grpManualTextarea" rows="4" placeholder="Ali bin Abu&#10;Tan Wei Ming&#10;Suresh Kumar" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs p-2.5 rounded-xl font-medium"></textarea>
+            <span class="text-[10px] text-slate-400 font-bold">Jumlah murid dikesan: <span id="parsedStudentCount" class="text-emerald-600 font-black">0</span> / 50</span>
+          </div>
+
+          <button onclick="handleSaveGroup()" class="w-full btn-duo-green text-white py-2.5 rounded-2xl font-black text-xs uppercase">
+            Simpan Senarai Kumpulan
+          </button>
+        </div>
+
+        <!-- Senarai Kumpulan Sedia Ada -->
+        <div id="kaptenExistingGroupsList" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- 7. SCREEN: LOBI PESERTA TOURNAMENT (IMBAS QR & MASUK) -->
+    <div id="screenParticipantLobby" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full text-center">
+      <div class="glass-card p-5 rounded-3xl border-2 border-purple-300 shadow-sm my-auto">
+        <div class="text-5xl mb-2">🎯🏁</div>
+        <h3 id="lobbyTourneyTitle" class="text-xl font-black text-purple-900">Kejohanan 25 Sifir</h3>
+        <p class="text-xs text-slate-500 font-bold mb-4">Sertai perlawanan kelajuan minda bersama rakan-rakan!</p>
+
+        <div id="lobbyJoinForm" class="space-y-3">
+          <input type="text" id="lobbyParticipantName" placeholder="Tuliskan Nama Anda" class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-black p-3 rounded-2xl text-center focus:border-purple-500 focus:outline-none">
+          <button onclick="handleParticipantJoinLobby()" class="w-full btn-duo-purple text-white py-3 rounded-2xl font-black text-sm uppercase">
+            Sertai Bilik Lobi
+          </button>
+        </div>
+
+        <div id="lobbyWaitingRoom" class="hidden space-y-3 mt-3">
+          <div class="bg-purple-100 text-purple-900 p-3 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 animate-pulse">
+            <span>⏳</span>
+            <span>Menunggu Kapten Memulakan Perlawanan...</span>
+          </div>
+          <p class="text-xs font-bold text-slate-500">Kekal di halaman ini. Soalan akan bermula serentak sebaik sahaja Kapten menekan Mula!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. SCREEN: RANKING LEADERBOARD (TOP 50 MASTER MALAYSIA) -->
     <div id="screenLeaderboard" class="hidden flex-col h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
       <div class="flex items-center justify-between mb-3 shrink-0">
         <button onclick="showScreenMap()" class="text-slate-500 font-black text-sm bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
@@ -365,10 +530,9 @@
       <div class="bg-gradient-to-r from-purple-700 to-indigo-800 text-white p-3 rounded-2xl shadow-sm mb-3 shrink-0 text-center">
         <div class="text-2xl">🇲🇾👑</div>
         <h4 class="text-base font-black">Top 50 Master Malaysia</h4>
-        <p class="text-[11px] text-purple-200">Masa paling pantas menghabiskan 25 soalan tanpa sebarang kesalahan!</p>
+        <p class="text-[11px] text-purple-200">Kedudukan 1 hingga 10 dianugerahkan Lencana Eksklusif Malaysia Top 10!</p>
       </div>
 
-      <!-- Jadual Ranking -->
       <div class="flex-1 bg-white border-2 border-slate-200 rounded-2xl p-2 overflow-y-auto shadow-inner">
         <table class="w-full text-left text-xs">
           <thead>
@@ -378,29 +542,186 @@
               <th class="py-1 px-2 text-right">Masa</th>
             </tr>
           </thead>
-          <tbody id="leaderboardTbody">
-            <tr><td colspan="3" class="text-center py-6 text-slate-400 font-bold">Memuatkan ranking master...</td></tr>
-          </tbody>
+          <tbody id="leaderboardTbody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- 9. SCREEN: GALERI LENCANA & ANUGERAH -->
+    <div id="screenBadgeGallery" class="hidden flex-col h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
+      <div class="flex items-center justify-between mb-2 shrink-0">
+        <button onclick="showScreenMap()" class="text-slate-500 font-black text-sm bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+          ← Kembali
+        </button>
+        <h3 class="text-base font-black text-slate-800">Galeri Lencana & Anugerah</h3>
+        <span class="text-xl">🎖️</span>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-4 pr-1 pb-4 text-left">
+        <div class="bg-gradient-to-r from-amber-500 to-yellow-600 text-white p-3.5 rounded-3xl shadow-sm">
+          <h4 class="font-black text-base flex items-center space-x-1.5">
+            <span>👑</span><span>Koleksi Lencana Kehormatan</span>
+          </h4>
+          <p class="text-xs text-amber-100 mt-0.5 leading-relaxed">
+            Kumpul kesemua 7 Lencana Burung dan rebut 10 Lencana Diraja Malaysia Top 10 untuk disematkan di sebelah nama profil anda!
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-black uppercase tracking-wider text-slate-400 mb-2 px-1">
+            1. Pangkat Burung Penguasaan Sifir (7 Peringkat)
+          </h4>
+          <div id="birdBadgeList" class="space-y-2"></div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-black uppercase tracking-wider text-purple-700 mb-2 px-1 flex items-center justify-between">
+            <span>2. Lencana Diraja Master Malaysia (Top 10)</span>
+            <span class="text-[10px] bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full font-black">TERTINGGI</span>
+          </h4>
+          <div id="top10BadgeList" class="space-y-2"></div>
+        </div>
       </div>
     </div>
 
   </main>
 
-  <!-- OVERLAY COUNTDOWN LEVEL RAHSIA (3.. 2.. 1.. MULA!) -->
-  <div id="overlayCountdown" class="fixed inset-0 bg-purple-950/90 z-50 hidden flex flex-col items-center justify-center text-white">
-    <div class="text-xs uppercase font-black tracking-widest text-yellow-300 mb-2">Bersedia Untuk Cabaran</div>
-    <div id="countdownNumber" class="text-8xl font-black text-white animate-pulse">3</div>
-    <p class="text-xs font-bold text-purple-300 mt-4">Jawab 25 soalan terpantas. Salah = Gagal!</p>
+  <!-- MODAL: LANGGAN PAKEJ KAPTEN SIFIR (RM50 + QR + WHATSAPP @cikguenal) -->
+  <div id="modalUpgradeKapten" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-amber-400 relative max-h-[92vh] overflow-y-auto">
+      <button onclick="closeUpgradeKaptenModal()" class="absolute top-3 right-3 text-slate-400 font-black text-lg">✕</button>
+      <div class="text-4xl mb-1">⭐👑</div>
+      <h3 class="text-xl font-black text-slate-800">Pakej Kapten Sifir</h3>
+      <p class="text-xs font-bold text-slate-500 mb-3">
+        Bina senarai murid sehingga 50 orang (manual/XLSX) dan anjurkan kejohanan live dengan imbasan QR Code!
+      </p>
+
+      <div class="bg-amber-50 p-2.5 rounded-2xl border border-amber-300 text-left text-xs space-y-1 mb-3">
+        <div class="flex items-center space-x-1 font-black text-amber-900">
+          <span>✔️</span><span>Cipta kelas & kumpulan (sehingga 50 murid)</span>
+        </div>
+        <div class="flex items-center space-x-1 font-black text-amber-900">
+          <span>✔️</span><span>Muat naik senarai nama terus menggunakan fail Excel (.xlsx)</span>
+        </div>
+        <div class="flex items-center space-x-1 font-black text-amber-900">
+          <span>✔️</span><span>Anjur Tournament Live 25 Sifir kawalan sendiri</span>
+        </div>
+        <div class="flex items-center space-x-1 font-black text-amber-900">
+          <span>✔️</span><span>Jana Kod QR penyertaan automatik untuk peserta</span>
+        </div>
+      </div>
+
+      <!-- Paparan QR DuitNow RM50 (znal.png) -->
+      <div class="bg-pink-50 p-2 rounded-2xl border border-pink-200 inline-block mb-2">
+        <span class="text-xs font-black text-pink-700 bg-pink-100 px-2 py-0.5 rounded-full mb-1 inline-block">Yuran: RM50 Sahaja</span>
+        <img src="znal.png" alt="DuitNow QR Developer (znal)" class="w-44 h-auto mx-auto rounded-xl shadow-xs object-contain" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DuitNow-Znal';">
+      </div>
+
+      <p class="text-[11px] font-bold text-slate-600 mb-3 leading-snug">
+        Selepas membuat pembayaran RM50 melalui DuitNow QR rasmi (znal)[cite: 1], hantarkan resit ke WhatsApp:
+      </p>
+
+      <!-- Butang WhatsApp Terus ke @cikguenal -->
+      <a href="https://wa.me/?text=Assalamualaikum%20@cikguenal,%20saya%20telah%20membuat%20pembayaran%20RM50%20untuk%20Pakej%20Kapten%20Sifir.%20Berikut%20adalah%20bukti%20resit." target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-2xl font-black text-xs uppercase flex items-center justify-center space-x-2 shadow-md">
+        <span>💬 Hantar Resit ke WhatsApp @cikguenal</span>
+      </a>
+    </div>
   </div>
 
-  <!-- POPUP KAD BUKTI PENDAFTARAN (SCREENSHOT CARD) -->
+  <!-- MODAL: PORTAL ADMIN (PASSWORD A@t021286) -->
+  <div id="modalAdminLogin" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-slate-700 relative">
+      <button onclick="closeAdminLoginModal()" class="absolute top-3 right-3 text-slate-400 font-black text-lg">✕</button>
+      <div class="text-4xl mb-1">⚙️🛡️</div>
+      <h3 class="text-lg font-black text-slate-800">Portal Pentadbir DuoSifir</h3>
+      <p class="text-xs text-slate-500 font-bold mb-3">Sila masukkan kata laluan keselamatan untuk mentadbir akaun Kapten Sifir.</p>
+
+      <div class="space-y-3 text-left">
+        <input type="password" id="adminPasswordInput" placeholder="Kata Laluan Admin" class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-bold p-3 rounded-2xl focus:outline-none focus:border-slate-600">
+        <button onclick="handleAdminLoginSubmit()" class="w-full bg-slate-900 hover:bg-black text-white py-3 rounded-2xl font-black text-xs uppercase tracking-wider">
+          Log Masuk Admin
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADMIN CONTROL DASHBOARD (CIPTA KAPTEN SIFIR) -->
+  <div id="modalAdminDashboard" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border-4 border-emerald-600 relative max-h-[90vh] overflow-y-auto text-left">
+      <div class="flex justify-between items-center border-b pb-2 mb-3">
+        <h3 class="text-base font-black text-slate-800 flex items-center space-x-1.5">
+          <span>🛡️</span><span>Panel Pentadbir: Jana Kapten Sifir</span>
+        </h3>
+        <button onclick="closeAdminDashboard()" class="text-slate-400 font-black text-lg">✕</button>
+      </div>
+
+      <!-- Borang Cipta Kapten Sifir Baharu -->
+      <div class="bg-emerald-50 border border-emerald-300 p-3.5 rounded-2xl space-y-2 mb-4">
+        <h4 class="text-xs font-black text-emerald-950 uppercase tracking-wider">+ Cipta Akaun Kapten Sifir</h4>
+        <input type="text" id="newKaptenUser" placeholder="Username Cth: cikgu_salmah" class="w-full bg-white border border-slate-200 text-xs px-3 py-2 rounded-xl font-bold">
+        <input type="password" id="newKaptenPass" placeholder="Password untuk Kapten Sifir" class="w-full bg-white border border-slate-200 text-xs px-3 py-2 rounded-xl font-bold">
+        <button onclick="handleAdminCreateKapten()" class="w-full btn-duo-green text-white py-2 rounded-xl font-black text-xs uppercase">
+          Daftarkan Kapten Sifir
+        </button>
+      </div>
+
+      <!-- Senarai Kapten Sifir yang Berdaftar -->
+      <div>
+        <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Senarai Kapten Sifir Berdaftar</h4>
+        <div id="adminKaptenList" class="space-y-1.5 max-h-48 overflow-y-auto">
+          <p class="text-xs text-slate-400">Memuatkan senarai Kapten...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLAY ANIMASI FLOATING LENCANA (10 SAAT) -->
+  <div id="modalBadgeCelebration" class="fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-50 hidden flex flex-col items-center justify-center p-4 text-center overflow-hidden">
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-25">
+      <svg class="w-[700px] h-[700px] spin-sunburst" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="48" fill="#facc15" />
+      </svg>
+    </div>
+
+    <div class="relative z-10 max-w-sm w-full flex flex-col items-center">
+      <div class="text-xs font-black uppercase tracking-widest text-yellow-300 bg-yellow-950/70 border border-yellow-500/50 px-3.5 py-1 rounded-full mb-3 shadow-lg">
+        ✨ ANUGERAH LENCANA BAHARU ✨
+      </div>
+
+      <div class="badge-float-anim relative my-4 flex flex-col items-center justify-center">
+        <div class="w-36 h-36 rounded-full border-4 border-yellow-400 bg-gradient-to-br from-amber-300 via-yellow-500 to-amber-700 p-2 shadow-2xl flex items-center justify-center relative">
+          <div class="w-full h-full rounded-full bg-slate-900 border-2 border-yellow-200 flex flex-col items-center justify-center p-2 text-center">
+            <span id="animBadgeBigIcon" class="text-5xl drop-shadow-md">👑</span>
+            <span id="animBadgeTag" class="text-[9px] font-black uppercase tracking-wider text-yellow-300 mt-1">Lencana Diraja</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 id="animBadgeTitle" class="text-2xl font-black text-white tracking-tight drop-shadow-lg mt-1">Burung Merpati</h3>
+      <p id="animBadgeSubtitle" class="text-xs font-bold text-yellow-100 max-w-xs mt-1.5 leading-relaxed drop-shadow"></p>
+
+      <div class="w-full max-w-xs mt-5 space-y-2">
+        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+          <div id="animCountdownBar" class="bg-gradient-to-r from-yellow-400 to-amber-500 h-full w-full transition-all duration-100 ease-linear"></div>
+        </div>
+        <div class="flex justify-between items-center text-[10px] text-yellow-300 font-mono px-1">
+          <span>Menyematkan ke profil...</span>
+          <span id="animTimerTxt">10s</span>
+        </div>
+        <button onclick="dismissBadgeCelebration()" class="w-full btn-duo-yellow text-slate-950 font-black py-2.5 rounded-2xl text-xs uppercase tracking-wider shadow-xl">
+          Sematkan Badge ke Profil 🎖️
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP KAD PENDAFTARAN PENGGUNA (SCREENSHOT) -->
   <div id="modalUserCard" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-emerald-500">
       <div class="text-4xl mb-1">📸✨</div>
       <h3 class="text-xl font-black text-slate-800">Pendaftaran Berjaya!</h3>
       <p class="text-xs text-rose-600 font-black mb-3">
-        ⚠️ SILA SCREENSHOT ATAU CATAT KAD INI SEKARANG! Maklumat tidak dihantar ke emel anda.
+        ⚠️ SILA SCREENSHOT ATAU CATAT KAD INI! Maklumat tidak dihantar ke emel anda.
       </p>
 
       <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-dashed border-emerald-400 rounded-2xl p-4 text-left space-y-2 mb-4 shadow-sm">
@@ -412,9 +733,6 @@
           <span class="text-[10px] uppercase font-black text-slate-400">Kata Laluan Anda:</span>
           <p id="cardPasswordDisplay" class="text-lg font-mono font-black text-slate-800">123456</p>
         </div>
-        <div class="pt-1 border-t border-emerald-200 text-[10px] font-bold text-slate-500">
-          Aplikasi DuoSifir • Simpan baik-baik untuk log masuk seterusnya
-        </div>
       </div>
 
       <button onclick="closeCardAndStart()" class="w-full btn-duo-green text-white py-3 rounded-2xl font-black text-sm uppercase">
@@ -423,21 +741,7 @@
     </div>
   </div>
 
-  <!-- DIALOG RALAT KUSTOM (CTH: USERNAME TIDAK WUJUD) -->
-  <div id="modalErrorDialog" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-xs w-full p-5 text-center shadow-2xl border-4 border-rose-500">
-      <div class="text-4xl mb-2">❌</div>
-      <h3 id="errorDialogTitle" class="text-lg font-black text-slate-800">Username Tidak Wujud</h3>
-      <p id="errorDialogMsg" class="text-xs font-bold text-slate-600 my-3 leading-relaxed">
-        Nama pengguna yang dimasukkan tidak ditemui dalam rekod. Sila semak semula ejaan atau daftar akaun baharu.
-      </p>
-      <button onclick="closeErrorDialog()" class="w-full bg-rose-600 text-white py-2.5 rounded-xl font-black text-xs uppercase">
-        Tutup
-      </button>
-    </div>
-  </div>
-
-  <!-- POPUP DUOLINGO FEEDBACK SHEET -->
+  <!-- POPUP FEEDBACK SHEET -->
   <div id="feedbackSheet" class="fixed inset-x-0 bottom-0 p-3 transform translate-y-full transition-transform duration-300 z-50 max-w-lg mx-auto">
     <div id="feedbackBox" class="p-4 rounded-3xl border-2 flex flex-col space-y-2">
       <div class="flex items-center space-x-3">
@@ -453,30 +757,30 @@
     </div>
   </div>
 
-  <!-- POPUP DERMA DEVELOPER (DuitNow QR - znal.png) -->
+  <!-- POPUP DERMA DEVELOPER -->
   <div id="modalDonate" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-pink-400 relative">
       <button onclick="closeDonateModal()" class="absolute top-3 right-3 text-slate-400 font-black text-lg">✕</button>
       <div class="text-3xl mb-1">🎁💖</div>
       <h3 class="text-lg font-black text-slate-800">Sumbangan Developer</h3>
       <p class="text-[11px] font-bold text-slate-500 mb-3">
-        Aplikasi ini percuma untuk semua murid. Sumbangan anda membantu kelangsungan pelayan dan naik taraf sistem.
+        Aplikasi ini percuma untuk semua murid. Sumbangan ikhlas anda membantu menyokong kelangsungan sistem ini.
       </p>
       <div class="bg-pink-50 p-2 rounded-2xl border border-pink-200 inline-block mb-2">
         <img src="znal.png" alt="DuitNow QR Developer (znal)" class="w-48 h-auto mx-auto rounded-xl shadow-sm object-contain" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DuitNow-Znal';">
       </div>
-      <p class="text-xs font-black text-pink-600 mb-3">DuitNow QR Rasmi (znal)</p>
+      <p class="text-xs font-black text-pink-600 mb-3">DuitNow QR Rasmi (znal)[cite: 1]</p>
       <button onclick="closeDonateModal()" class="w-full btn-duo-green text-white py-2.5 rounded-xl font-black text-xs uppercase">
         Sambung Belajar 🚀
       </button>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIK KESELURUHAN -->
+  <!-- JAVASCRIPT APLIKASI WEB & LOGIK PENUH -->
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzWOWCsANwfbWRU4ElL20tfwYHFYHsJYNF1913xSsVZgZvrv8aKD9dVWyhDHjcQQZnh/exec";
 
-    // Web Audio FX
+    // Audio Synthesizer
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(freq, type, duration, delay = 0) {
       setTimeout(() => {
@@ -506,28 +810,54 @@
     function playSfxLevelUp() {
       [440, 554, 659, 880].forEach((f, i) => playTone(f, 'triangle', 0.18, i * 70));
     }
+    function playSfxBadgeFanfare() {
+      const notes = [
+        { f: 523.25, d: 0.18, t: 0 },
+        { f: 659.25, d: 0.18, t: 150 },
+        { f: 783.99, d: 0.22, t: 300 },
+        { f: 1046.50, d: 0.55, t: 500 },
+        { f: 880.00, d: 0.20, t: 900 },
+        { f: 1046.50, d: 0.70, t: 1100 }
+      ];
+      notes.forEach(n => playTone(n.f, 'triangle', n.d, n.t));
+    }
 
-    // Peringkat Burung
+    // DEFINISI LENCANA BURUNG & TOP 10
     const BIRD_RANKS = [
-      { maxLevel: 2, name: "Burung Pipit", icon: "🐣", desc: "Permulaan yang ceria" },
-      { maxLevel: 4, name: "Burung Merpati", icon: "🕊️", desc: "Mula terbang laju" },
-      { maxLevel: 6, name: "Burung Tekukur", icon: "🦜", desc: "Ingatan semakin kukuh" },
-      { maxLevel: 8, name: "Burung Hantu", icon: "🦉", desc: "Pintar dan berfokus" },
-      { maxLevel: 10, name: "Burung Rajawali", icon: "🦅", desc: "Pantas menembusi sifir" },
-      { maxLevel: 11, name: "Burung Helang", icon: "🪶", desc: "Ketajaman minda terunggul" },
-      { maxLevel: 12, name: "Burung Garuda", icon: "👑🔥", desc: "Penguasa Agung Seluruh Sifir!" }
+      { id: "pipit", minLvl: 1, maxLvl: 2, name: "Burung Pipit", icon: "🐣", desc: "Permulaan yang ceria bagi penjelajah sifir 1 & 2.", req: "Daftar & mula Sifir 1" },
+      { id: "merpati", minLvl: 3, maxLvl: 4, name: "Burung Merpati", icon: "🕊️", desc: "Mula terbang laju menawan Sifir 3 & 4.", req: "Kuasai Sifir 2 sepenuhnya" },
+      { id: "tekukur", minLvl: 5, maxLvl: 6, name: "Burung Tekukur", icon: "🦜", desc: "Ingatan semakin mantap bagi Sifir 5 & 6.", req: "Kuasai Sifir 4 sepenuhnya" },
+      { id: "hantu", minLvl: 7, maxLvl: 8, name: "Burung Hantu", icon: "🦉", desc: "Pintar dan berfokus menembusi Sifir 7 & 8.", req: "Kuasai Sifir 6 sepenuhnya" },
+      { id: "rajawali", minLvl: 9, maxLvl: 10, name: "Burung Rajawali", icon: "🦅", desc: "Kombinasi kelajuan dan ketepatan Sifir 9 & 10.", req: "Kuasai Sifir 8 sepenuhnya" },
+      { id: "helang", minLvl: 11, maxLvl: 11, name: "Burung Helang", icon: "🪶", desc: "Ketajaman minda menguasai Sifir 11.", req: "Kuasai Sifir 10 sepenuhnya" },
+      { id: "garuda", minLvl: 12, maxLvl: 12, name: "Burung Garuda", icon: "👑🔥", desc: "Penguasa Agung Seluruh Sifir 1 hingga 12!", req: "Tamatkan Sifir 12 rekod penuh" }
     ];
+
+    const TOP_10_BADGES = [
+      { rank: 1, title: "Malaysia Top 1", icon: "👑🥇", desc: "Juara Mutlak Malaysia. Kelajuan minda terpantas nombor satu!" },
+      { rank: 2, title: "Malaysia Top 2", icon: "🥈", desc: "Naib Juara Kebangsaan Malaysia!" },
+      { rank: 3, title: "Malaysia Top 3", icon: "🥉", desc: "Tempat Ketiga Master Malaysia!" },
+      { rank: 4, title: "Malaysia Top 4", icon: "🎖️4", desc: "Elit Master Malaysia - Tangga Ke-4 Kebangsaan." },
+      { rank: 5, title: "Malaysia Top 5", icon: "🎖️5", desc: "Elit Master Malaysia - Tangga Ke-5 Kebangsaan." },
+      { rank: 6, title: "Malaysia Top 6", icon: "🎖️6", desc: "Elit Master Malaysia - Tangga Ke-6 Kebangsaan." },
+      { rank: 7, title: "Malaysia Top 7", icon: "🎖️7", desc: "Elit Master Malaysia - Tangga Ke-7 Kebangsaan." },
+      { rank: 8, title: "Malaysia Top 8", icon: "🎖️8", desc: "Elit Master Malaysia - Tangga Ke-8 Kebangsaan." },
+      { rank: 9, title: "Malaysia Top 9", icon: "🎖️9", desc: "Elit Master Malaysia - Tangga Ke-9 Kebangsaan." },
+      { rank: 10, title: "Malaysia Top 10", icon: "🔟🎖️", desc: "Elit Master Malaysia - Top 10 Terbaik!" }
+    ];
+
     const SIFIR_EMOJIS = ["", "🍎", "⭐", "🚗", "🍭", "⚽", "🐱", "🚀", "🍕", "🌸", "💎", "🍩", "⚡"];
 
     function getRank(level) {
       for (const r of BIRD_RANKS) {
-        if (level <= r.maxLevel) return r;
+        if (level <= r.maxLvl) return r;
       }
       return BIRD_RANKS[BIRD_RANKS.length - 1];
     }
 
     // App State
     let currentUser = null;
+    let userNationalRank = null;
     let authMode = 'login';
     let isUserVerified = false;
     let totalQuestionsAnsweredAllTime = 0;
@@ -540,17 +870,32 @@
     let currentInput = "";
     let isLastAnswerCorrect = false;
 
-    // State Khusus Level Siapa Rahsia
+    // State Siapa Rahsia & Tournament
     let secretTimerInterval = null;
     let secretStartTime = 0;
     let secretQuestions = [];
     let secretQIndex = 0;
     let secretInput = "";
+    let isTournamentPlay = false;
+    let currentTournamentId = null;
+    let tournamentParticipantName = "";
+    let tourneyPollInterval = null;
 
-    // -------------------------------------------------------------
-    // KEKALKAN SESI (LOCALSTORAGE) & MULA APLIKASI
-    // -------------------------------------------------------------
+    // Animasi Badge Floating
+    let badgeAnimInterval = null;
+    let confettiRainInterval = null;
+
+    // Memeriksa URL sama ada peserta imbas QR tournament
     window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tourneyParam = urlParams.get('tournament');
+
+      if (tourneyParam) {
+        currentTournamentId = tourneyParam.toUpperCase();
+        openParticipantLobby(currentTournamentId);
+        return;
+      }
+
       const savedUser = localStorage.getItem('duosifir_active_user');
       if (savedUser) {
         try {
@@ -563,9 +908,10 @@
     });
 
     function logoutUser() {
-      if (confirm("Adakah anda pasti ingin log keluar? Maklumat sesi anda akan ditutup.")) {
+      if (confirm("Adakah anda pasti ingin log keluar?")) {
         localStorage.removeItem('duosifir_active_user');
         currentUser = null;
+        userNationalRank = null;
         document.getElementById('statsBar').classList.add('hidden');
         document.getElementById('secretSpecialBar').classList.add('hidden');
         document.getElementById('screenMap').classList.add('hidden');
@@ -573,14 +919,15 @@
         document.getElementById('screenQuiz').classList.add('hidden');
         document.getElementById('screenSecretPlay').classList.add('hidden');
         document.getElementById('screenLeaderboard').classList.add('hidden');
+        document.getElementById('screenBadgeGallery').classList.add('hidden');
+        document.getElementById('screenKaptenDashboard').classList.add('hidden');
+        document.getElementById('screenParticipantLobby').classList.add('hidden');
         document.getElementById('screenAuth').classList.remove('hidden');
         switchAuthTab('login');
       }
     }
 
-    // -------------------------------------------------------------
-    // LOGIK AUTH & MODAL KAD PENDAFTARAN
-    // -------------------------------------------------------------
+    // AUTHENTICATION
     function switchAuthTab(mode) {
       authMode = mode;
       const tabLogin = document.getElementById('tabLogin');
@@ -609,10 +956,8 @@
     async function verifyUsernameAvailability() {
       const username = document.getElementById('authUsername').value.trim();
       const msg = document.getElementById('userCheckMsg');
-      if (!username) {
-        showErrorDialog("Nama Pengguna Kosong", "Sila masukkan nama pengguna yang ingin disemak.");
-        return;
-      }
+      if (!username) return alert("Sila masukkan nama pengguna!");
+
       msg.innerText = "Menyemak pangkalan data...";
       msg.className = "text-xs mt-1 font-bold text-slate-500";
       msg.classList.remove('hidden');
@@ -624,7 +969,7 @@
         });
         const data = await res.json();
         if (data.exists) {
-          msg.innerText = "❌ Username sudah wujud! Sila guna nama lain.";
+          msg.innerText = "❌ Username sudah wujud!";
           msg.className = "text-xs mt-1 font-bold text-rose-500";
           isUserVerified = false;
         } else {
@@ -632,8 +977,8 @@
           msg.className = "text-xs mt-1 font-bold text-emerald-600";
           isUserVerified = true;
         }
-      } catch (err) {
-        msg.innerText = "✅ Username sedia untuk pendaftaran";
+      } catch(e) {
+        msg.innerText = "✅ Username sedia digunakan";
         msg.className = "text-xs mt-1 font-bold text-emerald-600";
         isUserVerified = true;
       }
@@ -643,15 +988,8 @@
       const username = document.getElementById('authUsername').value.trim();
       const password = document.getElementById('authPassword').value.trim();
 
-      if (!username || !password) {
-        showErrorDialog("Maklumat Tidak Lengkap", "Sila lengkapkan kedua-dua ruangan nama pengguna dan kata laluan.");
-        return;
-      }
-
-      if (authMode === 'register' && !isUserVerified) {
-        showErrorDialog("Sila Semak Username", "Sila klik butang 'Semak' dahulu untuk memastikan username belum diambil orang lain.");
-        return;
-      }
+      if (!username || !password) return alert("Sila lengkapkan nama pengguna & kata laluan!");
+      if (authMode === 'register' && !isUserVerified) return alert("Sila klik 'Semak' dahulu bagi nama pengguna!");
 
       try {
         const action = authMode === 'register' ? 'register' : 'login';
@@ -666,7 +1004,6 @@
           localStorage.setItem('duosifir_active_user', JSON.stringify(currentUser));
           
           if (authMode === 'register') {
-            // Tunjukkan kad screenshot pendaftaran
             document.getElementById('cardUsernameDisplay').innerText = username;
             document.getElementById('cardPasswordDisplay').innerText = password;
             document.getElementById('modalUserCard').classList.remove('hidden');
@@ -674,33 +1011,10 @@
             startSession();
           }
         } else {
-          if (resData.notFound) {
-            showErrorDialog("Username Tidak Wujud", "Nama pengguna tidak wujud dalam sistem! Sila daftar terlebih dahulu melalui pautan di atas.");
-          } else {
-            showErrorDialog("Ralat Log Masuk", resData.message || "Nama pengguna atau kata laluan tidak sah.");
-          }
+          alert(resData.message || "Ralat log masuk.");
         }
-      } catch (err) {
-        // Sandaran offline/local
-        const localData = JSON.parse(localStorage.getItem('duosifir_u_' + username) || 'null');
-        if (authMode === 'login') {
-          if (!localData) {
-            showErrorDialog("Username Tidak Wujud", "Nama pengguna tidak dijumpai! Sila daftar akaun baru.");
-          } else if (localData.password === password) {
-            currentUser = localData;
-            localStorage.setItem('duosifir_active_user', JSON.stringify(currentUser));
-            startSession();
-          } else {
-            showErrorDialog("Kata Laluan Salah", "Kata laluan yang anda masukkan tidak tepat.");
-          }
-        } else {
-          currentUser = { username, password, currentLevel: 1, xp: 0, completedAll: false, bestSecretTime: 99999 };
-          localStorage.setItem('duosifir_u_' + username, JSON.stringify(currentUser));
-          localStorage.setItem('duosifir_active_user', JSON.stringify(currentUser));
-          document.getElementById('cardUsernameDisplay').innerText = username;
-          document.getElementById('cardPasswordDisplay').innerText = password;
-          document.getElementById('modalUserCard').classList.remove('hidden');
-        }
+      } catch(err) {
+        alert("Ralat sambungan pelayan. Sila cuba lagi.");
       }
     }
 
@@ -709,36 +1023,63 @@
       startSession();
     }
 
-    function showErrorDialog(title, message) {
-      document.getElementById('errorDialogTitle').innerText = title;
-      document.getElementById('errorDialogMsg').innerText = message;
-      document.getElementById('modalErrorDialog').classList.remove('hidden');
-    }
-
-    function closeErrorDialog() {
-      document.getElementById('modalErrorDialog').classList.add('hidden');
-    }
-
     function startSession() {
       document.getElementById('screenAuth').classList.add('hidden');
       document.getElementById('statsBar').classList.remove('hidden');
       document.getElementById('secretSpecialBar').classList.remove('hidden');
+
+      if (currentUser && currentUser.role === "kapten") {
+        document.getElementById('btnKaptenPanel').classList.remove('hidden');
+      } else {
+        document.getElementById('btnKaptenPanel').classList.add('hidden');
+      }
+
+      checkUserNationalRank();
       updateTopBarStats();
       showScreenMap();
+    }
+
+    async function checkUserNationalRank() {
+      if (!currentUser) return;
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "getLeaderboard" })
+        });
+        const data = await res.json();
+        if (data.success && data.leaderboard) {
+          const idx = data.leaderboard.findIndex(item => item.username.toLowerCase() === currentUser.username.toLowerCase());
+          userNationalRank = idx !== -1 ? idx + 1 : null;
+          updateTopBarStats();
+        }
+      } catch(e) {}
     }
 
     function updateTopBarStats() {
       if (!currentUser) return;
       document.getElementById('topBarUser').innerText = currentUser.username;
       document.getElementById('userXp').innerText = currentUser.xp;
+      
       const rank = getRank(currentUser.currentLevel);
-      document.getElementById('rankBadgeIcon').innerText = rank.icon;
-      document.getElementById('rankBadgeName').innerText = rank.name;
       document.getElementById('bannerBirdIcon').innerText = rank.icon;
       document.getElementById('bannerRankName').innerText = rank.name;
       document.getElementById('bannerRankDesc').innerText = `${rank.desc} • Sifir ${currentUser.currentLevel}`;
 
-      // Paparan Istimewa Rekod Level Rahsia
+      const pinIcon = document.getElementById('pinnedBadgeIcon');
+      const pinTitle = document.getElementById('pinnedBadgeTitle');
+      const pinBox = document.getElementById('pinnedBadgeIconBox');
+
+      if (userNationalRank && userNationalRank <= 10) {
+        const topBadge = TOP_10_BADGES[userNationalRank - 1];
+        pinIcon.innerText = topBadge.icon;
+        pinTitle.innerText = topBadge.title;
+        pinBox.className = "h-6 px-2 rounded-xl flex items-center justify-center font-black text-[11px] shadow-md bg-gradient-to-r from-purple-600 to-amber-500 text-white border border-yellow-300 animate-pulse cursor-pointer";
+      } else {
+        pinIcon.innerText = rank.icon;
+        pinTitle.innerText = rank.name.replace("Burung ", "");
+        pinBox.className = "h-6 px-1.5 rounded-xl flex items-center justify-center font-black text-[10px] shadow-sm hologram-glow text-amber-950 border border-amber-300 cursor-pointer";
+      }
+
       const recTxt = document.getElementById('txtSecretTimeRecord');
       if (currentUser.bestSecretTime && currentUser.bestSecretTime < 90000) {
         recTxt.innerText = `Rekod Rahsia: ${formatSeconds(currentUser.bestSecretTime)}`;
@@ -765,14 +1106,59 @@
       } catch(e) {}
     }
 
-    // -------------------------------------------------------------
-    // PETA LEVEL & INTEGRASI KAD LEVEL RAHSIA
-    // -------------------------------------------------------------
+    // ANIMASI FLOATING SCREEN LENCANA (10S)
+    function triggerBadgeCelebration(badgeInfo) {
+      playSfxBadgeFanfare();
+      const modal = document.getElementById('modalBadgeCelebration');
+      document.getElementById('animBadgeBigIcon').innerText = badgeInfo.icon;
+      document.getElementById('animBadgeTitle').innerText = badgeInfo.title;
+      document.getElementById('animBadgeTag').innerText = badgeInfo.tag || "LENCANA KEHORMATAN";
+      document.getElementById('animBadgeSubtitle').innerText = badgeInfo.subtitle || "Tahniah! Anda menyandang darjat baharu!";
+
+      modal.classList.remove('hidden');
+
+      confetti({ particleCount: 70, spread: 90, origin: { y: 0.5 } });
+      if (confettiRainInterval) clearInterval(confettiRainInterval);
+      confettiRainInterval = setInterval(() => {
+        confetti({ particleCount: 30, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 30, angle: 120, spread: 55, origin: { x: 1 } });
+      }, 1500);
+
+      const bar = document.getElementById('animCountdownBar');
+      const txt = document.getElementById('animTimerTxt');
+      bar.style.width = "100%";
+      txt.innerText = "10s";
+
+      const startTime = Date.now();
+      const totalDuration = 10000;
+
+      if (badgeAnimInterval) clearInterval(badgeAnimInterval);
+      badgeAnimInterval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, totalDuration - elapsed);
+        bar.style.width = ((remaining / totalDuration) * 100) + "%";
+        txt.innerText = `${Math.ceil(remaining / 1000)}s`;
+
+        if (remaining <= 0) dismissBadgeCelebration();
+      }, 100);
+    }
+
+    function dismissBadgeCelebration() {
+      if (badgeAnimInterval) clearInterval(badgeAnimInterval);
+      if (confettiRainInterval) clearInterval(confettiRainInterval);
+      document.getElementById('modalBadgeCelebration').classList.add('hidden');
+      updateTopBarStats();
+    }
+
+    // PETA LEVEL
     function showScreenMap() {
       document.getElementById('screenDemo').classList.add('hidden');
       document.getElementById('screenQuiz').classList.add('hidden');
       document.getElementById('screenSecretPlay').classList.add('hidden');
       document.getElementById('screenLeaderboard').classList.add('hidden');
+      document.getElementById('screenBadgeGallery').classList.add('hidden');
+      document.getElementById('screenKaptenDashboard').classList.add('hidden');
+      document.getElementById('screenParticipantLobby').classList.add('hidden');
       document.getElementById('screenMap').classList.remove('hidden');
       renderMapLevels();
       checkSecretLevelUnlock();
@@ -786,10 +1172,10 @@
       if (currentUser.completedAll) {
         badge.innerText = "🔓 Terbuka!";
         badge.className = "text-xs bg-emerald-500 text-white font-black px-2 py-0.5 rounded-full";
-        sub.innerText = "Sedia mencabar Rekod Master Malaysia 25 Soalan?";
+        sub.innerText = "Sedia memburu lencana agung Malaysia Top 10?";
         btn.disabled = false;
         btn.className = "z-10 btn-duo-yellow text-purple-950 text-xs px-3.5 py-3 rounded-2xl font-black shadow-md";
-        btn.innerText = "Cabut Rekod ⚡";
+        btn.innerText = "Rebut Lencana ⚡";
       } else {
         badge.innerText = "🔒 Terkunci";
         badge.className = "text-xs bg-purple-900/80 px-2 py-0.5 rounded-full";
@@ -812,10 +1198,7 @@
         const levelNode = document.createElement('div');
         levelNode.className = "flex flex-col items-center w-full";
 
-        let buttonStyle = "btn-duo-gray cursor-not-allowed";
-        if (isUnlocked) {
-          buttonStyle = isCurrent ? "btn-duo-green" : "btn-duo-blue";
-        }
+        let buttonStyle = isUnlocked ? (isCurrent ? "btn-duo-green" : "btn-duo-blue") : "btn-duo-gray cursor-not-allowed";
 
         levelNode.innerHTML = `
           <div class="flex items-center space-x-3">
@@ -825,11 +1208,7 @@
               <span class="text-[10px] tracking-tight">Sifir ${s}</span>
               ${isCurrent ? '<span class="absolute -top-1.5 -right-1 text-[9px] bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-full font-black animate-pulse">KINI</span>' : ''}
             </button>
-            ${canSkip ? `
-              <button onclick="skipLevel(${s})" class="btn-duo-yellow text-slate-900 text-[11px] px-2.5 py-1.5 rounded-xl font-black">
-                ⏩ Skip Sifir ${s}
-              </button>
-            ` : ''}
+            ${canSkip ? `<button onclick="skipLevel(${s})" class="btn-duo-yellow text-slate-900 text-[11px] px-2.5 py-1.5 rounded-xl font-black">⏩ Skip Sifir ${s}</button>` : ''}
           </div>
           ${s < 12 ? '<div class="w-1.5 h-4 bg-slate-200 rounded-full my-0.5"></div>' : ''}
         `;
@@ -838,9 +1217,20 @@
     }
 
     function skipLevel(s) {
-      if (confirm(`Langkau Sifir ${s}? Sifir seterusnya wajib diselesaikan satu persatu.`)) {
+      if (confirm(`Langkau Sifir ${s}? Sifir seterusnya wajib diselesaikan secara berturutan.`)) {
+        const oldRank = getRank(currentUser.currentLevel);
         currentUser.currentLevel = s + 1;
         currentUser.xp += 30;
+        const newRank = getRank(currentUser.currentLevel);
+
+        if (oldRank.name !== newRank.name) {
+          triggerBadgeCelebration({
+            title: newRank.name,
+            icon: newRank.icon,
+            tag: "PANGKAT BURUNG BAHARU",
+            subtitle: `Syabas! Anda kini melangkah ke darjat ${newRank.name}!`
+          });
+        }
         syncProgressWithServer();
         renderMapLevels();
       }
@@ -852,14 +1242,12 @@
     }
 
     function exitToMap() {
-      if (confirm("Kembali ke menu utama? Kemajuan sesi ini tidak disimpan.")) {
+      if (confirm("Kembali ke menu utama? Kemajuan sesi tidak akan disimpan.")) {
         showScreenMap();
       }
     }
 
-    // -------------------------------------------------------------
-    // DEMO ANIMASI KIRAAN BERGANDA (FLEKSIBEL & ZERO SCROLL)
-    // -------------------------------------------------------------
+    // DEMO ANIMASI SIFIR
     function startSifirDemo(sifirNum) {
       activeSifir = sifirNum;
       demoStep = 1;
@@ -874,19 +1262,12 @@
       document.getElementById('demoProgress').style.width = progressPct + "%";
       document.getElementById('demoStepIndicator').innerText = `${demoStep} / 14`;
 
-      if (demoStep === 6) {
-        startCheckpointQuiz(1, 5, 1);
-        return;
-      }
-      if (demoStep === 14) {
-        startCheckpointQuiz(6, 12, 2);
-        return;
-      }
+      if (demoStep === 6) return startCheckpointQuiz(1, 5, 1);
+      if (demoStep === 14) return startCheckpointQuiz(6, 12, 2);
 
-      let multiplier = demoStep;
-      if (demoStep > 6) multiplier = demoStep - 1;
-
+      let multiplier = demoStep > 6 ? demoStep - 1 : demoStep;
       const totalResult = activeSifir * multiplier;
+
       document.getElementById('demoMathFormula').innerText = `${activeSifir} × ${multiplier} = ${totalResult}`;
       document.getElementById('demoConceptTitle').innerText = `KONSEP SIFIR ${activeSifir} (${multiplier} KUMPULAN)`;
       document.getElementById('demoExplanation').innerText = 
@@ -895,24 +1276,13 @@
       const box = document.getElementById('demoAnimationBox');
       box.innerHTML = "";
 
-      // Pengiraan Skala Dinamik Agar Muat Skrin Tanpa Scroll
-      const totalItems = totalResult;
-      let emojiSizeClass = "text-lg";
-      let groupPadding = "p-1.5";
-      
-      if (multiplier > 6 || totalItems > 30) {
-        emojiSizeClass = "text-xs";
-        groupPadding = "p-0.5";
-      }
-      if (totalItems > 60) {
-        emojiSizeClass = "text-[9px]";
-        groupPadding = "p-0.5";
-      }
+      let emojiSizeClass = multiplier > 6 || totalResult > 30 ? "text-xs" : "text-lg";
+      let groupPadding = multiplier > 6 ? "p-0.5" : "p-1.5";
 
       for (let g = 1; g <= multiplier; g++) {
         const groupEl = document.createElement('div');
         groupEl.className = `bg-white ${groupPadding} rounded-xl border border-sky-300 shadow-xs flex flex-col items-center item-pop`;
-        groupEl.style.animationDelay = `${(g - 1) * 0.05}s`;
+        groupEl.style.animationDelay = `${(g - 1) * 0.04}s`;
 
         let itemsHtml = "";
         for (let i = 1; i <= activeSifir; i++) {
@@ -932,20 +1302,13 @@
       renderDemoStep();
     }
 
-    // -------------------------------------------------------------
-    // KUIZ BIASA (CHECKPOINTS & MOD 6 SOALAN DUOLINGO)
-    // -------------------------------------------------------------
+    // KUIZ BIASA & CHECKPOINTS
     function startCheckpointQuiz(minMul, maxMul, cpNumber) {
       document.getElementById('screenDemo').classList.add('hidden');
       document.getElementById('screenQuiz').classList.remove('hidden');
       quizMode = cpNumber === 1 ? 'checkpoint1' : 'checkpoint2';
-      
       const randMul = Math.floor(Math.random() * (maxMul - minMul + 1)) + minMul;
-      quizQuestions = [{
-        multiplier: randMul,
-        answer: activeSifir * randMul,
-        isCheckpoint: true
-      }];
+      quizQuestions = [{ multiplier: randMul, answer: activeSifir * randMul, isCheckpoint: true }];
       currentQuizIndex = 0;
       loadQuizQuestion();
     }
@@ -956,28 +1319,22 @@
       quizMode = 'main';
       currentQuizIndex = 0;
 
-      const multipliersPool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-      multipliersPool.sort(() => Math.random() - 0.5);
-      const selected = multipliersPool.slice(0, 6);
-
-      quizQuestions = selected.map(m => ({
+      const multipliersPool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].sort(() => Math.random() - 0.5);
+      quizQuestions = multipliersPool.slice(0, 6).map(m => ({
         multiplier: m,
         answer: activeSifir * m,
         isCheckpoint: false
       }));
-
       loadQuizQuestion();
     }
 
     function loadQuizQuestion() {
       currentInput = "";
       updateInputDisplay();
-      
       const q = quizQuestions[currentQuizIndex];
       const totalQ = quizQuestions.length;
-      
-      const pct = Math.round((currentQuizIndex / totalQ) * 100);
-      document.getElementById('quizProgressBar').style.width = pct + "%";
+
+      document.getElementById('quizProgressBar').style.width = Math.round((currentQuizIndex / totalQ) * 100) + "%";
       document.getElementById('quizQuestionCount').innerText = `${currentQuizIndex + 1} / ${totalQ}`;
       document.getElementById('quizEquationText').innerText = `${activeSifir} × ${q.multiplier} =`;
 
@@ -986,7 +1343,7 @@
         clueBox.classList.remove('hidden');
         clueBox.innerHTML = "";
         for (let i = 0; i < q.multiplier; i++) {
-          clueBox.innerHTML += `<div class="bg-white px-1.5 py-0.5 rounded-lg border border-amber-300 text-xs shadow-xs">${SIFIR_EMOJIS[activeSifir].repeat(activeSifir)}</div>`;
+          clueBox.innerHTML += `<div class="bg-white px-1.5 py-0.5 rounded-lg border border-amber-300 text-xs">${SIFIR_EMOJIS[activeSifir].repeat(activeSifir)}</div>`;
         }
       } else {
         clueBox.classList.add('hidden');
@@ -1006,11 +1363,8 @@
 
     function checkUserAnswer() {
       if (currentInput === "") return;
-
       totalQuestionsAnsweredAllTime++;
-      if ([20, 40, 60].includes(totalQuestionsAnsweredAllTime)) {
-        openDonateModal();
-      }
+      if ([20, 40, 60].includes(totalQuestionsAnsweredAllTime)) openDonateModal();
 
       const q = quizQuestions[currentQuizIndex];
       const isCorrect = (parseInt(currentInput) === q.answer);
@@ -1032,17 +1386,16 @@
         title.innerText = "Tepat Sekali!";
         subtitle.innerText = "Hebat, teruskan usaha anda!";
         icon.innerText = "🌟";
-        btn.className = "w-full py-3 rounded-2xl font-black text-white text-sm uppercase bg-emerald-600 hover:bg-emerald-700 shadow";
+        btn.className = "w-full py-3 rounded-2xl font-black text-white text-sm uppercase bg-emerald-600 shadow";
         confetti({ particleCount: 25, spread: 50, origin: { y: 0.85 } });
       } else {
         playSfxWrong();
         box.className = "p-4 rounded-3xl border-2 flex flex-col space-y-2 bg-rose-100 border-rose-400 text-rose-950";
         title.innerText = "Alamak, Salah!";
-        subtitle.innerText = `Jawapan yang tepat ialah: ${correctAnswer}`;
+        subtitle.innerText = `Jawapan yang betul ialah: ${correctAnswer}`;
         icon.innerText = "💔";
-        btn.className = "w-full py-3 rounded-2xl font-black text-white text-sm uppercase bg-rose-600 hover:bg-rose-700 shadow";
+        btn.className = "w-full py-3 rounded-2xl font-black text-white text-sm uppercase bg-rose-600 shadow";
       }
-
       sheet.classList.remove('translate-y-full');
     }
 
@@ -1051,7 +1404,7 @@
       sheet.classList.add('translate-y-full');
 
       if (!isLastAnswerCorrect) {
-        alert("Jawapan tidak tepat! Mengikut peraturan DuoSifir, anda perlu menjawab semua soalan dengan betul tanpa sebarang kesilapan. Kuiz dimulakan semula!");
+        alert("Jawapan salah! Mengikut peraturan DuoSifir, kuiz perlu dijawab 100% betul. Kuiz bermula semula.");
         if (quizMode === 'checkpoint1') {
           demoStep = 1;
           document.getElementById('screenQuiz').classList.add('hidden');
@@ -1089,99 +1442,80 @@
       playSfxLevelUp();
       confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
 
+      const oldRank = getRank(currentUser.currentLevel);
       currentUser.xp += 60;
-      let msg = `Tahniah! Anda telah menguasai Sifir ${activeSifir}!`;
+      let rankUpgraded = false;
+      let newRank = oldRank;
 
       if (activeSifir === currentUser.currentLevel) {
         if (currentUser.currentLevel < 12) {
           currentUser.currentLevel++;
-          msg += ` Sifir ${currentUser.currentLevel} kini dibuka!`;
+          newRank = getRank(currentUser.currentLevel);
+          if (oldRank.name !== newRank.name) rankUpgraded = true;
         } else {
           currentUser.completedAll = true;
-          msg += ` SYABAS! Anda telah tamat kesemua sifir dan dinobatkan sebagai BURUNG GARUDA! Tahap Siapa Rahsia kini telah dibuka! 👑`;
+          newRank = getRank(12);
+          rankUpgraded = true;
         }
       }
 
       syncProgressWithServer();
-      alert(msg);
       showScreenMap();
-    }
 
-    function confirmExitQuiz() {
-      if (confirm("Keluar dari kuiz? Sesi ini akan terbatal.")) {
-        showScreenMap();
+      if (rankUpgraded) {
+        setTimeout(() => {
+          triggerBadgeCelebration({
+            title: newRank.name,
+            icon: newRank.icon,
+            tag: "KENAIKAN PANGKAT KEBANGSAAN",
+            subtitle: `Tahniah! Anda telah sah dianugerahkan lencana ${newRank.name}!`
+          });
+        }, 400);
       }
     }
 
-    // -------------------------------------------------------------
-    // LEVEL SIAPA RAHSIA (25 SOALAN SEIMBANG 2 & 3 DIGIT + PEMASA)
-    // -------------------------------------------------------------
-    function startSecretLevelCountdown() {
-      document.getElementById('screenMap').classList.add('hidden');
-      const overlay = document.getElementById('overlayCountdown');
-      const countEl = document.getElementById('countdownNumber');
-      overlay.classList.remove('hidden');
-
-      let counter = 3;
-      countEl.innerText = counter;
-      playTone(400, 'triangle', 0.15);
-
-      const cdInterval = setInterval(() => {
-        counter--;
-        if (counter > 0) {
-          countEl.innerText = counter;
-          playTone(400, 'triangle', 0.15);
-        } else if (counter === 0) {
-          countEl.innerText = "MULA!";
-          playTone(800, 'sine', 0.3);
-        } else {
-          clearInterval(cdInterval);
-          overlay.classList.add('hidden');
-          initSecretGame();
-        }
-      }, 900);
+    function confirmExitQuiz() {
+      if (confirm("Keluar dari kuiz? Sesi ini akan terbatal.")) showScreenMap();
     }
 
-    function initSecretGame() {
-      // Jana 25 soalan sifir seimbang:
-      // 12 soalan jawapan 3 digit (>= 100) dan 13 soalan jawapan 2 digit (10-99)
-      const threeDigitPool = [
-        { a: 9, b: 12 }, { a: 12, b: 9 },
-        { a: 10, b: 10 }, { a: 10, b: 11 }, { a: 11, b: 10 }, { a: 10, b: 12 }, { a: 12, b: 10 },
-        { a: 11, b: 11 }, { a: 11, b: 12 }, { a: 12, b: 11 }, { a: 12, b: 12 }
-      ];
+    // -------------------------------------------------------------
+    // MOD 25 SIFIR (LEVEL SIAPA RAHSIA & TOURNAMENT)
+    // -------------------------------------------------------------
+    function startSecretLevelCountdown() {
+      isTournamentPlay = false;
+      document.getElementById('secretGameModeTag').innerText = "RAHSIA";
+      document.getElementById('screenMap').classList.add('hidden');
+      initSecret25Quiz();
+    }
 
+    function initSecret25Quiz() {
+      const threeDigitPool = [
+        { a: 9, b: 12 }, { a: 12, b: 9 }, { a: 10, b: 10 }, { a: 10, b: 11 }, { a: 11, b: 10 },
+        { a: 10, b: 12 }, { a: 12, b: 10 }, { a: 11, b: 11 }, { a: 11, b: 12 }, { a: 12, b: 11 }, { a: 12, b: 12 }
+      ];
       const twoDigitPool = [];
       for (let i = 2; i <= 12; i++) {
         for (let j = 2; j <= 12; j++) {
           const prod = i * j;
-          if (prod >= 10 && prod < 100) {
-            twoDigitPool.push({ a: i, b: j });
-          }
+          if (prod >= 10 && prod < 100) twoDigitPool.push({ a: i, b: j });
         }
       }
 
-      // Ambil 12 soalan 3-digit
       const selected3 = [];
       for (let k = 0; k < 12; k++) {
         const item = threeDigitPool[Math.floor(Math.random() * threeDigitPool.length)];
         selected3.push({ a: item.a, b: item.b, ans: item.a * item.b, digits: 3 });
       }
 
-      // Ambil 13 soalan 2-digit
       twoDigitPool.sort(() => Math.random() - 0.5);
-      const selected2 = twoDigitPool.slice(0, 13).map(item => ({
-        a: item.a, b: item.b, ans: item.a * item.b, digits: 2
-      }));
+      const selected2 = twoDigitPool.slice(0, 13).map(item => ({ a: item.a, b: item.b, ans: item.a * item.b, digits: 2 }));
 
-      // Gabung dan rawakkan keseluruhan 25 soalan
       secretQuestions = [...selected3, ...selected2].sort(() => Math.random() - 0.5);
       secretQIndex = 0;
 
       document.getElementById('screenSecretPlay').classList.remove('hidden');
       loadSecretQuestion();
 
-      // Mulakan pemasa
       secretStartTime = Date.now();
       if (secretTimerInterval) clearInterval(secretTimerInterval);
       secretTimerInterval = setInterval(updateSecretLiveTimer, 100);
@@ -1202,11 +1536,10 @@
     function loadSecretQuestion() {
       secretInput = "";
       updateSecretInputDisplay();
-
       const q = secretQuestions[secretQIndex];
       document.getElementById('secretQIndex').innerText = secretQIndex + 1;
       document.getElementById('secretEquationText').innerText = `${q.a} × ${q.b} =`;
-      
+
       const badge = document.getElementById('secretDigitBadge');
       if (q.digits === 3) {
         badge.innerText = "Jawapan 3 Digit";
@@ -1228,18 +1561,21 @@
       document.getElementById('secretInputDisplay').innerText = secretInput === "" ? "?" : secretInput;
     }
 
-    function checkSecretAnswer() {
+    async function checkSecretAnswer() {
       if (secretInput === "") return;
-
       const q = secretQuestions[secretQIndex];
       const isCorrect = (parseInt(secretInput) === q.ans);
 
       if (!isCorrect) {
         clearInterval(secretTimerInterval);
         playSfxWrong();
-        alert(`💥 GAGAL! Jawapan untuk ${q.a} × ${q.b} ialah ${q.ans}.\n\nUntuk Level Siapa Rahsia, kesemua 25 soalan wajib betul berturut-turut! Sila cuba lagi untuk cipta rekod terpantas.`);
+        alert(`💥 GAGAL! Jawapan untuk ${q.a} × ${q.b} ialah ${q.ans}. Semua 25 soalan wajib betul berturut-turut!`);
         document.getElementById('screenSecretPlay').classList.add('hidden');
-        showScreenMap();
+        if (isTournamentPlay) {
+          openParticipantLobby(currentTournamentId);
+        } else {
+          showScreenMap();
+        }
         return;
       }
 
@@ -1249,7 +1585,7 @@
       if (secretQIndex < secretQuestions.length) {
         loadSecretQuestion();
       } else {
-        // TAHNIAH! SELESAI SEMUA 25 SOALAN TANPA RALAT
+        // TAHAP SIAP MENJAWAB 25 SOALAN
         clearInterval(secretTimerInterval);
         const finalSec = ((Date.now() - secretStartTime) / 1000);
         const formatted = formatSeconds(finalSec);
@@ -1257,32 +1593,61 @@
         playSfxLevelUp();
         confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
 
-        alert(`👑 LUAR BIASA! Anda berjaya menjawab kesemua 25 soalan tanpa sebarang kesalahan dalam masa ${formatted}! Rekod anda sedang dihantar ke Peringkat Master Malaysia.`);
+        document.getElementById('screenSecretPlay').classList.add('hidden');
 
-        if (!currentUser.bestSecretTime || finalSec < currentUser.bestSecretTime) {
-          currentUser.bestSecretTime = finalSec;
-          syncProgressWithServer();
+        if (isTournamentPlay) {
+          // Rekod ke bilik Tournament
+          alert(`🏁 TAHNIAH! Anda menamatkan kejohanan dalam masa ${formatted}! Skor sedang dihantar kepada Kapten.`);
+          try {
+            await fetch(GAS_API_URL, {
+              method: "POST",
+              body: JSON.stringify({
+                action: "submitTournamentResult",
+                tournamentId: currentTournamentId,
+                participantName: tournamentParticipantName,
+                timeSeconds: finalSec,
+                formattedTime: formatted
+              })
+            });
+          } catch(e) {}
+          openParticipantLobby(currentTournamentId);
+        } else {
+          // Rekod ke Level Siapa Rahsia Kebangsaan
+          if (!currentUser.bestSecretTime || finalSec < currentUser.bestSecretTime) {
+            currentUser.bestSecretTime = finalSec;
+            syncProgressWithServer();
+          }
+          try {
+            await fetch(GAS_API_URL, {
+              method: "POST",
+              body: JSON.stringify({
+                action: "submitSecretScore",
+                username: currentUser.username,
+                timeSeconds: finalSec,
+                formattedTime: formatted
+              })
+            });
+          } catch(e) {}
+          await checkUserNationalRank();
+
+          if (userNationalRank && userNationalRank <= 10) {
+            const wonBadge = TOP_10_BADGES[userNationalRank - 1];
+            triggerBadgeCelebration({
+              title: wonBadge.title,
+              icon: wonBadge.icon,
+              tag: "LENCANA DIRAJA MALAYSIA TOP 10",
+              subtitle: `LUAR BIASA! Masa ${formatted} meletakkan anda di tangga #${userNationalRank} Master Kebangsaan!`
+            });
+          } else {
+            alert(`Tahniah! Catatan masa anda ialah ${formatted}.`);
+            openLeaderboardScreen();
+          }
         }
-
-        // Hantar ke Google Sheet SecretLeaderboard
-        fetch(GAS_API_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "submitSecretScore",
-            username: currentUser.username,
-            timeSeconds: finalSec,
-            formattedTime: formatted
-          })
-        }).then(() => {
-          openLeaderboardScreen();
-        }).catch(() => {
-          openLeaderboardScreen();
-        });
       }
     }
 
     function exitSecretGame() {
-      if (confirm("Adakah anda ingin batalkan cabaran Level Rahsia ini? Pemasa akan dimatikan.")) {
+      if (confirm("Batalkan cabaran? Pemasa akan dihentikan.")) {
         clearInterval(secretTimerInterval);
         document.getElementById('screenSecretPlay').classList.add('hidden');
         showScreenMap();
@@ -1290,54 +1655,434 @@
     }
 
     // -------------------------------------------------------------
-    // LEADERBOARD TOP 50 MASTER MALAYSIA
+    // FUNGSI KAPTEN SIFIR: KUMPULAN, TEMPLATE XLSX & TOURNAMENT
     // -------------------------------------------------------------
+    function openKaptenDashboard() {
+      document.getElementById('screenMap').classList.add('hidden');
+      document.getElementById('screenKaptenDashboard').classList.remove('hidden');
+      switchKaptenTab('tourney');
+      loadExistingGroups();
+    }
+
+    function switchKaptenTab(tab) {
+      const tabT = document.getElementById('tabKaptenTourney');
+      const tabG = document.getElementById('tabKaptenGroup');
+      const contT = document.getElementById('kaptenTabContentTourney');
+      const contG = document.getElementById('kaptenTabContentGroup');
+
+      if (tab === 'tourney') {
+        tabT.className = "flex-1 py-1.5 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-700";
+        tabG.className = "flex-1 py-1.5 font-black text-xs rounded-xl text-slate-600";
+        contT.classList.remove('hidden');
+        contG.classList.add('hidden');
+      } else {
+        tabG.className = "flex-1 py-1.5 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-700";
+        tabT.className = "flex-1 py-1.5 font-black text-xs rounded-xl text-slate-600";
+        contG.classList.remove('hidden');
+        contT.classList.add('hidden');
+      }
+    }
+
+    // Jana & Muat Turun Fail Dummy XLSX Menggunakan SheetJS
+    function downloadDummyXlsxTemplate() {
+      const dummyData = [
+        ["No", "Nama Murid", "No Kad Pengenalan / Catatan"],
+        [1, "Ahmad Daniel bin Farhan", "4 Bakawali"],
+        [2, "Chong Wei Lun", "4 Bakawali"],
+        [3, "Deepak A/L Ravindran", "4 Bakawali"],
+        [4, "Nur Batrisya binti Zulkifli", "4 Bakawali"],
+        [5, "Sarah Tan Mei Ling", "4 Bakawali"]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(dummyData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Senarai_Murid");
+      XLSX.writeFile(wb, "DuoSifir_Senarai_Murid_Dummy.xlsx");
+    }
+
+    // Muat Naik & Parsing Fail XLSX
+    function handleXlsxUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[firstSheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        const extractedNames = [];
+        for (let i = 1; i < rows.length; i++) {
+          if (rows[i] && rows[i][1]) {
+            extractedNames.push(rows[i][1].toString().trim());
+          }
+        }
+        document.getElementById('grpManualTextarea').value = extractedNames.slice(0, 50).join("\n");
+        document.getElementById('parsedStudentCount').innerText = Math.min(50, extractedNames.length);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    document.getElementById('grpManualTextarea').addEventListener('input', function() {
+      const lines = this.value.split("\n").filter(l => l.trim() !== "");
+      document.getElementById('parsedStudentCount').innerText = lines.length;
+    });
+
+    async function handleSaveGroup() {
+      const groupName = document.getElementById('grpNameInput').value.trim();
+      const groupType = document.getElementById('grpTypeSelect').value;
+      const text = document.getElementById('grpManualTextarea').value.trim();
+      const students = text.split("\n").map(s => s.trim()).filter(s => s !== "").slice(0, 50);
+
+      if (!groupName) return alert("Sila masukkan nama kumpulan/kelas!");
+      if (students.length === 0) return alert("Sila masukkan sekurang-kurangnya seorang murid!");
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "createGroup",
+            hostUsername: currentUser.username,
+            groupName,
+            groupType,
+            students
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          alert(`Kumpulan '${groupName}' (${students.length} murid) berjaya disimpan!`);
+          document.getElementById('grpNameInput').value = "";
+          document.getElementById('grpManualTextarea').value = "";
+          loadExistingGroups();
+        } else {
+          alert(d.message);
+        }
+      } catch(e) {
+        alert("Ralat menyimpan kumpulan.");
+      }
+    }
+
+    async function loadExistingGroups() {
+      const cont = document.getElementById('kaptenExistingGroupsList');
+      cont.innerHTML = "<p class='text-xs text-slate-400'>Memuatkan senarai kumpulan...</p>";
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "getGroups", hostUsername: currentUser.username })
+        });
+        const d = await res.json();
+        if (d.success && d.groups.length > 0) {
+          cont.innerHTML = "<h5 class='text-xs font-black text-slate-500 uppercase mb-1'>Kumpulan Sedia Ada:</h5>";
+          d.groups.forEach(g => {
+            cont.innerHTML += `
+              <div class="bg-white p-2.5 rounded-2xl border border-slate-200 text-xs">
+                <div class="flex justify-between items-center font-black">
+                  <span class="text-slate-800">${g.groupName} (${g.groupType})</span>
+                  <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">${g.totalStudents} Murid</span>
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          cont.innerHTML = "<p class='text-xs text-slate-400'>Belum ada kumpulan didaftarkan.</p>";
+        }
+      } catch(e) {}
+    }
+
+    // JANA TOURNAMENT OLEH KAPTEN
+    async function handleCreateTournament() {
+      const title = document.getElementById('tourneyTitleInput').value.trim() || "Kejohanan Sifir Pantas";
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "createTournament", hostUsername: currentUser.username, title })
+        });
+        const d = await res.json();
+        if (d.success) {
+          const tId = d.tournamentId;
+          document.getElementById('activeTourneyCard').classList.remove('hidden');
+          document.getElementById('activeTourneyCode').innerText = "KOD: " + tId;
+          document.getElementById('activeTourneyTitle').innerText = title;
+
+          // Pautan Penuh Bilik Tournament
+          const baseUrl = window.location.href.split('?')[0];
+          const joinUrl = `${baseUrl}?tournament=${tId}`;
+
+          // Papar QR Code rasmi penyertaan
+          const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(joinUrl)}`;
+          document.getElementById('tourneyQrImage').src = qrSrc;
+
+          // Mula Polling senarai peserta yang masuk lobi
+          startHostTourneyPolling(tId);
+        }
+      } catch(e) {
+        alert("Gagal menjana tournament.");
+      }
+    }
+
+    function startHostTourneyPolling(tId) {
+      if (tourneyPollInterval) clearInterval(tourneyPollInterval);
+      tourneyPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(GAS_API_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "getTournament", tournamentId: tId })
+          });
+          const d = await res.json();
+          if (d.success) {
+            const t = d.tournament;
+            document.getElementById('tourneyParticipantCount').innerText = `${t.participants.length} orang`;
+            const listCont = document.getElementById('tourneyParticipantList');
+            listCont.innerHTML = "";
+            t.participants.forEach(p => {
+              listCont.innerHTML += `<span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded-lg text-xs font-black">${p}</span>`;
+            });
+
+            // Kemas kini Papan Markah jika sudah ada keputusan
+            if (t.results && t.results.length > 0) {
+              document.getElementById('tourneyLeaderboardSection').classList.remove('hidden');
+              const tbody = document.getElementById('tourneyLeaderboardTbody');
+              tbody.innerHTML = "";
+              t.results.forEach((r, idx) => {
+                tbody.innerHTML += `
+                  <tr class="border-b py-1">
+                    <td class="font-black">${idx + 1}</td>
+                    <td class="font-bold text-slate-800">${r.name}</td>
+                    <td class="text-right font-mono font-black text-emerald-600">${r.formattedTime}</td>
+                  </tr>
+                `;
+              });
+            }
+          }
+        } catch(e) {}
+      }, 3000);
+    }
+
+    async function kaptenTriggerStartTournament() {
+      const codeTxt = document.getElementById('activeTourneyCode').innerText.replace("KOD: ", "").trim();
+      if (confirm("Adakah semua peserta telah masuk ke lobi? Mula perlawanan sekarang?")) {
+        try {
+          const res = await fetch(GAS_API_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "startTournament", tournamentId: codeTxt })
+          });
+          const d = await res.json();
+          if (d.success) {
+            document.getElementById('activeTourneyStatus').innerText = "Sedang Berlangsung ⚡";
+            document.getElementById('activeTourneyStatus').className = "bg-emerald-100 text-emerald-900 font-black px-2.5 py-1 rounded-lg";
+            alert("Tournament telah bermula! Semua peserta kini sedang menjawab 25 soalan.");
+          }
+        } catch(e) {}
+      }
+    }
+
+    // -------------------------------------------------------------
+    // ALIRAN PESERTA: LOBI TOURNAMENT (IMBAS QR & MASUK)
+    // -------------------------------------------------------------
+    function openParticipantLobby(tId) {
+      document.getElementById('screenAuth').classList.add('hidden');
+      document.getElementById('screenMap').classList.add('hidden');
+      document.getElementById('screenParticipantLobby').classList.remove('hidden');
+      document.getElementById('lobbyTourneyTitle').innerText = `Bilik Kejohanan (${tId})`;
+    }
+
+    async function handleParticipantJoinLobby() {
+      const name = document.getElementById('lobbyParticipantName').value.trim();
+      if (!name) return alert("Sila masukkan nama anda!");
+
+      tournamentParticipantName = name;
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "joinTournament",
+            tournamentId: currentTournamentId,
+            participantName: name
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          document.getElementById('lobbyJoinForm').classList.add('hidden');
+          document.getElementById('lobbyWaitingRoom').classList.remove('hidden');
+          startParticipantLobbyWaiting();
+        } else {
+          alert(d.message);
+        }
+      } catch(e) {
+        alert("Ralat menyertai lobi.");
+      }
+    }
+
+    function startParticipantLobbyWaiting() {
+      const waitInterval = setInterval(async () => {
+        try {
+          const res = await fetch(GAS_API_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "getTournament", tournamentId: currentTournamentId })
+          });
+          const d = await res.json();
+          if (d.success && d.tournament.status === "active") {
+            clearInterval(waitInterval);
+            document.getElementById('screenParticipantLobby').classList.add('hidden');
+            // MULA JAWAB 25 SOALAN TOURNAMENT
+            isTournamentPlay = true;
+            document.getElementById('secretGameModeTag').innerText = "TOURNAMENT";
+            initSecret25Quiz();
+          }
+        } catch(e) {}
+      }, 2500);
+    }
+
+    // -------------------------------------------------------------
+    // FUNGSI ADMIN: LOGIN, PENGESAHAN & CIPTA KAPTEN SIFIR
+    // -------------------------------------------------------------
+    function openAdminLoginModal() {
+      document.getElementById('modalAdminLogin').classList.remove('hidden');
+    }
+    function closeAdminLoginModal() {
+      document.getElementById('modalAdminLogin').classList.add('hidden');
+    }
+
+    async function handleAdminLoginSubmit() {
+      const pass = document.getElementById('adminPasswordInput').value.trim();
+      if (!pass) return alert("Sila masukkan kata laluan admin!");
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "adminLogin", password: pass })
+        });
+        const d = await res.json();
+        if (d.success) {
+          closeAdminLoginModal();
+          openAdminDashboard();
+        } else {
+          alert(d.message);
+        }
+      } catch(e) {
+        // Sandaran semakan tempatan bagi kata laluan 'A@t021286'
+        if (pass === "A@t021286") {
+          closeAdminLoginModal();
+          openAdminDashboard();
+        } else {
+          alert("Kata laluan Admin salah!");
+        }
+      }
+    }
+
+    function openAdminDashboard() {
+      document.getElementById('modalAdminDashboard').classList.remove('hidden');
+      loadAdminKaptenList();
+    }
+    function closeAdminDashboard() {
+      document.getElementById('modalAdminDashboard').classList.add('hidden');
+    }
+
+    async function handleAdminCreateKapten() {
+      const username = document.getElementById('newKaptenUser').value.trim();
+      const password = document.getElementById('newKaptenPass').value.trim();
+      if (!username || !password) return alert("Sila masukkan username & password!");
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "adminCreateKapten", username, password })
+        });
+        const d = await res.json();
+        alert(d.message);
+        if (d.success) {
+          document.getElementById('newKaptenUser').value = "";
+          document.getElementById('newKaptenPass').value = "";
+          loadAdminKaptenList();
+        }
+      } catch(e) {
+        alert("Gagal mencipta akaun Kapten.");
+      }
+    }
+
+    async function loadAdminKaptenList() {
+      const cont = document.getElementById('adminKaptenList');
+      cont.innerHTML = "<p class='text-xs text-slate-400'>Memuatkan senarai Kapten...</p>";
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "adminListKapten" })
+        });
+        const d = await res.json();
+        if (d.success && d.kaptenList.length > 0) {
+          cont.innerHTML = "";
+          d.kaptenList.forEach(k => {
+            cont.innerHTML += `
+              <div class="bg-slate-50 border p-2 rounded-xl flex justify-between items-center text-xs">
+                <span class="font-black text-slate-800">⭐ ${k.username}</span>
+                <span class="text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md font-bold">Kapten Sifir</span>
+              </div>
+            `;
+          });
+        } else {
+          cont.innerHTML = "<p class='text-xs text-slate-400'>Belum ada akaun Kapten Sifir.</p>";
+        }
+      } catch(e) {}
+    }
+
+    // Modal Pakej Kapten Sifir (RM50) & Derma
+    function openUpgradeKaptenModal() {
+      document.getElementById('modalUpgradeKapten').classList.remove('hidden');
+    }
+    function closeUpgradeKaptenModal() {
+      document.getElementById('modalUpgradeKapten').classList.add('hidden');
+    }
+
+    function openDonateModal() {
+      document.getElementById('modalDonate').classList.remove('hidden');
+    }
+    function closeDonateModal() {
+      document.getElementById('modalDonate').classList.add('hidden');
+    }
+
+    // Leaderboard Top 50 & Galeri Lencana
     function openLeaderboardScreen() {
       document.getElementById('screenMap').classList.add('hidden');
       document.getElementById('screenSecretPlay').classList.add('hidden');
+      document.getElementById('screenBadgeGallery').classList.add('hidden');
+      document.getElementById('screenKaptenDashboard').classList.add('hidden');
       document.getElementById('screenLeaderboard').classList.remove('hidden');
       fetchLeaderboard();
     }
 
     async function fetchLeaderboard() {
       const tbody = document.getElementById('leaderboardTbody');
-      tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-400 font-bold">Mengemaskini kedudukan Top 50...</td></tr>`;
-
+      tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-400 font-bold">Memuatkan Top 50...</td></tr>`;
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
           body: JSON.stringify({ action: "getLeaderboard" })
         });
-        const data = await res.json();
-        if (data.success && data.leaderboard.length > 0) {
-          renderLeaderboard(data.leaderboard);
-        } else {
-          tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-400 font-bold">Belum ada rekod Master dicatatkan. Jadilah yang pertama!</td></tr>`;
-        }
-      } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-rose-500 font-bold">Gagal memuatkan ranking. Sila cuba sebentar lagi.</td></tr>`;
-      }
+        const d = await res.json();
+        if (d.success && d.leaderboard) renderLeaderboard(d.leaderboard);
+      } catch(e) {}
     }
 
     function renderLeaderboard(list) {
       const tbody = document.getElementById('leaderboardTbody');
       tbody.innerHTML = "";
-
       list.forEach(item => {
         const isMe = currentUser && (item.username.toLowerCase() === currentUser.username.toLowerCase());
         const tr = document.createElement('tr');
         tr.className = `border-b border-slate-100 ${isMe ? 'bg-purple-50 font-black text-purple-900' : 'text-slate-700'}`;
 
         let rankBadge = item.rank;
-        if (item.rank === 1) rankBadge = "🥇 1";
+        if (item.rank === 1) rankBadge = "👑🥇 1";
         else if (item.rank === 2) rankBadge = "🥈 2";
         else if (item.rank === 3) rankBadge = "🥉 3";
+        else if (item.rank <= 10) rankBadge = `🎖️ ${item.rank}`;
 
         tr.innerHTML = `
           <td class="py-2.5 px-2 font-black">${rankBadge}</td>
           <td class="py-2.5 px-2 flex items-center space-x-1">
             <span>${item.username}</span>
-            ${isMe ? '<span class="text-[9px] bg-purple-600 text-white px-1.5 rounded-full">ANDA</span>' : ''}
+            ${isMe ? '<span class="text-[9px] bg-purple-600 text-white px-1.5 rounded-full font-black">ANDA</span>' : ''}
           </td>
           <td class="py-2.5 px-2 text-right font-mono font-bold text-emerald-600">${item.formattedTime}</td>
         `;
@@ -1345,12 +2090,56 @@
       });
     }
 
-    // Modal Derma
-    function openDonateModal() {
-      document.getElementById('modalDonate').classList.remove('hidden');
-    }
-    function closeDonateModal() {
-      document.getElementById('modalDonate').classList.add('hidden');
+    function openBadgeGallery() {
+      document.getElementById('screenMap').classList.add('hidden');
+      document.getElementById('screenLeaderboard').classList.add('hidden');
+      document.getElementById('screenSecretPlay').classList.add('hidden');
+      document.getElementById('screenKaptenDashboard').classList.add('hidden');
+      document.getElementById('screenBadgeGallery').classList.remove('hidden');
+
+      const birdContainer = document.getElementById('birdBadgeList');
+      const top10Container = document.getElementById('top10BadgeList');
+      birdContainer.innerHTML = "";
+      top10Container.innerHTML = "";
+
+      BIRD_RANKS.forEach(b => {
+        const isUnlocked = currentUser && (currentUser.currentLevel >= b.minLvl || currentUser.completedAll);
+        const isCurrent = currentUser && getRank(currentUser.currentLevel).name === b.name;
+        birdContainer.innerHTML += `
+          <div class="p-3 rounded-2xl border-2 flex items-center space-x-3 ${isUnlocked ? (isCurrent ? 'bg-amber-50 border-amber-400' : 'bg-white') : 'bg-slate-50 opacity-60'}">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner ${isUnlocked ? 'hologram-glow text-amber-950' : 'bg-slate-200'}">
+              ${isUnlocked ? b.icon : '🔒'}
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center space-x-1.5">
+                <h5 class="font-black text-xs text-slate-800">${b.name}</h5>
+                ${isCurrent ? '<span class="text-[9px] bg-amber-500 text-white px-1.5 py-0.2 rounded-full font-black">DISEMAT</span>' : ''}
+              </div>
+              <p class="text-[11px] text-slate-500 font-bold leading-tight mt-0.5">${b.desc}</p>
+              <span class="text-[10px] text-sky-600 font-black mt-1 inline-block">Syarat: ${b.req}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      TOP_10_BADGES.forEach(t => {
+        const isHeld = (userNationalRank === t.rank);
+        top10Container.innerHTML += `
+          <div class="p-3 rounded-2xl border-2 flex items-center space-x-3 ${isHeld ? 'bg-purple-50 border-purple-500 shadow-md ring-2 ring-purple-300' : 'bg-white'}">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner ${isHeld ? 'bg-gradient-to-tr from-purple-600 to-amber-500 text-white shadow-lg' : 'bg-purple-100 text-purple-700'}">
+              ${t.icon}
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center space-x-1.5">
+                <h5 class="font-black text-xs text-purple-900">${t.title}</h5>
+                ${isHeld ? '<span class="text-[9px] bg-purple-600 text-white px-1.5 py-0.2 rounded-full font-black">MILIK ANDA</span>' : ''}
+              </div>
+              <p class="text-[11px] text-slate-500 font-bold leading-tight mt-0.5">${t.desc}</p>
+              <span class="text-[10px] text-purple-600 font-black mt-1 inline-block">Syarat: Kedudukan #${t.rank} di Peringkat Master Malaysia</span>
+            </div>
+          </div>
+        `;
+      });
     }
   </script>
 </body>
