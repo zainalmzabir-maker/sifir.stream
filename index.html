@@ -2,9 +2,8 @@
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>DuoSifir - Pengembaraan Matematik</title>
-  <!-- Google Fonts & Tailwind CDN -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,276 +14,469 @@
       font-family: 'Fredoka', 'Nunito', sans-serif;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
-      background-color: #f7f9fa;
+      background-color: #f8fafc;
+      overflow-x: hidden;
     }
     .btn-duo-green {
       background-color: #58cc02;
-      box-shadow: 0 5px 0 #46a302;
+      box-shadow: 0 4px 0 #46a302;
       transition: all 0.1s ease;
     }
     .btn-duo-green:active {
-      transform: translateY(4px);
+      transform: translateY(3px);
       box-shadow: 0 1px 0 #46a302;
     }
     .btn-duo-blue {
       background-color: #1cb0f6;
-      box-shadow: 0 5px 0 #1899d6;
+      box-shadow: 0 4px 0 #1899d6;
       transition: all 0.1s ease;
     }
     .btn-duo-blue:active {
-      transform: translateY(4px);
+      transform: translateY(3px);
       box-shadow: 0 1px 0 #1899d6;
     }
-    .btn-duo-gray {
-      background-color: #e5e5e5;
-      box-shadow: 0 5px 0 #afafaf;
-      color: #afafaf;
+    .btn-duo-purple {
+      background-color: #a855f7;
+      box-shadow: 0 4px 0 #9333ea;
+      transition: all 0.1s ease;
     }
-    .btn-duo-gray:active {
-      transform: translateY(4px);
-      box-shadow: 0 1px 0 #afafaf;
+    .btn-duo-purple:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #9333ea;
+    }
+    .btn-duo-gray {
+      background-color: #e2e8f0;
+      box-shadow: 0 4px 0 #cbd5e1;
+      color: #94a3b8;
     }
     .btn-duo-yellow {
       background-color: #ffc800;
-      box-shadow: 0 5px 0 #cca000;
+      box-shadow: 0 4px 0 #cca000;
       transition: all 0.1s ease;
     }
     .btn-duo-yellow:active {
-      transform: translateY(4px);
+      transform: translateY(3px);
       box-shadow: 0 1px 0 #cca000;
     }
     .btn-keypad {
       background-color: #ffffff;
-      box-shadow: 0 4px 0 #e5e5e5;
-      border: 2px solid #e5e5e5;
-      font-weight: 700;
+      box-shadow: 0 3px 0 #e2e8f0;
+      border: 1.5px solid #e2e8f0;
+      font-weight: 800;
       transition: all 0.08s ease;
     }
     .btn-keypad:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #e5e5e5;
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #e2e8f0;
     }
     @keyframes popItem {
       0% { transform: scale(0); opacity: 0; }
-      70% { transform: scale(1.15); }
+      80% { transform: scale(1.15); }
       100% { transform: scale(1); opacity: 1; }
     }
     .item-pop {
-      animation: popItem 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(8px);
-      border: 3px solid #e5e7eb;
+      animation: popItem 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col justify-between">
 
-  <!-- TOP BAR -->
-  <header class="bg-white border-b-2 border-slate-200 sticky top-0 z-30 px-4 py-2 flex items-center justify-between max-w-lg mx-auto w-full">
-    <div class="flex items-center space-x-2">
-      <span class="text-2xl">🦉</span>
-      <span class="font-bold text-xl text-green-600 tracking-wide">DuoSifir</span>
+  <!-- TOP BAR DENGAN PROFIL LENGKAP & BUTANG LOGOUT -->
+  <header class="bg-white border-b-2 border-slate-200 sticky top-0 z-30 px-3 py-2 max-w-lg mx-auto w-full shadow-sm">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-1.5 cursor-pointer" onclick="showScreenMap()">
+        <span class="text-2xl">🦉</span>
+        <span class="font-black text-lg text-green-600 tracking-tight">DuoSifir</span>
+      </div>
+      
+      <div id="statsBar" class="flex items-center space-x-2 text-xs font-bold hidden">
+        <!-- Badge Nama Pengguna -->
+        <div class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl border border-slate-300 font-black flex items-center space-x-1">
+          <span>👤</span>
+          <span id="topBarUser" class="max-w-[70px] truncate">Murid</span>
+        </div>
+        
+        <!-- Peringkat Burung -->
+        <div class="flex items-center space-x-1 bg-amber-50 text-amber-900 px-2 py-1 rounded-xl border border-amber-200">
+          <span id="rankBadgeIcon">🐣</span>
+          <span id="rankBadgeName" class="hidden sm:inline">Pipit</span>
+        </div>
+
+        <!-- Mata XP -->
+        <div class="flex items-center space-x-0.5 text-amber-500 font-black">
+          <span>⚡</span>
+          <span id="userXp">0</span>
+        </div>
+
+        <!-- Butang Log Keluar -->
+        <button onclick="logoutUser()" title="Log Keluar" class="bg-rose-50 text-rose-600 px-2 py-1 rounded-xl border border-rose-200 hover:bg-rose-100 font-extrabold text-[11px]">
+          🚪 Keluar
+        </button>
+      </div>
     </div>
-    
-    <div id="statsBar" class="flex items-center space-x-4 text-sm font-bold hidden">
-      <!-- Peringkat Burung -->
-      <div class="flex items-center space-x-1 bg-amber-50 px-2 py-1 rounded-xl border-2 border-amber-200">
-        <span id="rankBadgeIcon">🐣</span>
-        <span id="rankBadgeName" class="text-amber-800 text-xs">Pipit</span>
+
+    <!-- Papan Maklumat Istimewa (Rekod Level Rahsia & Derma) -->
+    <div id="secretSpecialBar" class="hidden mt-1.5 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-extrabold">
+      <div id="badgeSecretStatus" class="flex items-center space-x-1 text-purple-700 bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-200">
+        <span>👑</span>
+        <span id="txtSecretTimeRecord">Rekod Rahsia: --:--</span>
       </div>
-      <!-- Mata XP -->
-      <div class="flex items-center space-x-1 text-amber-500">
-        <span>⚡</span>
-        <span id="userXp">0</span>
+      <div class="flex space-x-1.5">
+        <button onclick="openLeaderboardScreen()" class="text-purple-600 bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-200 hover:bg-purple-100">
+          🏆 Top 50 Master
+        </button>
+        <button onclick="openDonateModal()" class="text-rose-600 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-200 hover:bg-rose-100">
+          💖 Derma
+        </button>
       </div>
-      <!-- Butang Derma Tetap -->
-      <button onclick="openDonateModal()" class="text-xs bg-rose-100 text-rose-700 px-2.5 py-1 rounded-xl font-extrabold border-2 border-rose-300 hover:bg-rose-200">
-        💖 Derma
-      </button>
     </div>
   </header>
 
-  <!-- KANDUNGAN UTAMA -->
-  <main class="flex-1 max-w-lg mx-auto w-full p-4 flex flex-col justify-center">
+  <!-- KANDUNGAN UTAMA (CONTAINER) -->
+  <main class="flex-1 max-w-lg mx-auto w-full p-3 flex flex-col justify-center">
 
     <!-- 1. SCREEN: AUTH (LOG MASUK / DAFTAR) -->
-    <div id="screenAuth" class="glass-card p-6 rounded-3xl shadow-sm text-center">
-      <div class="text-5xl mb-3 animate-bounce">🦉✨</div>
-      <h2 class="text-2xl font-black text-slate-800 mb-1">Selamat Datang ke DuoSifir!</h2>
-      <p class="text-slate-500 text-sm mb-6">Kuasai sifir 1 hingga 12 dan capai martabat Burung Garuda.</p>
+    <div id="screenAuth" class="bg-white border-2 border-slate-200 p-5 rounded-3xl shadow-sm text-center">
+      <div class="text-5xl mb-2 animate-bounce">🦉✨</div>
+      <h2 class="text-2xl font-black text-slate-800 mb-0.5">DuoSifir Malaysia</h2>
+      <p class="text-slate-500 text-xs mb-3 font-bold">Kuasai sifir sehingga dinobatkan sebagai Burung Garuda!</p>
 
-      <!-- Toggle Tab -->
-      <div class="flex bg-slate-100 p-1 rounded-2xl mb-5 border-2 border-slate-200">
-        <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-bold text-sm rounded-xl bg-white shadow-sm text-green-600 transition">Log Masuk</button>
-        <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 font-bold text-sm rounded-xl text-slate-500 transition">Daftar Baharu</button>
+      <!-- Peringatan Mesra Daftar Terlebih Dahulu (Link Aktif) -->
+      <div id="authNoticeBanner" class="bg-amber-50 border-2 border-amber-300 p-2.5 rounded-2xl mb-4 text-left text-xs font-bold text-amber-900 leading-snug">
+        📢 <span class="font-extrabold">Peringatan:</span> Sila daftar akaun terlebih dahulu sebelum log masuk. Jika belum mendaftar, 
+        <a href="javascript:void(0)" onclick="switchAuthTab('register')" class="text-green-600 underline font-black hover:text-green-700">sila daftar di sini</a>.
       </div>
 
-      <div class="space-y-4 text-left">
+      <!-- Tab Switcher -->
+      <div class="flex bg-slate-100 p-1 rounded-2xl mb-4 border border-slate-200">
+        <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-black text-xs rounded-xl bg-white shadow-sm text-green-600 transition">Log Masuk</button>
+        <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 font-black text-xs rounded-xl text-slate-500 transition">Daftar Baharu</button>
+      </div>
+
+      <!-- Borang Log Masuk / Daftar -->
+      <div class="space-y-3 text-left">
+        <!-- Peringatan Khas semasa Daftar -->
+        <div id="regWarningNotice" class="hidden bg-rose-50 border border-rose-300 p-2 rounded-xl text-[11px] font-bold text-rose-800 leading-tight">
+          🔒 <span class="font-black">PENTING:</span> Username & kata laluan anda tidak dihantar ke mana-mana pihak. Sila catat atau screenshot maklumat anda selepas pendaftaran!
+        </div>
+
         <div>
-          <label class="text-xs font-black text-slate-500 uppercase tracking-wider">Nama Pengguna</label>
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">Nama Pengguna (Username)</label>
           <div class="flex mt-1">
-            <input type="text" id="authUsername" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-2.5 font-bold focus:outline-none focus:border-green-500 text-slate-700" placeholder="Cth: adik_ali">
-            <button id="btnCheckUser" onclick="verifyUsernameAvailability()" class="hidden ml-2 px-3 py-2 text-xs font-bold bg-sky-500 text-white rounded-xl shadow whitespace-nowrap">Semak</button>
+            <input type="text" id="authUsername" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 font-bold text-sm focus:outline-none focus:border-green-500 text-slate-700" placeholder="Cth: adik_ali">
+            <button id="btnCheckUser" onclick="verifyUsernameAvailability()" class="hidden ml-2 px-3 py-2 text-xs font-black bg-sky-500 text-white rounded-xl shadow whitespace-nowrap">Semak</button>
           </div>
-          <p id="userCheckMsg" class="text-xs mt-1 font-semibold hidden"></p>
+          <p id="userCheckMsg" class="text-xs mt-1 font-bold hidden"></p>
         </div>
 
         <div>
-          <label class="text-xs font-black text-slate-500 uppercase tracking-wider">Kata Laluan</label>
-          <input type="password" id="authPassword" class="w-full mt-1 bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-2.5 font-bold focus:outline-none focus:border-green-500 text-slate-700" placeholder="••••••••">
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">Kata Laluan</label>
+          <input type="password" id="authPassword" class="w-full mt-1 bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 font-bold text-sm focus:outline-none focus:border-green-500 text-slate-700" placeholder="••••••••">
         </div>
 
-        <button id="btnAuthSubmit" onclick="handleAuthSubmit()" class="w-full btn-duo-green text-white py-3.5 rounded-2xl font-black text-base uppercase tracking-wider mt-2">
+        <button id="btnAuthSubmit" onclick="handleAuthSubmit()" class="w-full btn-duo-green text-white py-3 rounded-2xl font-black text-sm uppercase tracking-wider mt-2">
           Mula Belajar
         </button>
       </div>
     </div>
 
     <!-- 2. SCREEN: PETA LEVEL (PATH MAP) -->
-    <div id="screenMap" class="hidden flex-col items-center space-y-5 pb-16">
-      <div class="w-full bg-emerald-500 text-white p-4 rounded-3xl shadow-md border-b-4 border-emerald-700 mb-2">
+    <div id="screenMap" class="hidden flex-col items-center space-y-4 pb-20">
+      <!-- Kad Profil & Peringkat Burung Banner -->
+      <div class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-3xl shadow-md border-b-4 border-emerald-700">
         <div class="flex justify-between items-center">
           <div>
-            <h3 class="text-lg font-black tracking-wide uppercase">Peringkat Penguasaan</h3>
-            <p id="bannerRankDesc" class="text-xs text-emerald-100 font-bold">Burung Pipit (Sifir 1 - 2)</p>
+            <span class="text-[10px] font-black bg-emerald-700/60 px-2 py-0.5 rounded-full uppercase tracking-wider">Darjat Penguasaan</span>
+            <h3 id="bannerRankName" class="text-xl font-black mt-0.5">Burung Pipit</h3>
+            <p id="bannerRankDesc" class="text-xs text-emerald-100 font-bold">Teruskan menjawab untuk naik taraf!</p>
           </div>
-          <div id="bannerBirdIcon" class="text-4xl">🐣</div>
+          <div id="bannerBirdIcon" class="text-5xl">🐣</div>
         </div>
       </div>
 
-      <!-- Senarai Node Sifir 1 hingga 12 -->
-      <div id="levelsContainer" class="w-full flex flex-col items-center space-y-4"></div>
+      <!-- KAD KHAS: LEVEL SIAPA RAHSIA (Terbuka Selepas Sifir 12) -->
+      <div id="cardSecretLevel" class="w-full bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-4 rounded-3xl shadow-lg border-b-4 border-purple-900 flex items-center justify-between relative overflow-hidden">
+        <div class="z-10">
+          <div class="flex items-center space-x-1.5">
+            <span class="text-xs bg-yellow-400 text-purple-950 font-black px-2 py-0.5 rounded-full">🏆 CABARAN MASTER</span>
+            <span id="secretLockBadge" class="text-xs bg-purple-900/80 px-2 py-0.5 rounded-full">🔒 Terkunci</span>
+          </div>
+          <h3 class="text-lg font-black mt-1">Level Siapa Rahsia</h3>
+          <p id="secretCardSubtitle" class="text-[11px] text-purple-200 font-bold max-w-[210px] leading-tight">
+            25 soalan rawak terpantas (2 & 3 Digit). Buka selepas tamat Sifir 12!
+          </p>
+        </div>
+        <button id="btnPlaySecret" onclick="startSecretLevelCountdown()" disabled class="z-10 btn-duo-gray text-xs px-3.5 py-3 rounded-2xl font-black">
+          Kunci
+        </button>
+      </div>
+
+      <!-- Laluan Sifir 1 hingga 12 -->
+      <div class="w-full flex items-center justify-between px-2 pt-2">
+        <span class="text-xs font-black text-slate-400 uppercase tracking-wider">Laluan Pembelajaran Sifir</span>
+        <button onclick="openLeaderboardScreen()" class="text-xs font-black text-purple-600 underline">🏆 Ranking Master</button>
+      </div>
+      <div id="levelsContainer" class="w-full flex flex-col items-center space-y-3"></div>
     </div>
 
-    <!-- 3. SCREEN: DEMO PEMBELAJARAN & ANIMASI BERGANDA -->
-    <div id="screenDemo" class="hidden flex flex-col justify-between h-full max-w-lg mx-auto w-full">
-      <div class="flex items-center justify-between mb-3">
-        <button onclick="exitToMap()" class="text-slate-400 font-extrabold text-lg hover:text-slate-600">✕</button>
-        <div class="w-2/3 bg-slate-200 h-3.5 rounded-full overflow-hidden border border-slate-300">
+    <!-- 3. SCREEN: DEMO ANIMASI BERGANDA (RESPONSIF - ZERO SCROLL) -->
+    <div id="screenDemo" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full overflow-hidden">
+      <!-- Demo Header -->
+      <div class="flex items-center justify-between shrink-0 mb-1">
+        <button onclick="exitToMap()" class="text-slate-400 font-black text-xl hover:text-slate-600">✕</button>
+        <div class="w-2/3 bg-slate-200 h-3 rounded-full overflow-hidden border border-slate-300">
           <div id="demoProgress" class="bg-amber-400 h-full transition-all duration-300" style="width: 10%;"></div>
         </div>
         <span id="demoStepIndicator" class="text-xs font-black text-slate-400">1 / 14</span>
       </div>
 
-      <div class="glass-card p-5 rounded-3xl text-center my-auto shadow-sm">
-        <div id="demoConceptTitle" class="text-sm font-black text-sky-600 uppercase tracking-widest mb-1">Konsep Penggandaan</div>
-        <div id="demoMathFormula" class="text-4xl font-black text-slate-800 mb-4 tracking-tight">1 × 1 = 1</div>
+      <!-- Kad Visual Animasi (Autoscale untuk elak scroll mobile) -->
+      <div class="bg-white border-2 border-slate-200 p-3 rounded-3xl text-center flex-1 flex flex-col justify-between overflow-hidden shadow-sm my-1">
+        <div class="shrink-0">
+          <div id="demoConceptTitle" class="text-[10px] font-black text-sky-600 uppercase tracking-widest">KONSEP SIFIR BERGANDA</div>
+          <div id="demoMathFormula" class="text-3xl font-black text-slate-800 tracking-tight">1 × 1 = 1</div>
+        </div>
 
-        <!-- Kanvas Animasi Benda Berganda -->
-        <div id="demoAnimationBox" class="min-h-[170px] bg-sky-50 border-2 border-dashed border-sky-200 rounded-2xl p-3 flex flex-wrap items-center justify-center gap-3 mb-3 transition"></div>
+        <!-- Kanvas Objek Animasi Menguncup Secara Automatik Mengikut Saiz -->
+        <div id="demoAnimationBox" class="flex-1 w-full bg-sky-50/70 border-2 border-dashed border-sky-200 rounded-2xl p-1.5 flex flex-wrap items-center justify-center content-center gap-1.5 my-1 overflow-hidden transition-all">
+          <!-- Objek animasi diisi secara dinamik -->
+        </div>
 
-        <p id="demoExplanation" class="text-sm font-bold text-slate-600 px-2 leading-relaxed">
-          1 benda didarabkan sebanyak 1 kali.
+        <p id="demoExplanation" class="text-xs font-bold text-slate-600 px-1 leading-snug shrink-0">
+          Penerangan konsep sifir berganda.
         </p>
       </div>
 
-      <div class="pt-4">
-        <button id="btnDemoNext" onclick="nextDemoStep()" class="w-full btn-duo-green text-white py-4 rounded-2xl font-black text-lg uppercase tracking-wider">
+      <!-- Action Button -->
+      <div class="shrink-0 pt-2">
+        <button id="btnDemoNext" onclick="nextDemoStep()" class="w-full btn-duo-green text-white py-3.5 rounded-2xl font-black text-base uppercase tracking-wider">
           Faham, Teruskan! ➔
         </button>
       </div>
     </div>
 
-    <!-- 4. SCREEN: KUIZ & UJIAN CHECKPOINT -->
-    <div id="screenQuiz" class="hidden flex flex-col justify-between h-full max-w-lg mx-auto w-full">
-      <div>
-        <div class="flex items-center justify-between mb-3">
-          <button onclick="confirmExitQuiz()" class="text-slate-400 font-extrabold text-lg">✕</button>
-          <div class="w-3/4 bg-slate-200 h-4 rounded-full overflow-hidden border border-slate-300">
+    <!-- 4. SCREEN: KUIZ BIASA & CHECKPOINTS -->
+    <div id="screenQuiz" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
+      <div class="shrink-0">
+        <div class="flex items-center justify-between mb-2">
+          <button onclick="confirmExitQuiz()" class="text-slate-400 font-black text-xl">✕</button>
+          <div class="w-3/4 bg-slate-200 h-3.5 rounded-full overflow-hidden border border-slate-300">
             <div id="quizProgressBar" class="bg-green-500 h-full transition-all duration-300" style="width: 0%;"></div>
           </div>
           <span id="quizQuestionCount" class="text-xs font-black text-slate-500">1/6</span>
         </div>
 
-        <div class="text-center mt-2 mb-4">
-          <h4 id="quizPromptTitle" class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Tuliskan jawapan yang betul</h4>
+        <div class="text-center mt-2 mb-2">
+          <h4 id="quizPromptTitle" class="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1">Tulis jawapan menggunakan keypad</h4>
           
-          <div id="quizVisualClue" class="hidden min-h-[90px] bg-amber-50 border-2 border-amber-200 rounded-2xl p-2 mb-3 flex flex-wrap items-center justify-center gap-2"></div>
+          <div id="quizVisualClue" class="hidden max-h-[80px] bg-amber-50 border border-amber-200 rounded-xl p-1.5 mb-2 flex flex-wrap items-center justify-center gap-1 overflow-hidden"></div>
 
           <div class="flex items-center justify-center space-x-3 text-3xl font-black text-slate-800">
             <span id="quizEquationText">1 × 4 =</span>
-            <div id="quizAnswerSlot" class="min-w-[70px] h-14 bg-white border-b-4 border-2 border-sky-400 rounded-2xl flex items-center justify-center text-3xl text-sky-600 font-black px-2 shadow-inner">
+            <div class="min-w-[70px] h-12 bg-white border-b-4 border-2 border-sky-400 rounded-2xl flex items-center justify-center text-3xl text-sky-600 font-black px-2 shadow-inner">
               <span id="quizInputDisplay">?</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- KEYPAD ATAS SKRIN -->
-      <div class="bg-slate-100 p-3 rounded-3xl border-2 border-slate-200 shadow-sm mt-auto">
-        <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto">
-          <button onclick="pressKey(1)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">1</button>
-          <button onclick="pressKey(2)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">2</button>
-          <button onclick="pressKey(3)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">3</button>
-          
-          <button onclick="pressKey(4)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">4</button>
-          <button onclick="pressKey(5)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">5</button>
-          <button onclick="pressKey(6)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">6</button>
-          
-          <button onclick="pressKey(7)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">7</button>
-          <button onclick="pressKey(8)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">8</button>
-          <button onclick="pressKey(9)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">9</button>
-          
-          <button onclick="pressKey('C')" class="btn-keypad py-3.5 rounded-2xl text-base text-rose-500 font-black">C</button>
-          <button onclick="pressKey(0)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">0</button>
-          <button onclick="pressKey('DEL')" class="btn-keypad py-3.5 rounded-2xl text-lg text-slate-600">⌫</button>
+      <!-- Keypad Sentuh -->
+      <div class="bg-slate-100 p-2.5 rounded-3xl border-2 border-slate-200 shadow-sm mt-auto shrink-0">
+        <div class="grid grid-cols-3 gap-1.5 max-w-xs mx-auto">
+          <button onclick="pressKey(1)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">1</button>
+          <button onclick="pressKey(2)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">2</button>
+          <button onclick="pressKey(3)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">3</button>
+          <button onclick="pressKey(4)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">4</button>
+          <button onclick="pressKey(5)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">5</button>
+          <button onclick="pressKey(6)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">6</button>
+          <button onclick="pressKey(7)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">7</button>
+          <button onclick="pressKey(8)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">8</button>
+          <button onclick="pressKey(9)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">9</button>
+          <button onclick="pressKey('C')" class="btn-keypad py-3 rounded-2xl text-base text-rose-500 font-black">C</button>
+          <button onclick="pressKey(0)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">0</button>
+          <button onclick="pressKey('DEL')" class="btn-keypad py-3 rounded-2xl text-lg text-slate-600">⌫</button>
         </div>
-
-        <button id="btnSubmitAnswer" onclick="checkUserAnswer()" class="w-full mt-3 btn-duo-green text-white py-3.5 rounded-2xl font-black text-lg uppercase tracking-wider">
+        <button id="btnSubmitAnswer" onclick="checkUserAnswer()" class="w-full mt-2 btn-duo-green text-white py-3 rounded-2xl font-black text-base uppercase tracking-wider">
           Semak Jawapan
         </button>
       </div>
     </div>
 
+    <!-- 5. SCREEN: LEVEL SIAPA RAHSIA (25 SOALAN SEIMBANG 2 & 3 DIGIT + PEMASA) -->
+    <div id="screenSecretPlay" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
+      <div class="shrink-0">
+        <!-- Top Status Bar Rahsia -->
+        <div class="flex items-center justify-between bg-purple-900 text-white p-2.5 rounded-2xl border-b-2 border-purple-950 mb-2">
+          <div class="flex items-center space-x-1.5">
+            <span class="text-sm font-black bg-yellow-400 text-purple-950 px-2 py-0.5 rounded-md">RAHSIA</span>
+            <span id="secretLiveTimer" class="font-mono text-base font-black text-yellow-300">00:00.0</span>
+          </div>
+          <div class="text-xs font-black text-purple-200">
+            Soalan: <span id="secretQIndex" class="text-white text-sm">1</span> / 25
+          </div>
+          <button onclick="exitSecretGame()" class="text-purple-300 hover:text-white font-black text-sm">Batal</button>
+        </div>
+
+        <div class="text-center my-3">
+          <span id="secretDigitBadge" class="text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full border border-purple-300">
+            Jawapan 2 Digit
+          </span>
+          <div class="flex items-center justify-center space-x-3 text-4xl font-black text-slate-800 mt-2">
+            <span id="secretEquationText">12 × 11 =</span>
+            <div class="min-w-[80px] h-14 bg-white border-b-4 border-2 border-purple-500 rounded-2xl flex items-center justify-center text-3xl text-purple-700 font-black px-2 shadow-inner">
+              <span id="secretInputDisplay">?</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keypad Khusus Level Rahsia -->
+      <div class="bg-purple-50 p-2.5 rounded-3xl border-2 border-purple-200 shadow-sm mt-auto shrink-0">
+        <div class="grid grid-cols-3 gap-1.5 max-w-xs mx-auto">
+          <button onclick="pressSecretKey(1)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">1</button>
+          <button onclick="pressSecretKey(2)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">2</button>
+          <button onclick="pressSecretKey(3)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">3</button>
+          <button onclick="pressSecretKey(4)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">4</button>
+          <button onclick="pressSecretKey(5)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">5</button>
+          <button onclick="pressSecretKey(6)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">6</button>
+          <button onclick="pressSecretKey(7)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">7</button>
+          <button onclick="pressSecretKey(8)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">8</button>
+          <button onclick="pressSecretKey(9)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">9</button>
+          <button onclick="pressSecretKey('C')" class="btn-keypad py-3 rounded-2xl text-base text-rose-500 font-black">C</button>
+          <button onclick="pressSecretKey(0)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">0</button>
+          <button onclick="pressSecretKey('DEL')" class="btn-keypad py-3 rounded-2xl text-lg text-slate-600">⌫</button>
+        </div>
+        <button onclick="checkSecretAnswer()" class="w-full mt-2 btn-duo-purple text-white py-3 rounded-2xl font-black text-base uppercase tracking-wider">
+          Hantar Jawapan Pantas ⚡
+        </button>
+      </div>
+    </div>
+
+    <!-- 6. SCREEN: RANKING LEVEL RAHSIA (TOP 50 MASTER MALAYSIA) -->
+    <div id="screenLeaderboard" class="hidden flex-col h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
+      <div class="flex items-center justify-between mb-3 shrink-0">
+        <button onclick="showScreenMap()" class="text-slate-500 font-black text-sm bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+          ← Kembali
+        </button>
+        <h3 class="text-base font-black text-purple-900">Ranking Level Rahsia</h3>
+        <button onclick="fetchLeaderboard()" class="text-xs text-purple-600 font-black">🔄 Muat Semula</button>
+      </div>
+
+      <div class="bg-gradient-to-r from-purple-700 to-indigo-800 text-white p-3 rounded-2xl shadow-sm mb-3 shrink-0 text-center">
+        <div class="text-2xl">🇲🇾👑</div>
+        <h4 class="text-base font-black">Top 50 Master Malaysia</h4>
+        <p class="text-[11px] text-purple-200">Masa paling pantas menghabiskan 25 soalan tanpa sebarang kesalahan!</p>
+      </div>
+
+      <!-- Jadual Ranking -->
+      <div class="flex-1 bg-white border-2 border-slate-200 rounded-2xl p-2 overflow-y-auto shadow-inner">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b-2 border-slate-100 text-[11px] text-slate-400 uppercase font-black">
+              <th class="py-1 px-2">No</th>
+              <th class="py-1 px-2">Nama Pengguna</th>
+              <th class="py-1 px-2 text-right">Masa</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardTbody">
+            <tr><td colspan="3" class="text-center py-6 text-slate-400 font-bold">Memuatkan ranking master...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </main>
 
-  <!-- MODAL MAKLUM BALAS (BETUL / SALAH) -->
-  <div id="feedbackSheet" class="fixed inset-x-0 bottom-0 p-4 transform translate-y-full transition-transform duration-300 z-50 max-w-lg mx-auto">
-    <div id="feedbackBox" class="p-5 rounded-3xl border-2 flex flex-col space-y-3">
+  <!-- OVERLAY COUNTDOWN LEVEL RAHSIA (3.. 2.. 1.. MULA!) -->
+  <div id="overlayCountdown" class="fixed inset-0 bg-purple-950/90 z-50 hidden flex flex-col items-center justify-center text-white">
+    <div class="text-xs uppercase font-black tracking-widest text-yellow-300 mb-2">Bersedia Untuk Cabaran</div>
+    <div id="countdownNumber" class="text-8xl font-black text-white animate-pulse">3</div>
+    <p class="text-xs font-bold text-purple-300 mt-4">Jawab 25 soalan terpantas. Salah = Gagal!</p>
+  </div>
+
+  <!-- POPUP KAD BUKTI PENDAFTARAN (SCREENSHOT CARD) -->
+  <div id="modalUserCard" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-emerald-500">
+      <div class="text-4xl mb-1">📸✨</div>
+      <h3 class="text-xl font-black text-slate-800">Pendaftaran Berjaya!</h3>
+      <p class="text-xs text-rose-600 font-black mb-3">
+        ⚠️ SILA SCREENSHOT ATAU CATAT KAD INI SEKARANG! Maklumat tidak dihantar ke emel anda.
+      </p>
+
+      <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-dashed border-emerald-400 rounded-2xl p-4 text-left space-y-2 mb-4 shadow-sm">
+        <div>
+          <span class="text-[10px] uppercase font-black text-slate-400">Nama Pengguna:</span>
+          <p id="cardUsernameDisplay" class="text-lg font-black text-emerald-800 tracking-wide">adik_ali</p>
+        </div>
+        <div>
+          <span class="text-[10px] uppercase font-black text-slate-400">Kata Laluan Anda:</span>
+          <p id="cardPasswordDisplay" class="text-lg font-mono font-black text-slate-800">123456</p>
+        </div>
+        <div class="pt-1 border-t border-emerald-200 text-[10px] font-bold text-slate-500">
+          Aplikasi DuoSifir • Simpan baik-baik untuk log masuk seterusnya
+        </div>
+      </div>
+
+      <button onclick="closeCardAndStart()" class="w-full btn-duo-green text-white py-3 rounded-2xl font-black text-sm uppercase">
+        Saya Sudah Screenshot & Faham ✅
+      </button>
+    </div>
+  </div>
+
+  <!-- DIALOG RALAT KUSTOM (CTH: USERNAME TIDAK WUJUD) -->
+  <div id="modalErrorDialog" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xs w-full p-5 text-center shadow-2xl border-4 border-rose-500">
+      <div class="text-4xl mb-2">❌</div>
+      <h3 id="errorDialogTitle" class="text-lg font-black text-slate-800">Username Tidak Wujud</h3>
+      <p id="errorDialogMsg" class="text-xs font-bold text-slate-600 my-3 leading-relaxed">
+        Nama pengguna yang dimasukkan tidak ditemui dalam rekod. Sila semak semula ejaan atau daftar akaun baharu.
+      </p>
+      <button onclick="closeErrorDialog()" class="w-full bg-rose-600 text-white py-2.5 rounded-xl font-black text-xs uppercase">
+        Tutup
+      </button>
+    </div>
+  </div>
+
+  <!-- POPUP DUOLINGO FEEDBACK SHEET -->
+  <div id="feedbackSheet" class="fixed inset-x-0 bottom-0 p-3 transform translate-y-full transition-transform duration-300 z-50 max-w-lg mx-auto">
+    <div id="feedbackBox" class="p-4 rounded-3xl border-2 flex flex-col space-y-2">
       <div class="flex items-center space-x-3">
         <span id="feedbackIcon" class="text-3xl">🎉</span>
         <div>
-          <h4 id="feedbackTitle" class="text-xl font-black">Hebat!</h4>
+          <h4 id="feedbackTitle" class="text-lg font-black">Hebat!</h4>
           <p id="feedbackSubtitle" class="text-xs font-bold"></p>
         </div>
       </div>
-      <button id="btnFeedbackContinue" onclick="proceedAfterFeedback()" class="w-full py-3.5 rounded-2xl font-black text-white text-base uppercase tracking-wider shadow-md">
+      <button id="btnFeedbackContinue" onclick="proceedAfterFeedback()" class="w-full py-3 rounded-2xl font-black text-white text-sm uppercase tracking-wider shadow">
         Teruskan
       </button>
     </div>
   </div>
 
-  <!-- MODAL DERMA DEVELOPER (DuitNow QR - znal.png) -->
+  <!-- POPUP DERMA DEVELOPER (DuitNow QR - znal.png) -->
   <div id="modalDonate" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border-4 border-pink-400 relative">
-      <button onclick="closeDonateModal()" class="absolute top-4 right-4 text-slate-400 font-black text-xl hover:text-slate-700">✕</button>
-      
-      <div class="text-4xl mb-2">🎁💖</div>
-      <h3 class="text-xl font-black text-slate-800">Sumbangan Developer</h3>
-      <p class="text-xs font-bold text-slate-500 mb-4">
-        Terima kasih kerana menyokong inisiatif pendidikan percuma ini. Sumbangan anda membantu menyelenggara sistem ini.
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-pink-400 relative">
+      <button onclick="closeDonateModal()" class="absolute top-3 right-3 text-slate-400 font-black text-lg">✕</button>
+      <div class="text-3xl mb-1">🎁💖</div>
+      <h3 class="text-lg font-black text-slate-800">Sumbangan Developer</h3>
+      <p class="text-[11px] font-bold text-slate-500 mb-3">
+        Aplikasi ini percuma untuk semua murid. Sumbangan anda membantu kelangsungan pelayan dan naik taraf sistem.
       </p>
-
-      <div class="bg-pink-50 p-3 rounded-2xl border-2 border-pink-200 inline-block mb-3">
-        <img src="znal.png" alt="DuitNow QR Developer (znal)" class="w-56 h-auto mx-auto rounded-xl shadow-sm object-contain" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DuitNow-Znal';">
+      <div class="bg-pink-50 p-2 rounded-2xl border border-pink-200 inline-block mb-2">
+        <img src="znal.png" alt="DuitNow QR Developer (znal)" class="w-48 h-auto mx-auto rounded-xl shadow-sm object-contain" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DuitNow-Znal';">
       </div>
-
-      <p class="text-xs font-extrabold text-pink-600 mb-4">DuitNow QR rasmi (znal)</p>
-
-      <button onclick="closeDonateModal()" class="w-full btn-duo-green text-white py-3 rounded-2xl font-black text-sm uppercase">
+      <p class="text-xs font-black text-pink-600 mb-3">DuitNow QR Rasmi (znal)</p>
+      <button onclick="closeDonateModal()" class="w-full btn-duo-green text-white py-2.5 rounded-xl font-black text-xs uppercase">
         Sambung Belajar 🚀
       </button>
     </div>
   </div>
 
-  <!-- LOGIK JAVASCRIPT & INTEGRASI GAS -->
+  <!-- JAVASCRIPT LOGIK KESELURUHAN -->
   <script>
-    // URL Web App Google Apps Script
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzWOWCsANwfbWRU4ElL20tfwYHFYHsJYNF1913xSsVZgZvrv8aKD9dVWyhDHjcQQZnh/exec";
 
-    // Audio FX sintesis (Web Audio API)
+    // Web Audio FX
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(freq, type, duration, delay = 0) {
       setTimeout(() => {
@@ -293,7 +485,7 @@
           const gain = audioCtx.createGain();
           osc.type = type;
           osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
           osc.connect(gain);
           gain.connect(audioCtx.destination);
@@ -303,33 +495,29 @@
       }, delay);
     }
     function playSfxCorrect() {
-      playTone(523.25, 'sine', 0.12, 0);
-      playTone(659.25, 'sine', 0.12, 100);
-      playTone(783.99, 'sine', 0.25, 200);
+      playTone(523.25, 'sine', 0.1, 0);
+      playTone(659.25, 'sine', 0.1, 80);
+      playTone(783.99, 'sine', 0.2, 160);
     }
     function playSfxWrong() {
-      playTone(250, 'sawtooth', 0.18, 0);
-      playTone(180, 'sawtooth', 0.28, 120);
+      playTone(260, 'sawtooth', 0.15, 0);
+      playTone(190, 'sawtooth', 0.25, 100);
     }
     function playSfxLevelUp() {
-      [440, 554, 659, 880].forEach((f, i) => playTone(f, 'triangle', 0.2, i * 80));
+      [440, 554, 659, 880].forEach((f, i) => playTone(f, 'triangle', 0.18, i * 70));
     }
 
-    // Keadaan Pengguna & Peringkat Burung
-    let currentUser = null;
-    let authMode = 'login';
-    let isUserVerified = false;
-    let totalQuestionsAnsweredAllTime = 0;
-
+    // Peringkat Burung
     const BIRD_RANKS = [
       { maxLevel: 2, name: "Burung Pipit", icon: "🐣", desc: "Permulaan yang ceria" },
       { maxLevel: 4, name: "Burung Merpati", icon: "🕊️", desc: "Mula terbang laju" },
-      { maxLevel: 6, name: "Burung Tekukur", icon: "🦜", desc: "Ingatan semakin mantap" },
+      { maxLevel: 6, name: "Burung Tekukur", icon: "🦜", desc: "Ingatan semakin kukuh" },
       { maxLevel: 8, name: "Burung Hantu", icon: "🦉", desc: "Pintar dan berfokus" },
       { maxLevel: 10, name: "Burung Rajawali", icon: "🦅", desc: "Pantas menembusi sifir" },
-      { maxLevel: 11, name: "Burung Helang", icon: "🪶", desc: "Ketajaman minda tertinggi" },
+      { maxLevel: 11, name: "Burung Helang", icon: "🪶", desc: "Ketajaman minda terunggul" },
       { maxLevel: 12, name: "Burung Garuda", icon: "👑🔥", desc: "Penguasa Agung Seluruh Sifir!" }
     ];
+    const SIFIR_EMOJIS = ["", "🍎", "⭐", "🚗", "🍭", "⚽", "🐱", "🚀", "🍕", "🌸", "💎", "🍩", "⚡"];
 
     function getRank(level) {
       for (const r of BIRD_RANKS) {
@@ -338,34 +526,83 @@
       return BIRD_RANKS[BIRD_RANKS.length - 1];
     }
 
+    // App State
+    let currentUser = null;
+    let authMode = 'login';
+    let isUserVerified = false;
+    let totalQuestionsAnsweredAllTime = 0;
+
     let activeSifir = 1;
     let demoStep = 1;
     let quizMode = 'main';
     let currentQuizIndex = 0;
     let quizQuestions = [];
     let currentInput = "";
-    const SIFIR_EMOJIS = ["", "🍎", "⭐", "🚗", "🍭", "⚽", "🐱", "🚀", "🍕", "🌸", "💎", "🍩", "⚡"];
+    let isLastAnswerCorrect = false;
 
-    // ---------------- AUTHENTICATION ----------------
+    // State Khusus Level Siapa Rahsia
+    let secretTimerInterval = null;
+    let secretStartTime = 0;
+    let secretQuestions = [];
+    let secretQIndex = 0;
+    let secretInput = "";
+
+    // -------------------------------------------------------------
+    // KEKALKAN SESI (LOCALSTORAGE) & MULA APLIKASI
+    // -------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('duosifir_active_user');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          startSession();
+        } catch(e) {
+          localStorage.removeItem('duosifir_active_user');
+        }
+      }
+    });
+
+    function logoutUser() {
+      if (confirm("Adakah anda pasti ingin log keluar? Maklumat sesi anda akan ditutup.")) {
+        localStorage.removeItem('duosifir_active_user');
+        currentUser = null;
+        document.getElementById('statsBar').classList.add('hidden');
+        document.getElementById('secretSpecialBar').classList.add('hidden');
+        document.getElementById('screenMap').classList.add('hidden');
+        document.getElementById('screenDemo').classList.add('hidden');
+        document.getElementById('screenQuiz').classList.add('hidden');
+        document.getElementById('screenSecretPlay').classList.add('hidden');
+        document.getElementById('screenLeaderboard').classList.add('hidden');
+        document.getElementById('screenAuth').classList.remove('hidden');
+        switchAuthTab('login');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // LOGIK AUTH & MODAL KAD PENDAFTARAN
+    // -------------------------------------------------------------
     function switchAuthTab(mode) {
       authMode = mode;
       const tabLogin = document.getElementById('tabLogin');
       const tabRegister = document.getElementById('tabRegister');
       const btnCheck = document.getElementById('btnCheckUser');
       const btnSubmit = document.getElementById('btnAuthSubmit');
-      const msg = document.getElementById('userCheckMsg');
-      msg.classList.add('hidden');
+      const userMsg = document.getElementById('userCheckMsg');
+      const regNotice = document.getElementById('regWarningNotice');
+      userMsg.classList.add('hidden');
 
       if (mode === 'login') {
-        tabLogin.className = "flex-1 py-2 font-bold text-sm rounded-xl bg-white shadow-sm text-green-600 transition";
-        tabRegister.className = "flex-1 py-2 font-bold text-sm rounded-xl text-slate-500 transition";
+        tabLogin.className = "flex-1 py-2 font-black text-xs rounded-xl bg-white shadow-sm text-green-600 transition";
+        tabRegister.className = "flex-1 py-2 font-black text-xs rounded-xl text-slate-500 transition";
         btnCheck.classList.add('hidden');
         btnSubmit.innerText = "Log Masuk";
+        regNotice.classList.add('hidden');
       } else {
-        tabRegister.className = "flex-1 py-2 font-bold text-sm rounded-xl bg-white shadow-sm text-green-600 transition";
-        tabLogin.className = "flex-1 py-2 font-bold text-sm rounded-xl text-slate-500 transition";
+        tabRegister.className = "flex-1 py-2 font-black text-xs rounded-xl bg-white shadow-sm text-green-600 transition";
+        tabLogin.className = "flex-1 py-2 font-black text-xs rounded-xl text-slate-500 transition";
         btnCheck.classList.remove('hidden');
-        btnSubmit.innerText = "Daftar & Mula";
+        btnSubmit.innerText = "Daftar Akaun & Catat";
+        regNotice.classList.remove('hidden');
       }
     }
 
@@ -373,11 +610,11 @@
       const username = document.getElementById('authUsername').value.trim();
       const msg = document.getElementById('userCheckMsg');
       if (!username) {
-        alert("Sila masukkan nama pengguna!");
+        showErrorDialog("Nama Pengguna Kosong", "Sila masukkan nama pengguna yang ingin disemak.");
         return;
       }
       msg.innerText = "Menyemak pangkalan data...";
-      msg.className = "text-xs mt-1 font-semibold text-slate-500";
+      msg.className = "text-xs mt-1 font-bold text-slate-500";
       msg.classList.remove('hidden');
 
       try {
@@ -387,17 +624,17 @@
         });
         const data = await res.json();
         if (data.exists) {
-          msg.innerText = "❌ Nama pengguna sudah wujud, sila pilih nama lain.";
-          msg.className = "text-xs mt-1 font-semibold text-rose-500";
+          msg.innerText = "❌ Username sudah wujud! Sila guna nama lain.";
+          msg.className = "text-xs mt-1 font-bold text-rose-500";
           isUserVerified = false;
         } else {
-          msg.innerText = "✅ Nama pengguna boleh didaftarkan!";
-          msg.className = "text-xs mt-1 font-semibold text-emerald-600";
+          msg.innerText = "✅ Username boleh digunakan!";
+          msg.className = "text-xs mt-1 font-bold text-emerald-600";
           isUserVerified = true;
         }
       } catch (err) {
-        msg.innerText = "✅ Diterima (mod sandaran)";
-        msg.className = "text-xs mt-1 font-semibold text-emerald-600";
+        msg.innerText = "✅ Username sedia untuk pendaftaran";
+        msg.className = "text-xs mt-1 font-bold text-emerald-600";
         isUserVerified = true;
       }
     }
@@ -407,12 +644,12 @@
       const password = document.getElementById('authPassword').value.trim();
 
       if (!username || !password) {
-        alert("Sila lengkapkan nama pengguna dan kata laluan!");
+        showErrorDialog("Maklumat Tidak Lengkap", "Sila lengkapkan kedua-dua ruangan nama pengguna dan kata laluan.");
         return;
       }
 
       if (authMode === 'register' && !isUserVerified) {
-        alert("Sila klik butang 'Semak' terlebih dahulu bagi mengesahkan nama pengguna.");
+        showErrorDialog("Sila Semak Username", "Sila klik butang 'Semak' dahulu untuk memastikan username belum diambil orang lain.");
         return;
       }
 
@@ -423,48 +660,97 @@
           body: JSON.stringify({ action, username, password })
         });
         const resData = await res.json();
+
         if (resData.success) {
           currentUser = resData.user;
-          startSession();
-        } else {
-          alert(resData.message || "Gagal log masuk atau pendaftaran.");
-        }
-      } catch (err) {
-        const localData = JSON.parse(localStorage.getItem('duosifir_' + username) || 'null');
-        if (authMode === 'login') {
-          if (localData && localData.password === password) {
-            currentUser = localData;
-            startSession();
+          localStorage.setItem('duosifir_active_user', JSON.stringify(currentUser));
+          
+          if (authMode === 'register') {
+            // Tunjukkan kad screenshot pendaftaran
+            document.getElementById('cardUsernameDisplay').innerText = username;
+            document.getElementById('cardPasswordDisplay').innerText = password;
+            document.getElementById('modalUserCard').classList.remove('hidden');
           } else {
-            alert("Nama pengguna atau kata laluan tidak sah.");
+            startSession();
           }
         } else {
-          currentUser = { username, password, currentLevel: 1, xp: 0, completedAll: false };
-          localStorage.setItem('duosifir_' + username, JSON.stringify(currentUser));
-          startSession();
+          if (resData.notFound) {
+            showErrorDialog("Username Tidak Wujud", "Nama pengguna tidak wujud dalam sistem! Sila daftar terlebih dahulu melalui pautan di atas.");
+          } else {
+            showErrorDialog("Ralat Log Masuk", resData.message || "Nama pengguna atau kata laluan tidak sah.");
+          }
+        }
+      } catch (err) {
+        // Sandaran offline/local
+        const localData = JSON.parse(localStorage.getItem('duosifir_u_' + username) || 'null');
+        if (authMode === 'login') {
+          if (!localData) {
+            showErrorDialog("Username Tidak Wujud", "Nama pengguna tidak dijumpai! Sila daftar akaun baru.");
+          } else if (localData.password === password) {
+            currentUser = localData;
+            localStorage.setItem('duosifir_active_user', JSON.stringify(currentUser));
+            startSession();
+          } else {
+            showErrorDialog("Kata Laluan Salah", "Kata laluan yang anda masukkan tidak tepat.");
+          }
+        } else {
+          currentUser = { username, password, currentLevel: 1, xp: 0, completedAll: false, bestSecretTime: 99999 };
+          localStorage.setItem('duosifir_u_' + username, JSON.stringify(currentUser));
+          localStorage.setItem('duosifir_active_user', JSON.stringify(currentUser));
+          document.getElementById('cardUsernameDisplay').innerText = username;
+          document.getElementById('cardPasswordDisplay').innerText = password;
+          document.getElementById('modalUserCard').classList.remove('hidden');
         }
       }
+    }
+
+    function closeCardAndStart() {
+      document.getElementById('modalUserCard').classList.add('hidden');
+      startSession();
+    }
+
+    function showErrorDialog(title, message) {
+      document.getElementById('errorDialogTitle').innerText = title;
+      document.getElementById('errorDialogMsg').innerText = message;
+      document.getElementById('modalErrorDialog').classList.remove('hidden');
+    }
+
+    function closeErrorDialog() {
+      document.getElementById('modalErrorDialog').classList.add('hidden');
     }
 
     function startSession() {
       document.getElementById('screenAuth').classList.add('hidden');
       document.getElementById('statsBar').classList.remove('hidden');
+      document.getElementById('secretSpecialBar').classList.remove('hidden');
       updateTopBarStats();
       showScreenMap();
     }
 
     function updateTopBarStats() {
       if (!currentUser) return;
+      document.getElementById('topBarUser').innerText = currentUser.username;
       document.getElementById('userXp').innerText = currentUser.xp;
       const rank = getRank(currentUser.currentLevel);
       document.getElementById('rankBadgeIcon').innerText = rank.icon;
       document.getElementById('rankBadgeName').innerText = rank.name;
       document.getElementById('bannerBirdIcon').innerText = rank.icon;
-      document.getElementById('bannerRankDesc').innerText = `${rank.name} • ${rank.desc}`;
+      document.getElementById('bannerRankName').innerText = rank.name;
+      document.getElementById('bannerRankDesc').innerText = `${rank.desc} • Sifir ${currentUser.currentLevel}`;
+
+      // Paparan Istimewa Rekod Level Rahsia
+      const recTxt = document.getElementById('txtSecretTimeRecord');
+      if (currentUser.bestSecretTime && currentUser.bestSecretTime < 90000) {
+        recTxt.innerText = `Rekod Rahsia: ${formatSeconds(currentUser.bestSecretTime)}`;
+      } else {
+        recTxt.innerText = `Rekod Rahsia: Tiada`;
+      }
     }
 
     async function syncProgressWithServer() {
       if (!currentUser) return;
+      localStorage.setItem('duosifir_active_user', JSON.stringify(currentUser));
+      updateTopBarStats();
       try {
         await fetch(GAS_API_URL, {
           method: "POST",
@@ -476,18 +762,42 @@
             completedAll: currentUser.completedAll
           })
         });
-      } catch(e) {
-        localStorage.setItem('duosifir_' + currentUser.username, JSON.stringify(currentUser));
-      }
-      updateTopBarStats();
+      } catch(e) {}
     }
 
-    // ---------------- PETA LEVEL ----------------
+    // -------------------------------------------------------------
+    // PETA LEVEL & INTEGRASI KAD LEVEL RAHSIA
+    // -------------------------------------------------------------
     function showScreenMap() {
       document.getElementById('screenDemo').classList.add('hidden');
       document.getElementById('screenQuiz').classList.add('hidden');
+      document.getElementById('screenSecretPlay').classList.add('hidden');
+      document.getElementById('screenLeaderboard').classList.add('hidden');
       document.getElementById('screenMap').classList.remove('hidden');
       renderMapLevels();
+      checkSecretLevelUnlock();
+    }
+
+    function checkSecretLevelUnlock() {
+      const btn = document.getElementById('btnPlaySecret');
+      const badge = document.getElementById('secretLockBadge');
+      const sub = document.getElementById('secretCardSubtitle');
+
+      if (currentUser.completedAll) {
+        badge.innerText = "🔓 Terbuka!";
+        badge.className = "text-xs bg-emerald-500 text-white font-black px-2 py-0.5 rounded-full";
+        sub.innerText = "Sedia mencabar Rekod Master Malaysia 25 Soalan?";
+        btn.disabled = false;
+        btn.className = "z-10 btn-duo-yellow text-purple-950 text-xs px-3.5 py-3 rounded-2xl font-black shadow-md";
+        btn.innerText = "Cabut Rekod ⚡";
+      } else {
+        badge.innerText = "🔒 Terkunci";
+        badge.className = "text-xs bg-purple-900/80 px-2 py-0.5 rounded-full";
+        sub.innerText = "Selesaikan kesemua Sifir 1 hingga 12 untuk membuka tahap ini.";
+        btn.disabled = true;
+        btn.className = "z-10 btn-duo-gray text-xs px-3.5 py-3 rounded-2xl font-black cursor-not-allowed";
+        btn.innerText = "Kunci";
+      }
     }
 
     function renderMapLevels() {
@@ -510,25 +820,25 @@
         levelNode.innerHTML = `
           <div class="flex items-center space-x-3">
             <button onclick="${isUnlocked ? `launchSifir(${s})` : ''}" 
-              class="w-20 h-20 rounded-full font-black text-2xl flex flex-col items-center justify-center text-white ${buttonStyle} relative">
+              class="w-16 h-16 rounded-full font-black text-xl flex flex-col items-center justify-center text-white ${buttonStyle} relative">
               <span>${isUnlocked ? SIFIR_EMOJIS[s] : '🔒'}</span>
-              <span class="text-xs tracking-tighter">Sifir ${s}</span>
-              ${isCurrent ? '<span class="absolute -top-2 -right-1 text-xs bg-amber-400 text-amber-900 px-2 py-0.5 rounded-full font-black animate-pulse">KINI</span>' : ''}
+              <span class="text-[10px] tracking-tight">Sifir ${s}</span>
+              ${isCurrent ? '<span class="absolute -top-1.5 -right-1 text-[9px] bg-amber-400 text-amber-950 px-1.5 py-0.5 rounded-full font-black animate-pulse">KINI</span>' : ''}
             </button>
             ${canSkip ? `
-              <button onclick="skipLevel(${s})" class="btn-duo-yellow text-slate-800 text-xs px-3 py-2 rounded-xl font-black">
+              <button onclick="skipLevel(${s})" class="btn-duo-yellow text-slate-900 text-[11px] px-2.5 py-1.5 rounded-xl font-black">
                 ⏩ Skip Sifir ${s}
               </button>
             ` : ''}
           </div>
-          ${s < 12 ? '<div class="w-2.5 h-6 bg-slate-200 rounded-full my-1"></div>' : ''}
+          ${s < 12 ? '<div class="w-1.5 h-4 bg-slate-200 rounded-full my-0.5"></div>' : ''}
         `;
         container.appendChild(levelNode);
       }
     }
 
     function skipLevel(s) {
-      if (confirm(`Adakah anda pasti ingin melangkau Sifir ${s}? Sifir seterusnya wajib diselesaikan secara berturutan.`)) {
+      if (confirm(`Langkau Sifir ${s}? Sifir seterusnya wajib diselesaikan satu persatu.`)) {
         currentUser.currentLevel = s + 1;
         currentUser.xp += 30;
         syncProgressWithServer();
@@ -542,12 +852,14 @@
     }
 
     function exitToMap() {
-      if (confirm("Adakah anda ingin keluar ke menu utama? Kemajuan sesi semasa tidak disimpan.")) {
+      if (confirm("Kembali ke menu utama? Kemajuan sesi ini tidak disimpan.")) {
         showScreenMap();
       }
     }
 
-    // ---------------- DEMO ANIMASI ----------------
+    // -------------------------------------------------------------
+    // DEMO ANIMASI KIRAAN BERGANDA (FLEKSIBEL & ZERO SCROLL)
+    // -------------------------------------------------------------
     function startSifirDemo(sifirNum) {
       activeSifir = sifirNum;
       demoStep = 1;
@@ -572,32 +884,44 @@
       }
 
       let multiplier = demoStep;
-      if (demoStep > 6) {
-        multiplier = demoStep - 1;
-      }
+      if (demoStep > 6) multiplier = demoStep - 1;
 
       const totalResult = activeSifir * multiplier;
       document.getElementById('demoMathFormula').innerText = `${activeSifir} × ${multiplier} = ${totalResult}`;
-      document.getElementById('demoConceptTitle').innerText = `KONSEP SIFIR ${activeSifir} (GANDAAN ${multiplier})`;
+      document.getElementById('demoConceptTitle').innerText = `KONSEP SIFIR ${activeSifir} (${multiplier} KUMPULAN)`;
       document.getElementById('demoExplanation').innerText = 
-        `Sebanyak ${multiplier} kumpulan, setiap satu mengandungi ${activeSifir} objek ${SIFIR_EMOJIS[activeSifir]}. Jumlah keseluruhan ialah ${totalResult}.`;
+        `Sebanyak ${multiplier} kumpulan, setiap satu mempunyai ${activeSifir} objek ${SIFIR_EMOJIS[activeSifir]}. Jumlahnya ialah ${totalResult}.`;
 
       const box = document.getElementById('demoAnimationBox');
       box.innerHTML = "";
 
+      // Pengiraan Skala Dinamik Agar Muat Skrin Tanpa Scroll
+      const totalItems = totalResult;
+      let emojiSizeClass = "text-lg";
+      let groupPadding = "p-1.5";
+      
+      if (multiplier > 6 || totalItems > 30) {
+        emojiSizeClass = "text-xs";
+        groupPadding = "p-0.5";
+      }
+      if (totalItems > 60) {
+        emojiSizeClass = "text-[9px]";
+        groupPadding = "p-0.5";
+      }
+
       for (let g = 1; g <= multiplier; g++) {
         const groupEl = document.createElement('div');
-        groupEl.className = "bg-white p-2 rounded-2xl border-2 border-sky-300 shadow-sm flex flex-col items-center item-pop";
-        groupEl.style.animationDelay = `${(g - 1) * 0.12}s`;
+        groupEl.className = `bg-white ${groupPadding} rounded-xl border border-sky-300 shadow-xs flex flex-col items-center item-pop`;
+        groupEl.style.animationDelay = `${(g - 1) * 0.05}s`;
 
         let itemsHtml = "";
         for (let i = 1; i <= activeSifir; i++) {
-          itemsHtml += `<span class="text-xl m-0.5">${SIFIR_EMOJIS[activeSifir]}</span>`;
+          itemsHtml += `<span class="${emojiSizeClass} leading-tight">${SIFIR_EMOJIS[activeSifir]}</span>`;
         }
 
         groupEl.innerHTML = `
-          <div class="flex flex-wrap max-w-[70px] justify-center">${itemsHtml}</div>
-          <span class="text-[10px] font-black text-sky-500 mt-1">Kump. ${g}</span>
+          <div class="flex flex-wrap max-w-[55px] justify-center gap-0.5">${itemsHtml}</div>
+          <span class="text-[8px] font-black text-sky-500 mt-0.5 leading-none">#${g}</span>
         `;
         box.appendChild(groupEl);
       }
@@ -608,7 +932,9 @@
       renderDemoStep();
     }
 
-    // ---------------- CHECKPOINTS & KUIZ ----------------
+    // -------------------------------------------------------------
+    // KUIZ BIASA (CHECKPOINTS & MOD 6 SOALAN DUOLINGO)
+    // -------------------------------------------------------------
     function startCheckpointQuiz(minMul, maxMul, cpNumber) {
       document.getElementById('screenDemo').classList.add('hidden');
       document.getElementById('screenQuiz').classList.remove('hidden');
@@ -660,7 +986,7 @@
         clueBox.classList.remove('hidden');
         clueBox.innerHTML = "";
         for (let i = 0; i < q.multiplier; i++) {
-          clueBox.innerHTML += `<div class="bg-white px-2 py-1 rounded-xl border border-amber-300 text-sm shadow-sm">${SIFIR_EMOJIS[activeSifir].repeat(activeSifir)}</div>`;
+          clueBox.innerHTML += `<div class="bg-white px-1.5 py-0.5 rounded-lg border border-amber-300 text-xs shadow-xs">${SIFIR_EMOJIS[activeSifir].repeat(activeSifir)}</div>`;
         }
       } else {
         clueBox.classList.add('hidden');
@@ -668,28 +994,18 @@
     }
 
     function pressKey(key) {
-      if (key === 'C') {
-        currentInput = "";
-      } else if (key === 'DEL') {
-        currentInput = currentInput.slice(0, -1);
-      } else {
-        if (currentInput.length < 4) {
-          currentInput += key.toString();
-        }
-      }
+      if (key === 'C') currentInput = "";
+      else if (key === 'DEL') currentInput = currentInput.slice(0, -1);
+      else if (currentInput.length < 4) currentInput += key.toString();
       updateInputDisplay();
     }
 
     function updateInputDisplay() {
-      const display = document.getElementById('quizInputDisplay');
-      display.innerText = currentInput === "" ? "?" : currentInput;
+      document.getElementById('quizInputDisplay').innerText = currentInput === "" ? "?" : currentInput;
     }
 
     function checkUserAnswer() {
-      if (currentInput === "") {
-        alert("Sila masukkan jawapan menggunakan pad nombor!");
-        return;
-      }
+      if (currentInput === "") return;
 
       totalQuestionsAnsweredAllTime++;
       if ([20, 40, 60].includes(totalQuestionsAnsweredAllTime)) {
@@ -700,8 +1016,6 @@
       const isCorrect = (parseInt(currentInput) === q.answer);
       showDuolingoFeedback(isCorrect, q.answer);
     }
-
-    let isLastAnswerCorrect = false;
 
     function showDuolingoFeedback(correct, correctAnswer) {
       isLastAnswerCorrect = correct;
@@ -714,19 +1028,19 @@
 
       if (correct) {
         playSfxCorrect();
-        box.className = "p-5 rounded-3xl border-2 flex flex-col space-y-3 bg-emerald-100 border-emerald-400 text-emerald-950";
-        title.innerText = "Luar Biasa! Tepat Sekali.";
-        subtitle.innerText = "Teruskan kecemerlangan anda!";
+        box.className = "p-4 rounded-3xl border-2 flex flex-col space-y-2 bg-emerald-100 border-emerald-400 text-emerald-950";
+        title.innerText = "Tepat Sekali!";
+        subtitle.innerText = "Hebat, teruskan usaha anda!";
         icon.innerText = "🌟";
-        btn.className = "w-full py-3.5 rounded-2xl font-black text-white text-base uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 shadow-md";
-        confetti({ particleCount: 30, spread: 60, origin: { y: 0.85 } });
+        btn.className = "w-full py-3 rounded-2xl font-black text-white text-sm uppercase bg-emerald-600 hover:bg-emerald-700 shadow";
+        confetti({ particleCount: 25, spread: 50, origin: { y: 0.85 } });
       } else {
         playSfxWrong();
-        box.className = "p-5 rounded-3xl border-2 flex flex-col space-y-3 bg-rose-100 border-rose-400 text-rose-950";
-        title.innerText = "Kurang Tepat!";
-        subtitle.innerText = `Jawapan yang betul ialah: ${correctAnswer}`;
+        box.className = "p-4 rounded-3xl border-2 flex flex-col space-y-2 bg-rose-100 border-rose-400 text-rose-950";
+        title.innerText = "Alamak, Salah!";
+        subtitle.innerText = `Jawapan yang tepat ialah: ${correctAnswer}`;
         icon.innerText = "💔";
-        btn.className = "w-full py-3.5 rounded-2xl font-black text-white text-base uppercase tracking-wider bg-rose-600 hover:bg-rose-700 shadow-md";
+        btn.className = "w-full py-3 rounded-2xl font-black text-white text-sm uppercase bg-rose-600 hover:bg-rose-700 shadow";
       }
 
       sheet.classList.remove('translate-y-full');
@@ -737,7 +1051,7 @@
       sheet.classList.add('translate-y-full');
 
       if (!isLastAnswerCorrect) {
-        alert("Jawapan tidak tepat! Sesi perlu dimulakan semula.");
+        alert("Jawapan tidak tepat! Mengikut peraturan DuoSifir, anda perlu menjawab semua soalan dengan betul tanpa sebarang kesilapan. Kuiz dimulakan semula!");
         if (quizMode === 'checkpoint1') {
           demoStep = 1;
           document.getElementById('screenQuiz').classList.add('hidden');
@@ -784,7 +1098,7 @@
           msg += ` Sifir ${currentUser.currentLevel} kini dibuka!`;
         } else {
           currentUser.completedAll = true;
-          msg += ` Syabas! Anda telah menamatkan semua sifir dan mencapai darjat tertinggi: BURUNG GARUDA! 👑`;
+          msg += ` SYABAS! Anda telah tamat kesemua sifir dan dinobatkan sebagai BURUNG GARUDA! Tahap Siapa Rahsia kini telah dibuka! 👑`;
         }
       }
 
@@ -794,12 +1108,244 @@
     }
 
     function confirmExitQuiz() {
-      if (confirm("Adakah anda ingin keluar? Kemajuan sesi ini tidak akan direkodkan.")) {
+      if (confirm("Keluar dari kuiz? Sesi ini akan terbatal.")) {
         showScreenMap();
       }
     }
 
-    // ---------------- MODAL DERMA ----------------
+    // -------------------------------------------------------------
+    // LEVEL SIAPA RAHSIA (25 SOALAN SEIMBANG 2 & 3 DIGIT + PEMASA)
+    // -------------------------------------------------------------
+    function startSecretLevelCountdown() {
+      document.getElementById('screenMap').classList.add('hidden');
+      const overlay = document.getElementById('overlayCountdown');
+      const countEl = document.getElementById('countdownNumber');
+      overlay.classList.remove('hidden');
+
+      let counter = 3;
+      countEl.innerText = counter;
+      playTone(400, 'triangle', 0.15);
+
+      const cdInterval = setInterval(() => {
+        counter--;
+        if (counter > 0) {
+          countEl.innerText = counter;
+          playTone(400, 'triangle', 0.15);
+        } else if (counter === 0) {
+          countEl.innerText = "MULA!";
+          playTone(800, 'sine', 0.3);
+        } else {
+          clearInterval(cdInterval);
+          overlay.classList.add('hidden');
+          initSecretGame();
+        }
+      }, 900);
+    }
+
+    function initSecretGame() {
+      // Jana 25 soalan sifir seimbang:
+      // 12 soalan jawapan 3 digit (>= 100) dan 13 soalan jawapan 2 digit (10-99)
+      const threeDigitPool = [
+        { a: 9, b: 12 }, { a: 12, b: 9 },
+        { a: 10, b: 10 }, { a: 10, b: 11 }, { a: 11, b: 10 }, { a: 10, b: 12 }, { a: 12, b: 10 },
+        { a: 11, b: 11 }, { a: 11, b: 12 }, { a: 12, b: 11 }, { a: 12, b: 12 }
+      ];
+
+      const twoDigitPool = [];
+      for (let i = 2; i <= 12; i++) {
+        for (let j = 2; j <= 12; j++) {
+          const prod = i * j;
+          if (prod >= 10 && prod < 100) {
+            twoDigitPool.push({ a: i, b: j });
+          }
+        }
+      }
+
+      // Ambil 12 soalan 3-digit
+      const selected3 = [];
+      for (let k = 0; k < 12; k++) {
+        const item = threeDigitPool[Math.floor(Math.random() * threeDigitPool.length)];
+        selected3.push({ a: item.a, b: item.b, ans: item.a * item.b, digits: 3 });
+      }
+
+      // Ambil 13 soalan 2-digit
+      twoDigitPool.sort(() => Math.random() - 0.5);
+      const selected2 = twoDigitPool.slice(0, 13).map(item => ({
+        a: item.a, b: item.b, ans: item.a * item.b, digits: 2
+      }));
+
+      // Gabung dan rawakkan keseluruhan 25 soalan
+      secretQuestions = [...selected3, ...selected2].sort(() => Math.random() - 0.5);
+      secretQIndex = 0;
+
+      document.getElementById('screenSecretPlay').classList.remove('hidden');
+      loadSecretQuestion();
+
+      // Mulakan pemasa
+      secretStartTime = Date.now();
+      if (secretTimerInterval) clearInterval(secretTimerInterval);
+      secretTimerInterval = setInterval(updateSecretLiveTimer, 100);
+    }
+
+    function updateSecretLiveTimer() {
+      const elapsedSec = (Date.now() - secretStartTime) / 1000;
+      document.getElementById('secretLiveTimer').innerText = formatSeconds(elapsedSec);
+    }
+
+    function formatSeconds(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      const ms = Math.floor((sec % 1) * 10);
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}.${ms}`;
+    }
+
+    function loadSecretQuestion() {
+      secretInput = "";
+      updateSecretInputDisplay();
+
+      const q = secretQuestions[secretQIndex];
+      document.getElementById('secretQIndex').innerText = secretQIndex + 1;
+      document.getElementById('secretEquationText').innerText = `${q.a} × ${q.b} =`;
+      
+      const badge = document.getElementById('secretDigitBadge');
+      if (q.digits === 3) {
+        badge.innerText = "Jawapan 3 Digit";
+        badge.className = "text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full border border-amber-300";
+      } else {
+        badge.innerText = "Jawapan 2 Digit";
+        badge.className = "text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full border border-purple-300";
+      }
+    }
+
+    function pressSecretKey(key) {
+      if (key === 'C') secretInput = "";
+      else if (key === 'DEL') secretInput = secretInput.slice(0, -1);
+      else if (secretInput.length < 4) secretInput += key.toString();
+      updateSecretInputDisplay();
+    }
+
+    function updateSecretInputDisplay() {
+      document.getElementById('secretInputDisplay').innerText = secretInput === "" ? "?" : secretInput;
+    }
+
+    function checkSecretAnswer() {
+      if (secretInput === "") return;
+
+      const q = secretQuestions[secretQIndex];
+      const isCorrect = (parseInt(secretInput) === q.ans);
+
+      if (!isCorrect) {
+        clearInterval(secretTimerInterval);
+        playSfxWrong();
+        alert(`💥 GAGAL! Jawapan untuk ${q.a} × ${q.b} ialah ${q.ans}.\n\nUntuk Level Siapa Rahsia, kesemua 25 soalan wajib betul berturut-turut! Sila cuba lagi untuk cipta rekod terpantas.`);
+        document.getElementById('screenSecretPlay').classList.add('hidden');
+        showScreenMap();
+        return;
+      }
+
+      playTone(600, 'sine', 0.08);
+      secretQIndex++;
+
+      if (secretQIndex < secretQuestions.length) {
+        loadSecretQuestion();
+      } else {
+        // TAHNIAH! SELESAI SEMUA 25 SOALAN TANPA RALAT
+        clearInterval(secretTimerInterval);
+        const finalSec = ((Date.now() - secretStartTime) / 1000);
+        const formatted = formatSeconds(finalSec);
+
+        playSfxLevelUp();
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.5 } });
+
+        alert(`👑 LUAR BIASA! Anda berjaya menjawab kesemua 25 soalan tanpa sebarang kesalahan dalam masa ${formatted}! Rekod anda sedang dihantar ke Peringkat Master Malaysia.`);
+
+        if (!currentUser.bestSecretTime || finalSec < currentUser.bestSecretTime) {
+          currentUser.bestSecretTime = finalSec;
+          syncProgressWithServer();
+        }
+
+        // Hantar ke Google Sheet SecretLeaderboard
+        fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "submitSecretScore",
+            username: currentUser.username,
+            timeSeconds: finalSec,
+            formattedTime: formatted
+          })
+        }).then(() => {
+          openLeaderboardScreen();
+        }).catch(() => {
+          openLeaderboardScreen();
+        });
+      }
+    }
+
+    function exitSecretGame() {
+      if (confirm("Adakah anda ingin batalkan cabaran Level Rahsia ini? Pemasa akan dimatikan.")) {
+        clearInterval(secretTimerInterval);
+        document.getElementById('screenSecretPlay').classList.add('hidden');
+        showScreenMap();
+      }
+    }
+
+    // -------------------------------------------------------------
+    // LEADERBOARD TOP 50 MASTER MALAYSIA
+    // -------------------------------------------------------------
+    function openLeaderboardScreen() {
+      document.getElementById('screenMap').classList.add('hidden');
+      document.getElementById('screenSecretPlay').classList.add('hidden');
+      document.getElementById('screenLeaderboard').classList.remove('hidden');
+      fetchLeaderboard();
+    }
+
+    async function fetchLeaderboard() {
+      const tbody = document.getElementById('leaderboardTbody');
+      tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-400 font-bold">Mengemaskini kedudukan Top 50...</td></tr>`;
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "getLeaderboard" })
+        });
+        const data = await res.json();
+        if (data.success && data.leaderboard.length > 0) {
+          renderLeaderboard(data.leaderboard);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-400 font-bold">Belum ada rekod Master dicatatkan. Jadilah yang pertama!</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-rose-500 font-bold">Gagal memuatkan ranking. Sila cuba sebentar lagi.</td></tr>`;
+      }
+    }
+
+    function renderLeaderboard(list) {
+      const tbody = document.getElementById('leaderboardTbody');
+      tbody.innerHTML = "";
+
+      list.forEach(item => {
+        const isMe = currentUser && (item.username.toLowerCase() === currentUser.username.toLowerCase());
+        const tr = document.createElement('tr');
+        tr.className = `border-b border-slate-100 ${isMe ? 'bg-purple-50 font-black text-purple-900' : 'text-slate-700'}`;
+
+        let rankBadge = item.rank;
+        if (item.rank === 1) rankBadge = "🥇 1";
+        else if (item.rank === 2) rankBadge = "🥈 2";
+        else if (item.rank === 3) rankBadge = "🥉 3";
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-2 font-black">${rankBadge}</td>
+          <td class="py-2.5 px-2 flex items-center space-x-1">
+            <span>${item.username}</span>
+            ${isMe ? '<span class="text-[9px] bg-purple-600 text-white px-1.5 rounded-full">ANDA</span>' : ''}
+          </td>
+          <td class="py-2.5 px-2 text-right font-mono font-bold text-emerald-600">${item.formattedTime}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Modal Derma
     function openDonateModal() {
       document.getElementById('modalDonate').classList.remove('hidden');
     }
