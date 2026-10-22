@@ -312,14 +312,13 @@
       </div>
     </div>
 
-    <!-- 5. SCREEN: ARENA TOURNAMENT & 25 SIFIR (ALL-IN-ONE THRILL PAGE) -->
+    <!-- 5. SCREEN: ARENA TOURNAMENT & 25 SIFIR -->
     <div id="screenSecretPlay" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
       <div class="shrink-0 space-y-2">
         <div class="bg-gradient-to-br from-slate-900 via-purple-950 to-indigo-950 text-white p-3.5 rounded-3xl border-2 border-purple-500 shadow-2xl flex items-center justify-between">
           <div>
             <span class="text-[9px] font-black tracking-widest text-purple-300 uppercase block">KEDUDUKAN SEMASA</span>
             <div class="flex items-baseline space-x-1.5 mt-0.5">
-              <!-- RANKING BESAR TERPAMPANG JELAS -->
               <span id="tourneyLiveRankBig" class="text-6xl font-black text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.9)] animate-pulse">#1</span>
               <span id="tourneyLiveTotalPlayers" class="text-xs font-bold text-purple-300">/ 1 Peserta</span>
             </div>
@@ -1027,6 +1026,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "checkUser", username })
         });
         const data = await res.json();
@@ -1057,6 +1057,7 @@
         const action = authMode === 'register' ? 'register' : 'login';
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action, username, password })
         });
         const resData = await res.json();
@@ -1106,6 +1107,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "getLeaderboard" })
         });
         const data = await res.json();
@@ -1157,6 +1159,7 @@
       try {
         await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "updateProgress",
             username: currentUser.username,
@@ -1462,7 +1465,7 @@
       sheet.classList.add('translate-y-full');
 
       if (!isLastAnswerCorrect) {
-        alert("Jawapan salah! Kuiz pembelajaran biasa perlu dijawab 100% betul. Kuiz bermula semula.");
+        alert("Jawapan salah! Kuiz pembelajaran biasa perlu dijawab 100% betul. Kuiz dimulakan semula.");
         if (quizMode === 'checkpoint1') {
           demoStep = 1;
           document.getElementById('screenQuiz').classList.add('hidden');
@@ -1720,6 +1723,7 @@
             try {
               await fetch(GAS_API_URL, {
                 method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({
                   action: "submitSecretScore",
                   username: currentUser.username,
@@ -1755,6 +1759,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: isFinished ? "submitTournamentResult" : "updateTournamentLiveProgress",
             tournamentId: currentTournamentId,
@@ -1778,7 +1783,7 @@
       if (tourneyLiveSyncInterval) clearInterval(tourneyLiveSyncInterval);
       tourneyLiveSyncInterval = setInterval(() => {
         sendLiveHeartbeat(false);
-      }, 1500); // Polling pantas 1.5 saat
+      }, 1500);
     }
 
     function exitSecretGame() {
@@ -1876,6 +1881,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "createGroup",
             hostUsername: currentUser.username,
@@ -1904,6 +1910,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "getGroups", hostUsername: currentUser.username })
         });
         const d = await res.json();
@@ -1925,7 +1932,7 @@
       } catch(e) {}
     }
 
-    // JANA TOURNAMENT (PANTAS & ANTI-GAGAL)
+    // JANA TOURNAMENT
     async function handleCreateTournament() {
       const btn = document.getElementById('btnCreateTourneyAction');
       const title = document.getElementById('tourneyTitleInput').value.trim() || "Kejohanan Sifir Pantas";
@@ -1935,6 +1942,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "createTournament", hostUsername: currentUser.username, title })
         });
         const d = await res.json();
@@ -1962,13 +1970,13 @@
       }
     }
 
-    // Polling Kapten (1.2 Saat)
     function startHostTourneyPolling(tId) {
       if (tourneyPollInterval) clearInterval(tourneyPollInterval);
       tourneyPollInterval = setInterval(async () => {
         try {
           const res = await fetch(GAS_API_URL, {
             method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "getTournament", tournamentId: tId })
           });
           const d = await res.json();
@@ -2003,7 +2011,7 @@
             }
           }
         } catch(e) {}
-      }, 1200); // Polling setiap 1.2 saat untuk kemas kini langsung
+      }, 1200);
     }
 
     async function kaptenTriggerStartTournament() {
@@ -2012,6 +2020,7 @@
         try {
           const res = await fetch(GAS_API_URL, {
             method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "startTournament", tournamentId: codeTxt })
           });
           const d = await res.json();
@@ -2027,9 +2036,6 @@
       }
     }
 
-    // -------------------------------------------------------------
-    // ALIRAN PESERTA: LOBI TOURNAMENT (IMBAS QR & MASUK PANTAS)
-    // -------------------------------------------------------------
     function openParticipantLobby(tId) {
       document.getElementById('screenAuth').classList.add('hidden');
       document.getElementById('screenMap').classList.add('hidden');
@@ -2049,6 +2055,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
             action: "joinTournament",
             tournamentId: currentTournamentId,
@@ -2076,6 +2083,7 @@
         try {
           const res = await fetch(GAS_API_URL, {
             method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "getTournament", tournamentId: currentTournamentId })
           });
           const d = await res.json();
@@ -2086,7 +2094,7 @@
             initSecret25Quiz();
           }
         } catch(e) {}
-      }, 1200); // Polling lobi peserta setiap 1.2 saat
+      }, 1200);
     }
 
     function openAdminLoginModal() {
@@ -2103,6 +2111,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "adminLogin", password: pass })
         });
         const d = await res.json();
@@ -2138,6 +2147,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "adminCreateKapten", username, password })
         });
         const d = await res.json();
@@ -2158,6 +2168,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "adminListKapten" })
         });
         const d = await res.json();
@@ -2206,6 +2217,7 @@
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: "getLeaderboard" })
         });
         const d = await res.json();
