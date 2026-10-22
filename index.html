@@ -314,7 +314,6 @@
 
     <!-- 5. SCREEN: ARENA TOURNAMENT & 25 SIFIR (ALL-IN-ONE THRILL PAGE) -->
     <div id="screenSecretPlay" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
-      <!-- HEADER RANKING BESAR & PEMASA LANGSUNG -->
       <div class="shrink-0 space-y-2">
         <div class="bg-gradient-to-br from-slate-900 via-purple-950 to-indigo-950 text-white p-3.5 rounded-3xl border-2 border-purple-500 shadow-2xl flex items-center justify-between">
           <div>
@@ -339,7 +338,6 @@
           </div>
         </div>
 
-        <!-- PAPAN KEDUDUKAN MINI LANGSUNG (LIVE TICKER) -->
         <div id="tourneyLiveMiniTicker" class="bg-purple-950/40 border border-purple-300/40 p-2 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-700">
           <div class="flex items-center space-x-1.5 truncate">
             <span class="text-xs">⚡</span>
@@ -348,7 +346,6 @@
           <button onclick="exitSecretGame()" class="text-rose-500 hover:text-rose-700 font-black text-[11px] shrink-0 ml-2">Batal</button>
         </div>
 
-        <!-- SOALAN SIFIR & RUANG JAWAPAN -->
         <div class="text-center py-1">
           <span id="secretDigitBadge" class="text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 px-2.5 py-0.5 rounded-full border border-purple-300">
             Jawapan 2 Digit
@@ -362,7 +359,6 @@
         </div>
       </div>
 
-      <!-- KEYPAD ATAS SKRIN -->
       <div class="bg-purple-50 p-2.5 rounded-3xl border-2 border-purple-200 shadow-sm mt-auto shrink-0">
         <div class="grid grid-cols-3 gap-1.5 max-w-xs mx-auto">
           <button onclick="pressSecretKey(1)" class="btn-keypad py-3 rounded-2xl text-xl text-slate-700">1</button>
@@ -401,16 +397,15 @@
         <button id="tabKaptenGroup" onclick="switchKaptenTab('group')" class="flex-1 py-1.5 font-black text-xs rounded-xl text-slate-600">Senarai Murid (Max 50)</button>
       </div>
 
-      <!-- TAB TOURNAMENT -->
       <div id="kaptenTabContentTourney" class="flex-1 overflow-y-auto space-y-3 pr-1">
         <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-3xl shadow-sm text-left">
           <h4 class="font-black text-base">Cipta Tournament 25 Sifir</h4>
           <p class="text-xs text-emerald-100 mt-1 leading-relaxed">
-            Peserta imbas Kod QR menggunakan kamera telefon untuk menyertai lobi. Kapten tekan mula serentak!
+            Peserta imbas Kod QR untuk masuk ke lobi. Kapten tekan mula serentak!
           </p>
           <div class="mt-3 flex space-x-2">
             <input type="text" id="tourneyTitleInput" placeholder="Tajuk Cth: Sifir Champ 5 Bakawali" class="flex-1 bg-white text-slate-800 text-xs px-3 py-2 rounded-xl font-bold focus:outline-none">
-            <button onclick="handleCreateTournament()" class="btn-duo-yellow text-slate-950 px-3 py-2 rounded-xl text-xs font-black">
+            <button id="btnCreateTourneyAction" onclick="handleCreateTournament()" class="btn-duo-yellow text-slate-950 px-3 py-2 rounded-xl text-xs font-black">
               + Jana Bilik
             </button>
           </div>
@@ -419,7 +414,10 @@
         <div id="activeTourneyCard" class="hidden bg-white border-2 border-emerald-400 p-4 rounded-3xl shadow-sm text-center space-y-3">
           <div class="flex justify-between items-center text-xs">
             <span id="activeTourneyCode" class="bg-purple-100 text-purple-900 font-mono font-black px-2.5 py-1 rounded-lg">KOD: TRN-000000</span>
-            <span id="activeTourneyStatus" class="bg-amber-100 text-amber-900 font-black px-2.5 py-1 rounded-lg">Menunggu Peserta</span>
+            <span id="activeTourneyStatus" class="bg-amber-100 text-amber-900 font-black px-2.5 py-1 rounded-lg flex items-center space-x-1">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              <span>Menunggu Peserta</span>
+            </span>
           </div>
 
           <h4 id="activeTourneyTitle" class="text-base font-black text-slate-800">Tajuk Kejohanan</h4>
@@ -431,11 +429,14 @@
 
           <div class="text-left bg-slate-50 p-3 rounded-2xl border border-slate-200">
             <div class="flex justify-between items-center mb-1.5">
-              <span class="text-xs font-black text-slate-600">Peserta Bersedia:</span>
+              <span class="text-xs font-black text-slate-600 flex items-center space-x-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Peserta Bersedia:</span>
+              </span>
               <span id="tourneyParticipantCount" class="text-xs font-black text-emerald-600">0 orang</span>
             </div>
-            <div id="tourneyParticipantList" class="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
-              <span class="text-[11px] text-slate-400 italic">Belum ada peserta masuk...</span>
+            <div id="tourneyParticipantList" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1">
+              <span class="text-[11px] text-slate-400 italic">Menunggu peserta imbas kod QR...</span>
             </div>
           </div>
 
@@ -455,7 +456,6 @@
         </div>
       </div>
 
-      <!-- TAB KUMPULAN & XLSX -->
       <div id="kaptenTabContentGroup" class="hidden flex-1 overflow-y-auto space-y-3 pr-1 text-left">
         <div class="bg-white border-2 border-slate-200 p-4 rounded-3xl shadow-sm space-y-3">
           <h4 class="font-black text-sm text-slate-800">Cipta Kumpulan / Kelas (Maksimum 50 Murid)</h4>
@@ -513,14 +513,14 @@
 
         <div id="lobbyJoinForm" class="space-y-3">
           <input type="text" id="lobbyParticipantName" placeholder="Tuliskan Nama Anda" class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-black p-3 rounded-2xl text-center focus:border-purple-500 focus:outline-none">
-          <button onclick="handleParticipantJoinLobby()" class="w-full btn-duo-purple text-white py-3 rounded-2xl font-black text-sm uppercase">
+          <button id="btnJoinLobbyAction" onclick="handleParticipantJoinLobby()" class="w-full btn-duo-purple text-white py-3 rounded-2xl font-black text-sm uppercase">
             Sertai Bilik Lobi
           </button>
         </div>
 
         <div id="lobbyWaitingRoom" class="hidden space-y-3 mt-3">
           <div class="bg-purple-100 text-purple-900 p-3 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 animate-pulse">
-            <span>⏳</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-600 animate-ping"></span>
             <span>Menunggu Kapten Memulakan Perlawanan...</span>
           </div>
           <p class="text-xs font-bold text-slate-500">Kekal di halaman ini. Soalan akan bermula serentak sebaik sahaja Kapten menekan Mula!</p>
@@ -597,7 +597,7 @@
 
   </main>
 
-  <!-- MODAL: LANGGAN PAKEJ KAPTEN SIFIR (RM50 + QR + WHATSAPP @cikguenal) -->
+  <!-- MODAL: LANGGAN PAKEJ KAPTEN SIFIR -->
   <div id="modalUpgradeKapten" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-amber-400 relative max-h-[92vh] overflow-y-auto">
       <button onclick="closeUpgradeKaptenModal()" class="absolute top-3 right-3 text-slate-400 font-black text-lg">✕</button>
@@ -934,7 +934,6 @@
     let currentInput = "";
     let isLastAnswerCorrect = false;
 
-    // STATE KHUSUS TOURNAMENT LIVE & PENALTI
     let secretTimerInterval = null;
     let secretStartTime = 0;
     let secretQuestions = [];
@@ -955,7 +954,7 @@
       const tourneyParam = urlParams.get('tournament');
 
       if (tourneyParam) {
-        currentTournamentId = tourneyParam.toUpperCase();
+        currentTournamentId = tourneyParam.trim().toUpperCase();
         openParticipantLobby(currentTournamentId);
         return;
       }
@@ -1463,7 +1462,7 @@
       sheet.classList.add('translate-y-full');
 
       if (!isLastAnswerCorrect) {
-        alert("Jawapan salah! Kuiz pembelajaran biasa perlu dijawab 100% betul. Kuiz dimulakan semula.");
+        alert("Jawapan salah! Kuiz pembelajaran biasa perlu dijawab 100% betul. Kuiz bermula semula.");
         if (quizMode === 'checkpoint1') {
           demoStep = 1;
           document.getElementById('screenQuiz').classList.add('hidden');
@@ -1580,7 +1579,6 @@
       if (secretTimerInterval) clearInterval(secretTimerInterval);
       secretTimerInterval = setInterval(updateSecretLiveTimer, 100);
 
-      // Mulakan sinkronisasi ranking langsung sekiranya dalam tournament
       if (isTournamentPlay) {
         startLiveTournamentSync();
       }
@@ -1626,7 +1624,6 @@
       document.getElementById('secretInputDisplay').innerText = secretInput === "" ? "?" : secretInput;
     }
 
-    // PENGIRAAN & PENYELARASAN RANKING SECARA LANGSUNG
     function updateTourneyLiveHeader() {
       document.getElementById('tourneyLiveProgressBadge').innerText = `${secretQIndex + 1} / 25`;
       document.getElementById('tourneyLiveMistakesBadge').innerText = `Salah: ${tourneyMistakes}`;
@@ -1642,23 +1639,15 @@
         noteEl.className = "text-[11px] text-rose-800 font-extrabold truncate";
       }
 
-      // KIRA RANKING LANGSUNG WALAU SEORANG:
-      // Sekiranya solo (1 peserta), ranking sentiasa #1 / 1
       if (!isTournamentPlay || currentLiveParticipants.length <= 1) {
         rankBig.innerText = "#1";
         document.getElementById('tourneyLiveTotalPlayers').innerText = "/ 1 Peserta";
         return;
       }
 
-      // Sekiranya ramai peserta:
-      // Susun kedudukan mengikut peraturan:
-      // 1. Peserta 0 salah > Peserta ada salah
-      // 2. Salah paling sedikit
-      // 3. Masa paling pantas
-      const myName = tournamentParticipantName.toLowerCase();
+      const myName = (tournamentParticipantName || "").toLowerCase();
       const myElapsed = (Date.now() - secretStartTime) / 1000;
 
-      // Update rekod diri sendiri dalam senarai live
       let tempBoard = [...currentLiveParticipants];
       const myIdx = tempBoard.findIndex(p => p.name.toLowerCase() === myName);
       const myData = { name: tournamentParticipantName, mistakes: tourneyMistakes, timeSeconds: myElapsed };
@@ -1676,17 +1665,14 @@
       document.getElementById('tourneyLiveTotalPlayers').innerText = `/ ${tempBoard.length} Peserta`;
     }
 
-    // SEMAK JAWAPAN DENGAN PENALTI (TIDAK AKAN BATAL JIKA SALAH)
     async function checkSecretAnswer() {
       if (secretInput === "") return;
       const q = secretQuestions[secretQIndex];
       const isCorrect = (parseInt(secretInput) === q.ans);
 
       if (!isCorrect) {
-        // JAWAPAN SALAH: POTONG MARKAH / TAMBAH PENALTI, TIDAK BATAL SESI!
         tourneyMistakes++;
         playSfxWrong();
-        // Berikan maklum balas visual gegaran ringkas
         document.getElementById('secretInputDisplay').classList.add('text-rose-600', 'animate-ping');
         setTimeout(() => {
           document.getElementById('secretInputDisplay').classList.remove('text-rose-600', 'animate-ping');
@@ -1697,7 +1683,6 @@
 
       secretQIndex++;
 
-      // Hantar kemajuan langsung ke Apps Script jika dalam tournament
       if (isTournamentPlay) {
         sendLiveHeartbeat(false);
       }
@@ -1705,7 +1690,6 @@
       if (secretQIndex < secretQuestions.length) {
         loadSecretQuestion();
       } else {
-        // SELESAI SEMUA 25 SOALAN
         clearInterval(secretTimerInterval);
         if (tourneyLiveSyncInterval) clearInterval(tourneyLiveSyncInterval);
 
@@ -1718,7 +1702,6 @@
         document.getElementById('screenSecretPlay').classList.add('hidden');
 
         if (isTournamentPlay) {
-          // Hantar keputusan rasmi kejohanan
           await sendLiveHeartbeat(true);
           let hasilMsg = `🏁 TOURNAMENT SELESAI!\n\nMasa: ${formatted}\nJumlah Salah: ${tourneyMistakes}\n\n`;
           if (tourneyMistakes === 0) {
@@ -1729,7 +1712,6 @@
           alert(hasilMsg);
           openParticipantLobby(currentTournamentId);
         } else {
-          // Mod Siapa Rahsia Kebangsaan (Wajib 0 salah untuk rekod sah)
           if (tourneyMistakes === 0) {
             if (!currentUser.bestSecretTime || finalSec < currentUser.bestSecretTime) {
               currentUser.bestSecretTime = finalSec;
@@ -1796,7 +1778,7 @@
       if (tourneyLiveSyncInterval) clearInterval(tourneyLiveSyncInterval);
       tourneyLiveSyncInterval = setInterval(() => {
         sendLiveHeartbeat(false);
-      }, 3500);
+      }, 1500); // Polling pantas 1.5 saat
     }
 
     function exitSecretGame() {
@@ -1943,8 +1925,13 @@
       } catch(e) {}
     }
 
+    // JANA TOURNAMENT (PANTAS & ANTI-GAGAL)
     async function handleCreateTournament() {
+      const btn = document.getElementById('btnCreateTourneyAction');
       const title = document.getElementById('tourneyTitleInput').value.trim() || "Kejohanan Sifir Pantas";
+      btn.innerText = "Menjana...";
+      btn.disabled = true;
+
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
@@ -1952,7 +1939,7 @@
         });
         const d = await res.json();
         if (d.success) {
-          const tId = d.tournamentId;
+          const tId = d.tournamentId.toString().trim().toUpperCase();
           document.getElementById('activeTourneyCard').classList.remove('hidden');
           document.getElementById('activeTourneyCode').innerText = "KOD: " + tId;
           document.getElementById('activeTourneyTitle').innerText = title;
@@ -1964,12 +1951,18 @@
           document.getElementById('tourneyQrImage').src = qrSrc;
 
           startHostTourneyPolling(tId);
+        } else {
+          alert("Gagal menjana tournament: " + (d.message || "Ralat pelayan"));
         }
       } catch(e) {
-        alert("Gagal menjana tournament.");
+        alert("Ralat sambungan rangkaian. Sila cuba lagi.");
+      } finally {
+        btn.innerText = "+ Jana Bilik";
+        btn.disabled = false;
       }
     }
 
+    // Polling Kapten (1.2 Saat)
     function startHostTourneyPolling(tId) {
       if (tourneyPollInterval) clearInterval(tourneyPollInterval);
       tourneyPollInterval = setInterval(async () => {
@@ -1979,14 +1972,19 @@
             body: JSON.stringify({ action: "getTournament", tournamentId: tId })
           });
           const d = await res.json();
-          if (d.success) {
+          if (d.success && d.tournament) {
             const t = d.tournament;
             document.getElementById('tourneyParticipantCount').innerText = `${t.participants.length} orang`;
             const listCont = document.getElementById('tourneyParticipantList');
-            listCont.innerHTML = "";
-            t.participants.forEach(p => {
-              listCont.innerHTML += `<span class="bg-purple-100 text-purple-900 px-2 py-0.5 rounded-lg text-xs font-black">${p}</span>`;
-            });
+            
+            if (t.participants.length > 0) {
+              listCont.innerHTML = "";
+              t.participants.forEach(p => {
+                listCont.innerHTML += `<span class="bg-purple-100 text-purple-900 px-2 py-1 rounded-xl text-xs font-black shadow-xs border border-purple-200">👤 ${p}</span>`;
+              });
+            } else {
+              listCont.innerHTML = `<span class="text-[11px] text-slate-400 italic">Menunggu peserta imbas kod QR...</span>`;
+            }
 
             if (t.results && t.results.length > 0) {
               document.getElementById('tourneyLeaderboardSection').classList.remove('hidden');
@@ -1994,10 +1992,10 @@
               tbody.innerHTML = "";
               t.results.forEach((r, idx) => {
                 tbody.innerHTML += `
-                  <tr class="border-b py-1">
-                    <td class="font-black">${idx + 1}</td>
-                    <td class="font-bold text-slate-800">${r.name}</td>
-                    <td class="font-black text-rose-500">${r.mistakes || 0}</td>
+                  <tr class="border-b py-1 text-slate-700">
+                    <td class="font-black text-purple-700">#${idx + 1}</td>
+                    <td class="font-bold">${r.name}</td>
+                    <td class="font-black ${r.mistakes > 0 ? 'text-rose-500' : 'text-emerald-600'}">${r.mistakes || 0}</td>
                     <td class="text-right font-mono font-black text-emerald-600">${r.formattedTime}</td>
                   </tr>
                 `;
@@ -2005,7 +2003,7 @@
             }
           }
         } catch(e) {}
-      }, 3000);
+      }, 1200); // Polling setiap 1.2 saat untuk kemas kini langsung
     }
 
     async function kaptenTriggerStartTournament() {
@@ -2018,14 +2016,20 @@
           });
           const d = await res.json();
           if (d.success) {
-            document.getElementById('activeTourneyStatus').innerText = "Sedang Berlangsung ⚡";
-            document.getElementById('activeTourneyStatus').className = "bg-emerald-100 text-emerald-900 font-black px-2.5 py-1 rounded-lg";
-            alert("Tournament telah bermula!");
+            document.getElementById('activeTourneyStatus').innerHTML = `
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span>Sedang Berlangsung ⚡</span>
+            `;
+            document.getElementById('activeTourneyStatus').className = "bg-emerald-100 text-emerald-900 font-black px-2.5 py-1 rounded-lg flex items-center space-x-1";
+            alert("Tournament telah bermula! Semua peserta kini bersaing menjawab 25 soalan.");
           }
         } catch(e) {}
       }
     }
 
+    // -------------------------------------------------------------
+    // ALIRAN PESERTA: LOBI TOURNAMENT (IMBAS QR & MASUK PANTAS)
+    // -------------------------------------------------------------
     function openParticipantLobby(tId) {
       document.getElementById('screenAuth').classList.add('hidden');
       document.getElementById('screenMap').classList.add('hidden');
@@ -2034,10 +2038,14 @@
     }
 
     async function handleParticipantJoinLobby() {
+      const btn = document.getElementById('btnJoinLobbyAction');
       const name = document.getElementById('lobbyParticipantName').value.trim();
       if (!name) return alert("Sila masukkan nama anda!");
 
+      btn.innerText = "Menyertai...";
+      btn.disabled = true;
       tournamentParticipantName = name;
+
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
@@ -2056,7 +2064,10 @@
           alert(d.message);
         }
       } catch(e) {
-        alert("Ralat menyertai lobi.");
+        alert("Ralat menyertai lobi. Sila pastikan sambungan internet aktif.");
+      } finally {
+        btn.innerText = "Sertai Bilik Lobi";
+        btn.disabled = false;
       }
     }
 
@@ -2075,7 +2086,7 @@
             initSecret25Quiz();
           }
         } catch(e) {}
-      }, 2500);
+      }, 1200); // Polling lobi peserta setiap 1.2 saat
     }
 
     function openAdminLoginModal() {
@@ -2134,7 +2145,7 @@
         if (d.success) {
           document.getElementById('newKaptenUser').value = "";
           document.getElementById('newKaptenPass').value = "";
-          loadAdminAdminList();
+          loadAdminKaptenList();
         }
       } catch(e) {
         alert("Gagal mencipta akaun Kapten.");
