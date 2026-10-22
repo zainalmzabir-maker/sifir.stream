@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DuoSifir - Pengembaraan Matematik</title>
+  <!-- Google Fonts & Tailwind CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    body {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      background-color: #f7f9fa;
+    }
+    .btn-duo-green {
+      background-color: #58cc02;
+      box-shadow: 0 5px 0 #46a302;
+      transition: all 0.1s ease;
+    }
+    .btn-duo-green:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #46a302;
+    }
+    .btn-duo-blue {
+      background-color: #1cb0f6;
+      box-shadow: 0 5px 0 #1899d6;
+      transition: all 0.1s ease;
+    }
+    .btn-duo-blue:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #1899d6;
+    }
+    .btn-duo-gray {
+      background-color: #e5e5e5;
+      box-shadow: 0 5px 0 #afafaf;
+      color: #afafaf;
+    }
+    .btn-duo-gray:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #afafaf;
+    }
+    .btn-duo-yellow {
+      background-color: #ffc800;
+      box-shadow: 0 5px 0 #cca000;
+      transition: all 0.1s ease;
+    }
+    .btn-duo-yellow:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #cca000;
+    }
+    .btn-keypad {
+      background-color: #ffffff;
+      box-shadow: 0 4px 0 #e5e5e5;
+      border: 2px solid #e5e5e5;
+      font-weight: 700;
+      transition: all 0.08s ease;
+    }
+    .btn-keypad:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #e5e5e5;
+    }
+    @keyframes popItem {
+      0% { transform: scale(0); opacity: 0; }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .item-pop {
+      animation: popItem 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border: 3px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
+
+  <!-- TOP BAR -->
+  <header class="bg-white border-b-2 border-slate-200 sticky top-0 z-30 px-4 py-2 flex items-center justify-between max-w-lg mx-auto w-full">
+    <div class="flex items-center space-x-2">
+      <span class="text-2xl">🦉</span>
+      <span class="font-bold text-xl text-green-600 tracking-wide">DuoSifir</span>
+    </div>
+    
+    <div id="statsBar" class="flex items-center space-x-4 text-sm font-bold hidden">
+      <!-- Peringkat Burung -->
+      <div class="flex items-center space-x-1 bg-amber-50 px-2 py-1 rounded-xl border-2 border-amber-200">
+        <span id="rankBadgeIcon">🐣</span>
+        <span id="rankBadgeName" class="text-amber-800 text-xs">Pipit</span>
+      </div>
+      <!-- Mata XP -->
+      <div class="flex items-center space-x-1 text-amber-500">
+        <span>⚡</span>
+        <span id="userXp">0</span>
+      </div>
+      <!-- Butang Derma Tetap -->
+      <button onclick="openDonateModal()" class="text-xs bg-rose-100 text-rose-700 px-2.5 py-1 rounded-xl font-extrabold border-2 border-rose-300 hover:bg-rose-200">
+        💖 Derma
+      </button>
+    </div>
+  </header>
+
+  <!-- KANDUNGAN UTAMA -->
+  <main class="flex-1 max-w-lg mx-auto w-full p-4 flex flex-col justify-center">
+
+    <!-- 1. SCREEN: AUTH (LOG MASUK / DAFTAR) -->
+    <div id="screenAuth" class="glass-card p-6 rounded-3xl shadow-sm text-center">
+      <div class="text-5xl mb-3 animate-bounce">🦉✨</div>
+      <h2 class="text-2xl font-black text-slate-800 mb-1">Selamat Datang ke DuoSifir!</h2>
+      <p class="text-slate-500 text-sm mb-6">Kuasai sifir 1 hingga 12 dan capai martabat Burung Garuda.</p>
+
+      <!-- Toggle Tab -->
+      <div class="flex bg-slate-100 p-1 rounded-2xl mb-5 border-2 border-slate-200">
+        <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-bold text-sm rounded-xl bg-white shadow-sm text-green-600 transition">Log Masuk</button>
+        <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 font-bold text-sm rounded-xl text-slate-500 transition">Daftar Baharu</button>
+      </div>
+
+      <div class="space-y-4 text-left">
+        <div>
+          <label class="text-xs font-black text-slate-500 uppercase tracking-wider">Nama Pengguna</label>
+          <div class="flex mt-1">
+            <input type="text" id="authUsername" class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-2.5 font-bold focus:outline-none focus:border-green-500 text-slate-700" placeholder="Cth: adik_ali">
+            <button id="btnCheckUser" onclick="verifyUsernameAvailability()" class="hidden ml-2 px-3 py-2 text-xs font-bold bg-sky-500 text-white rounded-xl shadow whitespace-nowrap">Semak</button>
+          </div>
+          <p id="userCheckMsg" class="text-xs mt-1 font-semibold hidden"></p>
+        </div>
+
+        <div>
+          <label class="text-xs font-black text-slate-500 uppercase tracking-wider">Kata Laluan</label>
+          <input type="password" id="authPassword" class="w-full mt-1 bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-2.5 font-bold focus:outline-none focus:border-green-500 text-slate-700" placeholder="••••••••">
+        </div>
+
+        <button id="btnAuthSubmit" onclick="handleAuthSubmit()" class="w-full btn-duo-green text-white py-3.5 rounded-2xl font-black text-base uppercase tracking-wider mt-2">
+          Mula Belajar
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. SCREEN: PETA LEVEL (PATH MAP) -->
+    <div id="screenMap" class="hidden flex-col items-center space-y-5 pb-16">
+      <div class="w-full bg-emerald-500 text-white p-4 rounded-3xl shadow-md border-b-4 border-emerald-700 mb-2">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-black tracking-wide uppercase">Peringkat Penguasaan</h3>
+            <p id="bannerRankDesc" class="text-xs text-emerald-100 font-bold">Burung Pipit (Sifir 1 - 2)</p>
+          </div>
+          <div id="bannerBirdIcon" class="text-4xl">🐣</div>
+        </div>
+      </div>
+
+      <!-- Senarai Node Sifir 1 hingga 12 -->
+      <div id="levelsContainer" class="w-full flex flex-col items-center space-y-4"></div>
+    </div>
+
+    <!-- 3. SCREEN: DEMO PEMBELAJARAN & ANIMASI BERGANDA -->
+    <div id="screenDemo" class="hidden flex flex-col justify-between h-full max-w-lg mx-auto w-full">
+      <div class="flex items-center justify-between mb-3">
+        <button onclick="exitToMap()" class="text-slate-400 font-extrabold text-lg hover:text-slate-600">✕</button>
+        <div class="w-2/3 bg-slate-200 h-3.5 rounded-full overflow-hidden border border-slate-300">
+          <div id="demoProgress" class="bg-amber-400 h-full transition-all duration-300" style="width: 10%;"></div>
+        </div>
+        <span id="demoStepIndicator" class="text-xs font-black text-slate-400">1 / 14</span>
+      </div>
+
+      <div class="glass-card p-5 rounded-3xl text-center my-auto shadow-sm">
+        <div id="demoConceptTitle" class="text-sm font-black text-sky-600 uppercase tracking-widest mb-1">Konsep Penggandaan</div>
+        <div id="demoMathFormula" class="text-4xl font-black text-slate-800 mb-4 tracking-tight">1 × 1 = 1</div>
+
+        <!-- Kanvas Animasi Benda Berganda -->
+        <div id="demoAnimationBox" class="min-h-[170px] bg-sky-50 border-2 border-dashed border-sky-200 rounded-2xl p-3 flex flex-wrap items-center justify-center gap-3 mb-3 transition"></div>
+
+        <p id="demoExplanation" class="text-sm font-bold text-slate-600 px-2 leading-relaxed">
+          1 benda didarabkan sebanyak 1 kali.
+        </p>
+      </div>
+
+      <div class="pt-4">
+        <button id="btnDemoNext" onclick="nextDemoStep()" class="w-full btn-duo-green text-white py-4 rounded-2xl font-black text-lg uppercase tracking-wider">
+          Faham, Teruskan! ➔
+        </button>
+      </div>
+    </div>
+
+    <!-- 4. SCREEN: KUIZ & UJIAN CHECKPOINT -->
+    <div id="screenQuiz" class="hidden flex flex-col justify-between h-full max-w-lg mx-auto w-full">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <button onclick="confirmExitQuiz()" class="text-slate-400 font-extrabold text-lg">✕</button>
+          <div class="w-3/4 bg-slate-200 h-4 rounded-full overflow-hidden border border-slate-300">
+            <div id="quizProgressBar" class="bg-green-500 h-full transition-all duration-300" style="width: 0%;"></div>
+          </div>
+          <span id="quizQuestionCount" class="text-xs font-black text-slate-500">1/6</span>
+        </div>
+
+        <div class="text-center mt-2 mb-4">
+          <h4 id="quizPromptTitle" class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Tuliskan jawapan yang betul</h4>
+          
+          <div id="quizVisualClue" class="hidden min-h-[90px] bg-amber-50 border-2 border-amber-200 rounded-2xl p-2 mb-3 flex flex-wrap items-center justify-center gap-2"></div>
+
+          <div class="flex items-center justify-center space-x-3 text-3xl font-black text-slate-800">
+            <span id="quizEquationText">1 × 4 =</span>
+            <div id="quizAnswerSlot" class="min-w-[70px] h-14 bg-white border-b-4 border-2 border-sky-400 rounded-2xl flex items-center justify-center text-3xl text-sky-600 font-black px-2 shadow-inner">
+              <span id="quizInputDisplay">?</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KEYPAD ATAS SKRIN -->
+      <div class="bg-slate-100 p-3 rounded-3xl border-2 border-slate-200 shadow-sm mt-auto">
+        <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+          <button onclick="pressKey(1)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">1</button>
+          <button onclick="pressKey(2)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">2</button>
+          <button onclick="pressKey(3)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">3</button>
+          
+          <button onclick="pressKey(4)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">4</button>
+          <button onclick="pressKey(5)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">5</button>
+          <button onclick="pressKey(6)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">6</button>
+          
+          <button onclick="pressKey(7)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">7</button>
+          <button onclick="pressKey(8)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">8</button>
+          <button onclick="pressKey(9)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">9</button>
+          
+          <button onclick="pressKey('C')" class="btn-keypad py-3.5 rounded-2xl text-base text-rose-500 font-black">C</button>
+          <button onclick="pressKey(0)" class="btn-keypad py-3.5 rounded-2xl text-xl text-slate-700">0</button>
+          <button onclick="pressKey('DEL')" class="btn-keypad py-3.5 rounded-2xl text-lg text-slate-600">⌫</button>
+        </div>
+
+        <button id="btnSubmitAnswer" onclick="checkUserAnswer()" class="w-full mt-3 btn-duo-green text-white py-3.5 rounded-2xl font-black text-lg uppercase tracking-wider">
+          Semak Jawapan
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL MAKLUM BALAS (BETUL / SALAH) -->
+  <div id="feedbackSheet" class="fixed inset-x-0 bottom-0 p-4 transform translate-y-full transition-transform duration-300 z-50 max-w-lg mx-auto">
+    <div id="feedbackBox" class="p-5 rounded-3xl border-2 flex flex-col space-y-3">
+      <div class="flex items-center space-x-3">
+        <span id="feedbackIcon" class="text-3xl">🎉</span>
+        <div>
+          <h4 id="feedbackTitle" class="text-xl font-black">Hebat!</h4>
+          <p id="feedbackSubtitle" class="text-xs font-bold"></p>
+        </div>
+      </div>
+      <button id="btnFeedbackContinue" onclick="proceedAfterFeedback()" class="w-full py-3.5 rounded-2xl font-black text-white text-base uppercase tracking-wider shadow-md">
+        Teruskan
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL DERMA DEVELOPER (DuitNow QR - znal.png) -->
+  <div id="modalDonate" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border-4 border-pink-400 relative">
+      <button onclick="closeDonateModal()" class="absolute top-4 right-4 text-slate-400 font-black text-xl hover:text-slate-700">✕</button>
+      
+      <div class="text-4xl mb-2">🎁💖</div>
+      <h3 class="text-xl font-black text-slate-800">Sumbangan Developer</h3>
+      <p class="text-xs font-bold text-slate-500 mb-4">
+        Terima kasih kerana menyokong inisiatif pendidikan percuma ini. Sumbangan anda membantu menyelenggara sistem ini.
+      </p>
+
+      <div class="bg-pink-50 p-3 rounded-2xl border-2 border-pink-200 inline-block mb-3">
+        <img src="znal.png" alt="DuitNow QR Developer (znal)" class="w-56 h-auto mx-auto rounded-xl shadow-sm object-contain" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DuitNow-Znal';">
+      </div>
+
+      <p class="text-xs font-extrabold text-pink-600 mb-4">DuitNow QR rasmi (znal)</p>
+
+      <button onclick="closeDonateModal()" class="w-full btn-duo-green text-white py-3 rounded-2xl font-black text-sm uppercase">
+        Sambung Belajar 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- LOGIK JAVASCRIPT & INTEGRASI GAS -->
+  <script>
+    // URL Web App Google Apps Script
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzWOWCsANwfbWRU4ElL20tfwYHFYHsJYNF1913xSsVZgZvrv8aKD9dVWyhDHjcQQZnh/exec";
+
+    // Audio FX sintesis (Web Audio API)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, type, duration, delay = 0) {
+      setTimeout(() => {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch(e) {}
+      }, delay);
+    }
+    function playSfxCorrect() {
+      playTone(523.25, 'sine', 0.12, 0);
+      playTone(659.25, 'sine', 0.12, 100);
+      playTone(783.99, 'sine', 0.25, 200);
+    }
+    function playSfxWrong() {
+      playTone(250, 'sawtooth', 0.18, 0);
+      playTone(180, 'sawtooth', 0.28, 120);
+    }
+    function playSfxLevelUp() {
+      [440, 554, 659, 880].forEach((f, i) => playTone(f, 'triangle', 0.2, i * 80));
+    }
+
+    // Keadaan Pengguna & Peringkat Burung
+    let currentUser = null;
+    let authMode = 'login';
+    let isUserVerified = false;
+    let totalQuestionsAnsweredAllTime = 0;
+
+    const BIRD_RANKS = [
+      { maxLevel: 2, name: "Burung Pipit", icon: "🐣", desc: "Permulaan yang ceria" },
+      { maxLevel: 4, name: "Burung Merpati", icon: "🕊️", desc: "Mula terbang laju" },
+      { maxLevel: 6, name: "Burung Tekukur", icon: "🦜", desc: "Ingatan semakin mantap" },
+      { maxLevel: 8, name: "Burung Hantu", icon: "🦉", desc: "Pintar dan berfokus" },
+      { maxLevel: 10, name: "Burung Rajawali", icon: "🦅", desc: "Pantas menembusi sifir" },
+      { maxLevel: 11, name: "Burung Helang", icon: "🪶", desc: "Ketajaman minda tertinggi" },
+      { maxLevel: 12, name: "Burung Garuda", icon: "👑🔥", desc: "Penguasa Agung Seluruh Sifir!" }
+    ];
+
+    function getRank(level) {
+      for (const r of BIRD_RANKS) {
+        if (level <= r.maxLevel) return r;
+      }
+      return BIRD_RANKS[BIRD_RANKS.length - 1];
+    }
+
+    let activeSifir = 1;
+    let demoStep = 1;
+    let quizMode = 'main';
+    let currentQuizIndex = 0;
+    let quizQuestions = [];
+    let currentInput = "";
+    const SIFIR_EMOJIS = ["", "🍎", "⭐", "🚗", "🍭", "⚽", "🐱", "🚀", "🍕", "🌸", "💎", "🍩", "⚡"];
+
+    // ---------------- AUTHENTICATION ----------------
+    function switchAuthTab(mode) {
+      authMode = mode;
+      const tabLogin = document.getElementById('tabLogin');
+      const tabRegister = document.getElementById('tabRegister');
+      const btnCheck = document.getElementById('btnCheckUser');
+      const btnSubmit = document.getElementById('btnAuthSubmit');
+      const msg = document.getElementById('userCheckMsg');
+      msg.classList.add('hidden');
+
+      if (mode === 'login') {
+        tabLogin.className = "flex-1 py-2 font-bold text-sm rounded-xl bg-white shadow-sm text-green-600 transition";
+        tabRegister.className = "flex-1 py-2 font-bold text-sm rounded-xl text-slate-500 transition";
+        btnCheck.classList.add('hidden');
+        btnSubmit.innerText = "Log Masuk";
+      } else {
+        tabRegister.className = "flex-1 py-2 font-bold text-sm rounded-xl bg-white shadow-sm text-green-600 transition";
+        tabLogin.className = "flex-1 py-2 font-bold text-sm rounded-xl text-slate-500 transition";
+        btnCheck.classList.remove('hidden');
+        btnSubmit.innerText = "Daftar & Mula";
+      }
+    }
+
+    async function verifyUsernameAvailability() {
+      const username = document.getElementById('authUsername').value.trim();
+      const msg = document.getElementById('userCheckMsg');
+      if (!username) {
+        alert("Sila masukkan nama pengguna!");
+        return;
+      }
+      msg.innerText = "Menyemak pangkalan data...";
+      msg.className = "text-xs mt-1 font-semibold text-slate-500";
+      msg.classList.remove('hidden');
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "checkUser", username })
+        });
+        const data = await res.json();
+        if (data.exists) {
+          msg.innerText = "❌ Nama pengguna sudah wujud, sila pilih nama lain.";
+          msg.className = "text-xs mt-1 font-semibold text-rose-500";
+          isUserVerified = false;
+        } else {
+          msg.innerText = "✅ Nama pengguna boleh didaftarkan!";
+          msg.className = "text-xs mt-1 font-semibold text-emerald-600";
+          isUserVerified = true;
+        }
+      } catch (err) {
+        msg.innerText = "✅ Diterima (mod sandaran)";
+        msg.className = "text-xs mt-1 font-semibold text-emerald-600";
+        isUserVerified = true;
+      }
+    }
+
+    async function handleAuthSubmit() {
+      const username = document.getElementById('authUsername').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+
+      if (!username || !password) {
+        alert("Sila lengkapkan nama pengguna dan kata laluan!");
+        return;
+      }
+
+      if (authMode === 'register' && !isUserVerified) {
+        alert("Sila klik butang 'Semak' terlebih dahulu bagi mengesahkan nama pengguna.");
+        return;
+      }
+
+      try {
+        const action = authMode === 'register' ? 'register' : 'login';
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action, username, password })
+        });
+        const resData = await res.json();
+        if (resData.success) {
+          currentUser = resData.user;
+          startSession();
+        } else {
+          alert(resData.message || "Gagal log masuk atau pendaftaran.");
+        }
+      } catch (err) {
+        const localData = JSON.parse(localStorage.getItem('duosifir_' + username) || 'null');
+        if (authMode === 'login') {
+          if (localData && localData.password === password) {
+            currentUser = localData;
+            startSession();
+          } else {
+            alert("Nama pengguna atau kata laluan tidak sah.");
+          }
+        } else {
+          currentUser = { username, password, currentLevel: 1, xp: 0, completedAll: false };
+          localStorage.setItem('duosifir_' + username, JSON.stringify(currentUser));
+          startSession();
+        }
+      }
+    }
+
+    function startSession() {
+      document.getElementById('screenAuth').classList.add('hidden');
+      document.getElementById('statsBar').classList.remove('hidden');
+      updateTopBarStats();
+      showScreenMap();
+    }
+
+    function updateTopBarStats() {
+      if (!currentUser) return;
+      document.getElementById('userXp').innerText = currentUser.xp;
+      const rank = getRank(currentUser.currentLevel);
+      document.getElementById('rankBadgeIcon').innerText = rank.icon;
+      document.getElementById('rankBadgeName').innerText = rank.name;
+      document.getElementById('bannerBirdIcon').innerText = rank.icon;
+      document.getElementById('bannerRankDesc').innerText = `${rank.name} • ${rank.desc}`;
+    }
+
+    async function syncProgressWithServer() {
+      if (!currentUser) return;
+      try {
+        await fetch(GAS_API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "updateProgress",
+            username: currentUser.username,
+            currentLevel: currentUser.currentLevel,
+            xp: currentUser.xp,
+            completedAll: currentUser.completedAll
+          })
+        });
+      } catch(e) {
+        localStorage.setItem('duosifir_' + currentUser.username, JSON.stringify(currentUser));
+      }
+      updateTopBarStats();
+    }
+
+    // ---------------- PETA LEVEL ----------------
+    function showScreenMap() {
+      document.getElementById('screenDemo').classList.add('hidden');
+      document.getElementById('screenQuiz').classList.add('hidden');
+      document.getElementById('screenMap').classList.remove('hidden');
+      renderMapLevels();
+    }
+
+    function renderMapLevels() {
+      const container = document.getElementById('levelsContainer');
+      container.innerHTML = "";
+
+      for (let s = 1; s <= 12; s++) {
+        const isCurrent = (s === currentUser.currentLevel);
+        const isUnlocked = (s <= currentUser.currentLevel) || currentUser.completedAll;
+        const canSkip = (s === 1 || s === 2) && (s === currentUser.currentLevel) && !currentUser.completedAll;
+
+        const levelNode = document.createElement('div');
+        levelNode.className = "flex flex-col items-center w-full";
+
+        let buttonStyle = "btn-duo-gray cursor-not-allowed";
+        if (isUnlocked) {
+          buttonStyle = isCurrent ? "btn-duo-green" : "btn-duo-blue";
+        }
+
+        levelNode.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <button onclick="${isUnlocked ? `launchSifir(${s})` : ''}" 
+              class="w-20 h-20 rounded-full font-black text-2xl flex flex-col items-center justify-center text-white ${buttonStyle} relative">
+              <span>${isUnlocked ? SIFIR_EMOJIS[s] : '🔒'}</span>
+              <span class="text-xs tracking-tighter">Sifir ${s}</span>
+              ${isCurrent ? '<span class="absolute -top-2 -right-1 text-xs bg-amber-400 text-amber-900 px-2 py-0.5 rounded-full font-black animate-pulse">KINI</span>' : ''}
+            </button>
+            ${canSkip ? `
+              <button onclick="skipLevel(${s})" class="btn-duo-yellow text-slate-800 text-xs px-3 py-2 rounded-xl font-black">
+                ⏩ Skip Sifir ${s}
+              </button>
+            ` : ''}
+          </div>
+          ${s < 12 ? '<div class="w-2.5 h-6 bg-slate-200 rounded-full my-1"></div>' : ''}
+        `;
+        container.appendChild(levelNode);
+      }
+    }
+
+    function skipLevel(s) {
+      if (confirm(`Adakah anda pasti ingin melangkau Sifir ${s}? Sifir seterusnya wajib diselesaikan secara berturutan.`)) {
+        currentUser.currentLevel = s + 1;
+        currentUser.xp += 30;
+        syncProgressWithServer();
+        renderMapLevels();
+      }
+    }
+
+    function launchSifir(sifirNum) {
+      activeSifir = sifirNum;
+      startSifirDemo(sifirNum);
+    }
+
+    function exitToMap() {
+      if (confirm("Adakah anda ingin keluar ke menu utama? Kemajuan sesi semasa tidak disimpan.")) {
+        showScreenMap();
+      }
+    }
+
+    // ---------------- DEMO ANIMASI ----------------
+    function startSifirDemo(sifirNum) {
+      activeSifir = sifirNum;
+      demoStep = 1;
+      document.getElementById('screenMap').classList.add('hidden');
+      document.getElementById('screenQuiz').classList.add('hidden');
+      document.getElementById('screenDemo').classList.remove('hidden');
+      renderDemoStep();
+    }
+
+    function renderDemoStep() {
+      const progressPct = Math.round((demoStep / 14) * 100);
+      document.getElementById('demoProgress').style.width = progressPct + "%";
+      document.getElementById('demoStepIndicator').innerText = `${demoStep} / 14`;
+
+      if (demoStep === 6) {
+        startCheckpointQuiz(1, 5, 1);
+        return;
+      }
+      if (demoStep === 14) {
+        startCheckpointQuiz(6, 12, 2);
+        return;
+      }
+
+      let multiplier = demoStep;
+      if (demoStep > 6) {
+        multiplier = demoStep - 1;
+      }
+
+      const totalResult = activeSifir * multiplier;
+      document.getElementById('demoMathFormula').innerText = `${activeSifir} × ${multiplier} = ${totalResult}`;
+      document.getElementById('demoConceptTitle').innerText = `KONSEP SIFIR ${activeSifir} (GANDAAN ${multiplier})`;
+      document.getElementById('demoExplanation').innerText = 
+        `Sebanyak ${multiplier} kumpulan, setiap satu mengandungi ${activeSifir} objek ${SIFIR_EMOJIS[activeSifir]}. Jumlah keseluruhan ialah ${totalResult}.`;
+
+      const box = document.getElementById('demoAnimationBox');
+      box.innerHTML = "";
+
+      for (let g = 1; g <= multiplier; g++) {
+        const groupEl = document.createElement('div');
+        groupEl.className = "bg-white p-2 rounded-2xl border-2 border-sky-300 shadow-sm flex flex-col items-center item-pop";
+        groupEl.style.animationDelay = `${(g - 1) * 0.12}s`;
+
+        let itemsHtml = "";
+        for (let i = 1; i <= activeSifir; i++) {
+          itemsHtml += `<span class="text-xl m-0.5">${SIFIR_EMOJIS[activeSifir]}</span>`;
+        }
+
+        groupEl.innerHTML = `
+          <div class="flex flex-wrap max-w-[70px] justify-center">${itemsHtml}</div>
+          <span class="text-[10px] font-black text-sky-500 mt-1">Kump. ${g}</span>
+        `;
+        box.appendChild(groupEl);
+      }
+    }
+
+    function nextDemoStep() {
+      demoStep++;
+      renderDemoStep();
+    }
+
+    // ---------------- CHECKPOINTS & KUIZ ----------------
+    function startCheckpointQuiz(minMul, maxMul, cpNumber) {
+      document.getElementById('screenDemo').classList.add('hidden');
+      document.getElementById('screenQuiz').classList.remove('hidden');
+      quizMode = cpNumber === 1 ? 'checkpoint1' : 'checkpoint2';
+      
+      const randMul = Math.floor(Math.random() * (maxMul - minMul + 1)) + minMul;
+      quizQuestions = [{
+        multiplier: randMul,
+        answer: activeSifir * randMul,
+        isCheckpoint: true
+      }];
+      currentQuizIndex = 0;
+      loadQuizQuestion();
+    }
+
+    function startFullGameQuiz() {
+      document.getElementById('screenDemo').classList.add('hidden');
+      document.getElementById('screenQuiz').classList.remove('hidden');
+      quizMode = 'main';
+      currentQuizIndex = 0;
+
+      const multipliersPool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+      multipliersPool.sort(() => Math.random() - 0.5);
+      const selected = multipliersPool.slice(0, 6);
+
+      quizQuestions = selected.map(m => ({
+        multiplier: m,
+        answer: activeSifir * m,
+        isCheckpoint: false
+      }));
+
+      loadQuizQuestion();
+    }
+
+    function loadQuizQuestion() {
+      currentInput = "";
+      updateInputDisplay();
+      
+      const q = quizQuestions[currentQuizIndex];
+      const totalQ = quizQuestions.length;
+      
+      const pct = Math.round((currentQuizIndex / totalQ) * 100);
+      document.getElementById('quizProgressBar').style.width = pct + "%";
+      document.getElementById('quizQuestionCount').innerText = `${currentQuizIndex + 1} / ${totalQ}`;
+      document.getElementById('quizEquationText').innerText = `${activeSifir} × ${q.multiplier} =`;
+
+      const clueBox = document.getElementById('quizVisualClue');
+      if (q.isCheckpoint) {
+        clueBox.classList.remove('hidden');
+        clueBox.innerHTML = "";
+        for (let i = 0; i < q.multiplier; i++) {
+          clueBox.innerHTML += `<div class="bg-white px-2 py-1 rounded-xl border border-amber-300 text-sm shadow-sm">${SIFIR_EMOJIS[activeSifir].repeat(activeSifir)}</div>`;
+        }
+      } else {
+        clueBox.classList.add('hidden');
+      }
+    }
+
+    function pressKey(key) {
+      if (key === 'C') {
+        currentInput = "";
+      } else if (key === 'DEL') {
+        currentInput = currentInput.slice(0, -1);
+      } else {
+        if (currentInput.length < 4) {
+          currentInput += key.toString();
+        }
+      }
+      updateInputDisplay();
+    }
+
+    function updateInputDisplay() {
+      const display = document.getElementById('quizInputDisplay');
+      display.innerText = currentInput === "" ? "?" : currentInput;
+    }
+
+    function checkUserAnswer() {
+      if (currentInput === "") {
+        alert("Sila masukkan jawapan menggunakan pad nombor!");
+        return;
+      }
+
+      totalQuestionsAnsweredAllTime++;
+      if ([20, 40, 60].includes(totalQuestionsAnsweredAllTime)) {
+        openDonateModal();
+      }
+
+      const q = quizQuestions[currentQuizIndex];
+      const isCorrect = (parseInt(currentInput) === q.answer);
+      showDuolingoFeedback(isCorrect, q.answer);
+    }
+
+    let isLastAnswerCorrect = false;
+
+    function showDuolingoFeedback(correct, correctAnswer) {
+      isLastAnswerCorrect = correct;
+      const sheet = document.getElementById('feedbackSheet');
+      const box = document.getElementById('feedbackBox');
+      const title = document.getElementById('feedbackTitle');
+      const subtitle = document.getElementById('feedbackSubtitle');
+      const icon = document.getElementById('feedbackIcon');
+      const btn = document.getElementById('btnFeedbackContinue');
+
+      if (correct) {
+        playSfxCorrect();
+        box.className = "p-5 rounded-3xl border-2 flex flex-col space-y-3 bg-emerald-100 border-emerald-400 text-emerald-950";
+        title.innerText = "Luar Biasa! Tepat Sekali.";
+        subtitle.innerText = "Teruskan kecemerlangan anda!";
+        icon.innerText = "🌟";
+        btn.className = "w-full py-3.5 rounded-2xl font-black text-white text-base uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 shadow-md";
+        confetti({ particleCount: 30, spread: 60, origin: { y: 0.85 } });
+      } else {
+        playSfxWrong();
+        box.className = "p-5 rounded-3xl border-2 flex flex-col space-y-3 bg-rose-100 border-rose-400 text-rose-950";
+        title.innerText = "Kurang Tepat!";
+        subtitle.innerText = `Jawapan yang betul ialah: ${correctAnswer}`;
+        icon.innerText = "💔";
+        btn.className = "w-full py-3.5 rounded-2xl font-black text-white text-base uppercase tracking-wider bg-rose-600 hover:bg-rose-700 shadow-md";
+      }
+
+      sheet.classList.remove('translate-y-full');
+    }
+
+    function proceedAfterFeedback() {
+      const sheet = document.getElementById('feedbackSheet');
+      sheet.classList.add('translate-y-full');
+
+      if (!isLastAnswerCorrect) {
+        alert("Jawapan tidak tepat! Sesi perlu dimulakan semula.");
+        if (quizMode === 'checkpoint1') {
+          demoStep = 1;
+          document.getElementById('screenQuiz').classList.add('hidden');
+          document.getElementById('screenDemo').classList.remove('hidden');
+          renderDemoStep();
+        } else if (quizMode === 'checkpoint2') {
+          demoStep = 7;
+          document.getElementById('screenQuiz').classList.add('hidden');
+          document.getElementById('screenDemo').classList.remove('hidden');
+          renderDemoStep();
+        } else {
+          startFullGameQuiz();
+        }
+        return;
+      }
+
+      if (quizMode === 'checkpoint1') {
+        demoStep = 7;
+        document.getElementById('screenQuiz').classList.add('hidden');
+        document.getElementById('screenDemo').classList.remove('hidden');
+        renderDemoStep();
+      } else if (quizMode === 'checkpoint2') {
+        startFullGameQuiz();
+      } else {
+        currentQuizIndex++;
+        if (currentQuizIndex < quizQuestions.length) {
+          loadQuizQuestion();
+        } else {
+          handleLevelCompleted();
+        }
+      }
+    }
+
+    function handleLevelCompleted() {
+      playSfxLevelUp();
+      confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+
+      currentUser.xp += 60;
+      let msg = `Tahniah! Anda telah menguasai Sifir ${activeSifir}!`;
+
+      if (activeSifir === currentUser.currentLevel) {
+        if (currentUser.currentLevel < 12) {
+          currentUser.currentLevel++;
+          msg += ` Sifir ${currentUser.currentLevel} kini dibuka!`;
+        } else {
+          currentUser.completedAll = true;
+          msg += ` Syabas! Anda telah menamatkan semua sifir dan mencapai darjat tertinggi: BURUNG GARUDA! 👑`;
+        }
+      }
+
+      syncProgressWithServer();
+      alert(msg);
+      showScreenMap();
+    }
+
+    function confirmExitQuiz() {
+      if (confirm("Adakah anda ingin keluar? Kemajuan sesi ini tidak akan direkodkan.")) {
+        showScreenMap();
+      }
+    }
+
+    // ---------------- MODAL DERMA ----------------
+    function openDonateModal() {
+      document.getElementById('modalDonate').classList.remove('hidden');
+    }
+    function closeDonateModal() {
+      document.getElementById('modalDonate').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
