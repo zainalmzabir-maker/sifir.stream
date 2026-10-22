@@ -97,6 +97,10 @@
       background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%);
       box-shadow: 0 0 14px rgba(245, 158, 11, 0.7);
     }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col justify-between">
@@ -515,6 +519,9 @@
           <button id="btnJoinLobbyAction" onclick="handleParticipantJoinLobby()" class="w-full btn-duo-purple text-white py-3 rounded-2xl font-black text-sm uppercase">
             Sertai Bilik Lobi
           </button>
+          <button onclick="exitParticipantLobby()" class="w-full text-slate-500 hover:text-slate-700 font-bold text-xs py-2">
+            ← Batal & Kembali ke Menu Utama
+          </button>
         </div>
 
         <div id="lobbyWaitingRoom" class="hidden space-y-3 mt-3">
@@ -523,6 +530,9 @@
             <span>Menunggu Kapten Memulakan Perlawanan...</span>
           </div>
           <p class="text-xs font-bold text-slate-500">Kekal di halaman ini. Soalan akan bermula serentak sebaik sahaja Kapten menekan Mula!</p>
+          <button onclick="exitParticipantLobby()" class="text-rose-500 hover:text-rose-700 font-bold text-xs pt-1">
+            ✕ Batalkan Penyertaan
+          </button>
         </div>
       </div>
     </div>
@@ -846,23 +856,38 @@
       window.open(waUrl, "_blank");
     }
 
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx && AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
     function playTone(freq, type, duration, delay = 0) {
       setTimeout(() => {
         try {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
           osc.type = type;
-          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
           osc.connect(gain);
-          gain.connect(audioCtx.destination);
+          gain.connect(ctx.destination);
           osc.start();
-          osc.stop(audioCtx.currentTime + duration);
+          osc.stop(ctx.currentTime + duration);
         } catch(e) {}
       }, delay);
     }
+
     function playSfxCorrect() {
       playTone(523.25, 'sine', 0.1, 0);
       playTone(659.25, 'sine', 0.1, 80);
@@ -919,6 +944,7 @@
       return BIRD_RANKS[BIRD_RANKS.length - 1];
     }
 
+    // PEMBOLEH UBAH GLOBAL APLIKASI
     let currentUser = null;
     let userNationalRank = null;
     let authMode = 'login';
@@ -945,6 +971,9 @@
     let tourneyLiveSyncInterval = null;
     let currentLiveParticipants = [];
 
+    // PEMBOLEH UBAH PEMASA DIISYTIHARKAN
+    let tourneyPollInterval = null;
+    let participantWaitInterval = null;
     let badgeAnimInterval = null;
     let confettiRainInterval = null;
 
@@ -969,8 +998,18 @@
       }
     });
 
+    function clearAllAppIntervals() {
+      if (secretTimerInterval) { clearInterval(secretTimerInterval); secretTimerInterval = null; }
+      if (tourneyLiveSyncInterval) { clearInterval(tourneyLiveSyncInterval); tourneyLiveSyncInterval = null; }
+      if (tourneyPollInterval) { clearInterval(tourneyPollInterval); tourneyPollInterval = null; }
+      if (participantWaitInterval) { clearInterval(participantWaitInterval); participantWaitInterval = null; }
+      if (badgeAnimInterval) { clearInterval(badgeAnimInterval); badgeAnimInterval = null; }
+      if (confettiRainInterval) { clearInterval(confettiRainInterval); confettiRainInterval = null; }
+    }
+
     function logoutUser() {
       if (confirm("Adakah anda pasti ingin log keluar?")) {
+        clearAllAppIntervals();
         localStorage.removeItem('sifirstream_active_user');
         currentUser = null;
         userNationalRank = null;
@@ -1208,13 +1247,14 @@
     }
 
     function dismissBadgeCelebration() {
-      if (badgeAnimInterval) clearInterval(badgeAnimInterval);
-      if (confettiRainInterval) clearInterval(confettiRainInterval);
+      if (badgeAnimInterval) { clearInterval(badgeAnimInterval); badgeAnimInterval = null; }
+      if (confettiRainInterval) { clearInterval(confettiRainInterval); confettiRainInterval = null; }
       document.getElementById('modalBadgeCelebration').classList.add('hidden');
       updateTopBarStats();
     }
 
     function showScreenMap() {
+      clearAllAppIntervals();
       document.getElementById('screenDemo').classList.add('hidden');
       document.getElementById('screenQuiz').classList.add('hidden');
       document.getElementById('screenSecretPlay').classList.add('hidden');
@@ -1232,7 +1272,7 @@
       const badge = document.getElementById('secretLockBadge');
       const sub = document.getElementById('secretCardSubtitle');
 
-      if (currentUser.completedAll) {
+      if (currentUser && currentUser.completedAll) {
         badge.innerText = "🔓 Terbuka!";
         badge.className = "text-xs bg-emerald-500 text-white font-black px-2 py-0.5 rounded-full";
         sub.innerText = "Sedia memburu lencana agung Malaysia Top 10?";
@@ -1254,9 +1294,9 @@
       container.innerHTML = "";
 
       for (let s = 1; s <= 12; s++) {
-        const isCurrent = (s === currentUser.currentLevel);
-        const isUnlocked = (s <= currentUser.currentLevel) || currentUser.completedAll;
-        const canSkip = (s === 1 || s === 2) && (s === currentUser.currentLevel) && !currentUser.completedAll;
+        const isCurrent = currentUser && (s === currentUser.currentLevel);
+        const isUnlocked = currentUser && ((s <= currentUser.currentLevel) || currentUser.completedAll);
+        const canSkip = currentUser && (s === 1 || s === 2) && (s === currentUser.currentLevel) && !currentUser.completedAll;
 
         const levelNode = document.createElement('div');
         levelNode.className = "flex flex-col items-center w-full";
@@ -2041,6 +2081,23 @@
       document.getElementById('screenMap').classList.add('hidden');
       document.getElementById('screenParticipantLobby').classList.remove('hidden');
       document.getElementById('lobbyTourneyTitle').innerText = `Bilik Kejohanan (${tId})`;
+      document.getElementById('lobbyJoinForm').classList.remove('hidden');
+      document.getElementById('lobbyWaitingRoom').classList.add('hidden');
+    }
+
+    function exitParticipantLobby() {
+      if (confirm("Keluar dari lobi kejohanan ini?")) {
+        if (participantWaitInterval) {
+          clearInterval(participantWaitInterval);
+          participantWaitInterval = null;
+        }
+        if (currentUser) {
+          showScreenMap();
+        } else {
+          document.getElementById('screenParticipantLobby').classList.add('hidden');
+          document.getElementById('screenAuth').classList.remove('hidden');
+        }
+      }
     }
 
     async function handleParticipantJoinLobby() {
@@ -2079,7 +2136,8 @@
     }
 
     function startParticipantLobbyWaiting() {
-      const waitInterval = setInterval(async () => {
+      if (participantWaitInterval) clearInterval(participantWaitInterval);
+      participantWaitInterval = setInterval(async () => {
         try {
           const res = await fetch(GAS_API_URL, {
             method: "POST",
@@ -2088,7 +2146,8 @@
           });
           const d = await res.json();
           if (d.success && d.tournament.status === "active") {
-            clearInterval(waitInterval);
+            clearInterval(participantWaitInterval);
+            participantWaitInterval = null;
             document.getElementById('screenParticipantLobby').classList.add('hidden');
             isTournamentPlay = true;
             initSecret25Quiz();
