@@ -199,6 +199,10 @@
       <h2 class="text-2xl font-black text-slate-800 mb-0.5">Sifir.Stream Malaysia</h2>
       <p class="text-slate-500 text-xs mb-3 font-bold">Kuasai sifir, sertai kejohanan bilik kelas, dan julang Lencana Garuda!</p>
 
+      <div id="authNoticeBanner" class="bg-amber-50 border-2 border-amber-300 p-2.5 rounded-2xl mb-4 text-left text-xs font-bold text-amber-900 leading-snug">
+        📢 <span class="font-extrabold">Peringatan:</span> Sila log masuk menggunakan Username & Kata Laluan yang dibekalkan guru atau daftar akaun baharu jika belajar secara solo.
+      </div>
+
       <div class="flex bg-slate-100 p-1 rounded-2xl mb-4 border border-slate-200">
         <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-600 transition">Log Masuk</button>
         <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 font-black text-xs rounded-xl text-slate-500 transition">Daftar Baharu</button>
@@ -480,7 +484,7 @@
 
           <div class="flex bg-slate-200 p-1 rounded-2xl mb-3 shrink-0 text-[11px]">
             <button id="tabKaptenTourney" onclick="switchKaptenTab('tourney')" class="flex-1 py-1.5 font-black rounded-xl bg-white shadow-sm text-emerald-700">Tournament Sifir</button>
-            <button id="tabKaptenGroup" onclick="switchKaptenTab('group')" class="flex-1 py-1.5 font-black rounded-xl text-slate-600">Senarai Murid</button>
+            <button id="tabKaptenGroup" onclick="switchKaptenTab('group')" class="flex-1 py-1.5 font-black rounded-xl text-slate-600">Pengurusan Murid & Kelas</button>
             <button id="tabKaptenHistory" onclick="switchKaptenTab('history')" class="flex-1 py-1.5 font-black rounded-xl text-slate-600">📚 Arkib Kejohanan</button>
           </div>
 
@@ -489,16 +493,16 @@
             <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-3xl shadow-sm text-left">
               <h4 class="font-black text-base">Cipta Kejohanan 25 Sifir Live</h4>
               <p class="text-xs text-emerald-100 mt-1 leading-relaxed">
-                Pilih kumpulan kelas sasaran supaya murid boleh masuk terus tanpa imbas kod QR!
+                Pilih kumpulan kelas sasaran supaya murid boleh masuk terus dari menu tanpa imbas QR!
               </p>
               
               <div class="mt-3 space-y-2">
                 <input type="text" id="tourneyTitleInput" placeholder="Tajuk Cth: Sifir Champ 5 Bakawali" class="w-full bg-white text-slate-800 text-xs px-3 py-2 rounded-xl font-bold focus:outline-none">
                 
                 <div>
-                  <label class="text-[10px] font-black uppercase tracking-wider text-emerald-100">Kumpulan / Kelas Sasaran (Pilihan Tanpa QR):</label>
+                  <label class="text-[10px] font-black uppercase tracking-wider text-emerald-100">Kumpulan / Kelas Sasaran:</label>
                   <select id="tourneyTargetGroupSelect" class="w-full mt-1 bg-white text-slate-800 text-xs px-3 py-2 rounded-xl font-bold">
-                    <option value="ALL">Semua Murid / Terbuka (Guna Kod/QR)</option>
+                    <option value="ALL">Semua Murid / Terbuka</option>
                   </select>
                 </div>
 
@@ -548,53 +552,111 @@
             </div>
           </div>
 
-          <!-- TAB 2: SENARAI MURID & DAFTAR AKAUN PUKAL -->
+          <!-- TAB 2: PENGURUSAN KELAS & SENARAI MURID (LANGSUNG) -->
           <div id="kaptenTabContentGroup" class="hidden space-y-3 text-left">
-            <div class="bg-white border-2 border-slate-200 p-4 rounded-3xl shadow-sm space-y-3">
-              <h4 class="font-black text-sm text-slate-800">Cipta Kumpulan & Jana Akaun Murid (Max 50)</h4>
-              <p class="text-[11px] text-slate-500">Akaun username & kata laluan murid akan didaftarkan secara automatik.</p>
-              
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="text-[10px] font-black text-slate-400 uppercase">Nama Kumpulan/Kelas</label>
-                  <input type="text" id="grpNameInput" placeholder="Cth: 4 Amanah" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-3 py-2 rounded-xl font-bold">
+            
+            <!-- Paparan 1: Senarai Kelas -->
+            <div id="viewKaptenClassList" class="space-y-3">
+              <div class="bg-white border-2 border-slate-200 p-4 rounded-3xl shadow-sm space-y-3">
+                <h4 class="font-black text-sm text-slate-800">+ Cipta Kelas / Kumpulan Baharu</h4>
+                
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Nama Kelas</label>
+                    <input type="text" id="grpNameInput" placeholder="Cth: 4 Amanah" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-3 py-2 rounded-xl font-bold">
+                  </div>
+                  <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Jenis</label>
+                    <select id="grpTypeSelect" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-2 py-2 rounded-xl font-bold">
+                      <option value="Kelas">Kelas</option>
+                      <option value="Kumpulan">Kumpulan / Kelab</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label class="text-[10px] font-black text-slate-400 uppercase">Jenis</label>
-                  <select id="grpTypeSelect" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-2 py-2 rounded-xl font-bold">
-                    <option value="Kelas">Kelas</option>
-                    <option value="Kumpulan">Kumpulan / Kelab</option>
-                  </select>
-                </div>
-              </div>
 
-              <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl flex items-center justify-between">
-                <div>
-                  <p class="text-xs font-black text-amber-900">Format Excel (XLSX)</p>
-                  <p class="text-[10px] text-amber-700">Templat mengandungi: Nama Penuh, Username, Password.</p>
+                <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl flex items-center justify-between">
+                  <div>
+                    <p class="text-xs font-black text-amber-900">Format Excel (XLSX)</p>
+                    <p class="text-[10px] text-amber-700">Templat: Nama Penuh, Username, Password.</p>
+                  </div>
+                  <button onclick="downloadDummyXlsxTemplate()" class="bg-amber-500 hover:bg-amber-600 text-white font-black text-[11px] px-2.5 py-1.5 rounded-xl shadow-xs">
+                    📥 Templat XLSX
+                  </button>
                 </div>
-                <button onclick="downloadDummyXlsxTemplate()" class="bg-amber-500 hover:bg-amber-600 text-white font-black text-[11px] px-2.5 py-1.5 rounded-xl shadow-xs">
-                  📥 Muat Turun Template
+
+                <div>
+                  <label class="text-[10px] font-black text-slate-400 uppercase">Muat Naik Fail XLSX (Pilihan):</label>
+                  <input type="file" id="xlsxFileInput" accept=".xlsx, .xls" onchange="handleXlsxUpload(event)" class="w-full mt-1 text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-emerald-100 file:text-emerald-800">
+                </div>
+
+                <div>
+                  <label class="text-[10px] font-black text-slate-400 uppercase">Atau Taip Pukal (Nama Penuh, Username, Password):</label>
+                  <textarea id="grpManualTextarea" rows="2" placeholder="Ali bin Abu, ali01, 123456&#10;Tan Wei Ming, weiming, 123456" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs p-2.5 rounded-xl font-medium"></textarea>
+                  <span class="text-[10px] text-slate-400 font-bold">Jumlah murid dikesan: <span id="parsedStudentCount" class="text-emerald-600 font-black">0</span> / 50</span>
+                </div>
+
+                <button onclick="handleSaveGroup()" class="w-full btn-duo-green text-white py-2.5 rounded-2xl font-black text-xs uppercase">
+                  Simpan & Jana Kelas
                 </button>
               </div>
 
               <div>
-                <label class="text-[10px] font-black text-slate-400 uppercase">Muat Naik Fail XLSX:</label>
-                <input type="file" id="xlsxFileInput" accept=".xlsx, .xls" onchange="handleXlsxUpload(event)" class="w-full mt-1 text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-emerald-100 file:text-emerald-800">
+                <h5 class="text-xs font-black text-slate-500 uppercase px-1 mb-2">Senarai Kelas Sedia Ada:</h5>
+                <div id="kaptenExistingGroupsList" class="space-y-2"></div>
               </div>
-
-              <div>
-                <label class="text-[10px] font-black text-slate-400 uppercase">Atau Taip Manual (Format: Nama Penuh, Username, Password):</label>
-                <textarea id="grpManualTextarea" rows="3" placeholder="Ali bin Abu, ali01, 123456&#10;Tan Wei Ming, weiming, 123456" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs p-2.5 rounded-xl font-medium"></textarea>
-                <span class="text-[10px] text-slate-400 font-bold">Jumlah murid dikesan: <span id="parsedStudentCount" class="text-emerald-600 font-black">0</span> / 50</span>
-              </div>
-
-              <button onclick="handleSaveGroup()" class="w-full btn-duo-green text-white py-2.5 rounded-2xl font-black text-xs uppercase">
-                Simpan Senarai & Jana Akaun Murid
-              </button>
             </div>
 
-            <div id="kaptenExistingGroupsList" class="space-y-2"></div>
+            <!-- Paparan 2: Perincian Kelas & Urus Murid Terus -->
+            <div id="viewKaptenClassDetail" class="hidden space-y-3">
+              <div class="bg-white border-2 border-slate-200 p-4 rounded-3xl shadow-sm space-y-3">
+                <div class="flex items-center justify-between border-b pb-2">
+                  <button onclick="backToClassList()" class="text-slate-500 hover:text-slate-700 font-black text-xs">
+                    ← Kembali ke Senarai Kelas
+                  </button>
+                  <button onclick="exportClassStudentCredentialsXlsx()" class="bg-emerald-50 text-emerald-700 border border-emerald-300 px-2.5 py-1 rounded-xl font-black text-[11px]">
+                    📥 Cetak / Excel Murid
+                  </button>
+                </div>
+
+                <div>
+                  <div class="flex items-baseline space-x-2">
+                    <h4 id="detailClassTitle" class="text-base font-black text-slate-800">Nama Kelas</h4>
+                    <span id="detailClassCount" class="text-xs bg-emerald-100 text-emerald-800 font-black px-2 py-0.5 rounded-full">0/50 Murid</span>
+                  </div>
+                  <p id="detailClassId" class="text-[10px] font-mono text-slate-400">ID: GRP-XXXXXX</p>
+                </div>
+
+                <!-- Bar Tambah Murid Terus -->
+                <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-2xl space-y-2">
+                  <span class="text-[10px] font-black uppercase text-slate-500 block">+ Tambah Murid Baharu ke Kelas Ini:</span>
+                  <div class="grid grid-cols-3 gap-1.5">
+                    <input type="text" id="newStdName" placeholder="Nama Penuh" class="bg-white border border-slate-200 text-xs px-2.5 py-1.5 rounded-xl font-bold">
+                    <input type="text" id="newStdUser" placeholder="Username" class="bg-white border border-slate-200 text-xs px-2.5 py-1.5 rounded-xl font-bold">
+                    <input type="text" id="newStdPass" placeholder="Password" value="123456" class="bg-white border border-slate-200 text-xs px-2.5 py-1.5 rounded-xl font-bold">
+                  </div>
+                  <button onclick="handleDirectAddStudent()" class="w-full btn-duo-green text-white py-1.5 rounded-xl font-black text-xs uppercase">
+                    + Tambah Murid Sekarang
+                  </button>
+                </div>
+
+                <!-- Jadual Senarai Murid Kelas -->
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-xs">
+                    <thead>
+                      <tr class="border-b-2 border-slate-100 text-[10px] text-slate-400 uppercase font-black">
+                        <th class="py-1">No</th>
+                        <th>Nama Murid</th>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th class="text-right">Tindakan</th>
+                      </tr>
+                    </thead>
+                    <tbody id="detailStudentsTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <!-- TAB 3: ARKIB KEJOHANAN LALU -->
@@ -737,6 +799,42 @@
     </div>
 
   </main>
+
+  <!-- MODAL: UBAHSUAI MURID (MODAL EDIT STUDENT) -->
+  <div id="modalEditStudent" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-left shadow-2xl border-4 border-indigo-500 space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h4 class="text-sm font-black text-slate-800">✏️ Kemaskini Maklumat Murid</h4>
+        <button onclick="closeEditStudentModal()" class="text-slate-400 font-black text-lg">✕</button>
+      </div>
+
+      <input type="hidden" id="editOldUsername">
+
+      <div>
+        <label class="text-[10px] font-black uppercase text-slate-400">Nama Penuh Murid:</label>
+        <input type="text" id="editStudentName" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-3 py-2 rounded-xl font-bold">
+      </div>
+
+      <div>
+        <label class="text-[10px] font-black uppercase text-slate-400">Nama Pengguna (Username):</label>
+        <input type="text" id="editStudentUser" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-3 py-2 rounded-xl font-bold">
+      </div>
+
+      <div>
+        <label class="text-[10px] font-black uppercase text-slate-400">Kata Laluan Baharu:</label>
+        <input type="text" id="editStudentPass" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs px-3 py-2 rounded-xl font-bold">
+      </div>
+
+      <div class="pt-2 flex space-x-2">
+        <button onclick="handleSaveEditedStudent()" class="flex-1 btn-duo-green text-white py-2 rounded-xl font-black text-xs uppercase">
+          Simpan Perubahan
+        </button>
+        <button onclick="closeEditStudentModal()" class="px-3 bg-slate-100 text-slate-600 font-bold text-xs rounded-xl">
+          Batal
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: BUTIRAN KEJOHANAN LALU (ARKIB DETAIL) -->
   <div id="modalPastTourneyDetail" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -1109,6 +1207,10 @@
     let cachedLiveResults = [];
     let activeDetectedTournament = null;
 
+    // STATE PENGURUSAN KELAS & MURID
+    let kaptenGroupsData = [];
+    let activeSelectedGroup = null;
+
     // STATE ARKIB KEJOHANAN
     let pastTournamentsData = [];
     let activeSelectedPastTourney = null;
@@ -1237,13 +1339,11 @@
       updateTopBarStats();
       showScreenMap();
 
-      // Jika pengguna adalah murid, mulakan semakan kejohanan kelas automatik (tanpa QR)
       if (currentUser && currentUser.role !== "kapten") {
         startStudentClassTournamentDetection();
       }
     }
 
-    // SEMAK KEJOHANAN KELAS LANGSUNG BAGI MURID (TANPA QR KOD)
     function startStudentClassTournamentDetection() {
       if (classCheckInterval) clearInterval(classCheckInterval);
       
@@ -1277,7 +1377,6 @@
       classCheckInterval = setInterval(checkTourney, 3000);
     }
 
-    // Murid Tekan Masuk Terus dari Banner (Automatik Guna Nama Murid)
     async function joinClassTournamentDirect() {
       if (!activeDetectedTournament) return;
       currentTournamentId = activeDetectedTournament.tournamentId;
@@ -1967,7 +2066,7 @@
     }
 
     // -------------------------------------------------------------
-    // FUNGSI KAPTEN SIFIR: TOURNAMENT, KUMPULAN & ARKIB
+    // FUNGSI KAPTEN: TOURNAMENT, URUS KELAS & MURID LANGSUNG
     // -------------------------------------------------------------
     function openKaptenDashboard() {
       document.getElementById('screenMap').classList.add('hidden');
@@ -2009,6 +2108,8 @@
       } else if (tab === 'group') {
         tabG.className = "flex-1 py-1.5 font-black rounded-xl bg-white shadow-sm text-emerald-700";
         contG.classList.remove('hidden');
+        backToClassList();
+        loadExistingGroups();
       } else if (tab === 'history') {
         tabH.className = "flex-1 py-1.5 font-black rounded-xl bg-white shadow-sm text-emerald-700";
         contH.classList.remove('hidden');
@@ -2016,7 +2117,6 @@
       }
     }
 
-    // Templat Excel mengandungi Nama Penuh, Username, Password
     function downloadDummyXlsxTemplate() {
       const dummyData = [
         ["No", "Nama Penuh Murid", "Username", "Password"],
@@ -2069,7 +2169,6 @@
       const text = document.getElementById('grpManualTextarea').value.trim();
 
       if (!groupName) return alert("Sila masukkan nama kumpulan/kelas!");
-      if (!text) return alert("Sila masukkan senarai murid!");
 
       const lines = text.split("\n").filter(l => l.trim() !== "").slice(0, 50);
       const students = lines.map(line => {
@@ -2095,7 +2194,7 @@
         });
         const d = await res.json();
         if (d.success) {
-          alert(`Kumpulan '${groupName}' dan ${d.totalRegistered} akaun murid berjaya didaftarkan! Murid kini boleh log masuk menggunakan username & password masing-masing.`);
+          alert(`Kumpulan '${groupName}' berjaya disimpan!`);
           document.getElementById('grpNameInput').value = "";
           document.getElementById('grpManualTextarea').value = "";
           loadExistingGroups();
@@ -2120,18 +2219,27 @@
         });
         const d = await res.json();
         if (d.success && d.groups.length > 0) {
-          cont.innerHTML = "<h5 class='text-xs font-black text-slate-500 uppercase mb-1'>Kumpulan Sedia Ada:</h5>";
+          kaptenGroupsData = d.groups;
+          cont.innerHTML = "";
           selectTarget.innerHTML = `<option value="ALL">Semua Murid / Terbuka</option>`;
 
           d.groups.forEach(g => {
             selectTarget.innerHTML += `<option value="${g.groupId}">${g.groupName} (${g.totalStudents} Murid)</option>`;
             cont.innerHTML += `
-              <div class="bg-white p-3 rounded-2xl border border-slate-200 text-xs shadow-xs space-y-1">
+              <div class="bg-white p-3.5 rounded-2xl border-2 border-slate-200 text-xs shadow-xs space-y-2">
                 <div class="flex justify-between items-center font-black">
-                  <span class="text-slate-800">${g.groupName} (${g.groupType})</span>
-                  <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">${g.totalStudents} Murid</span>
+                  <span class="text-slate-800 text-sm">${g.groupName} (${g.groupType})</span>
+                  <span class="text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">${g.totalStudents} Murid</span>
                 </div>
-                <p class="text-[10px] text-slate-400">ID Kumpulan: ${g.groupId}</p>
+                <p class="text-[10px] text-slate-400 font-mono">ID Kumpulan: ${g.groupId} • Dicipta: ${g.createdAt}</p>
+                <div class="flex space-x-1.5 pt-1">
+                  <button onclick="openClassDetail('${g.groupId}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-black py-2 rounded-xl text-xs">
+                    👥 Urus Murid (${g.totalStudents})
+                  </button>
+                  <button onclick="handleDeleteGroup('${g.groupId}')" class="px-3 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-black py-2 rounded-xl text-xs">
+                    🗑️ Padam
+                  </button>
+                </div>
               </div>
             `;
           });
@@ -2139,6 +2247,216 @@
           cont.innerHTML = "<p class='text-xs text-slate-400'>Belum ada kumpulan didaftarkan.</p>";
         }
       } catch(e) {}
+    }
+
+    function openClassDetail(groupId) {
+      const g = kaptenGroupsData.find(item => item.groupId === groupId);
+      if (!g) return;
+      activeSelectedGroup = g;
+
+      document.getElementById('viewKaptenClassList').classList.add('hidden');
+      document.getElementById('viewKaptenClassDetail').classList.remove('hidden');
+
+      document.getElementById('detailClassTitle').innerText = `${g.groupName} (${g.groupType})`;
+      document.getElementById('detailClassCount').innerText = `${g.students.length}/50 Murid`;
+      document.getElementById('detailClassId').innerText = `ID: ${g.groupId}`;
+
+      renderClassStudentsTable(g.students);
+    }
+
+    function backToClassList() {
+      document.getElementById('viewKaptenClassDetail').classList.add('hidden');
+      document.getElementById('viewKaptenClassList').classList.remove('hidden');
+      activeSelectedGroup = null;
+      loadExistingGroups();
+    }
+
+    function renderClassStudentsTable(students) {
+      const tbody = document.getElementById('detailStudentsTbody');
+      tbody.innerHTML = "";
+
+      if (!students || students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400 italic">Belum ada murid dalam kelas ini. Tambah murid baharu di atas!</td></tr>`;
+        return;
+      }
+
+      students.forEach((s, idx) => {
+        tbody.innerHTML += `
+          <tr class="border-b border-slate-100 hover:bg-slate-50 text-slate-700">
+            <td class="py-2.5 font-black text-slate-400">${idx + 1}</td>
+            <td class="py-2.5 font-bold">${s.name}</td>
+            <td class="py-2.5 font-mono text-indigo-600 font-bold">${s.username}</td>
+            <td class="py-2.5 font-mono text-slate-500">${s.password}</td>
+            <td class="py-2.5 text-right space-x-1">
+              <button onclick="openEditStudentModal('${s.username}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded-lg font-bold text-[11px] border border-indigo-200">
+                ✏️ Ubah
+              </button>
+              <button onclick="handleDeleteStudent('${s.username}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-2 py-1 rounded-lg font-bold text-[11px] border border-rose-200">
+                🗑️
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    async function handleDirectAddStudent() {
+      if (!activeSelectedGroup) return;
+      const name = document.getElementById('newStdName').value.trim();
+      const username = document.getElementById('newStdUser').value.trim();
+      const password = document.getElementById('newStdPass').value.trim() || "123456";
+
+      if (!name || !username) return alert("Sila masukkan Nama Penuh dan Username murid!");
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "addStudentToGroup",
+            groupId: activeSelectedGroup.groupId,
+            hostUsername: currentUser.username,
+            student: { name, username, password }
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          activeSelectedGroup.students = d.students;
+          activeSelectedGroup.totalStudents = d.students.length;
+          document.getElementById('detailClassCount').innerText = `${d.students.length}/50 Murid`;
+          renderClassStudentsTable(d.students);
+          document.getElementById('newStdName').value = "";
+          document.getElementById('newStdUser').value = "";
+          document.getElementById('newStdPass').value = "123456";
+        } else {
+          alert(d.message);
+        }
+      } catch(e) {
+        alert("Ralat menambah murid.");
+      }
+    }
+
+    function openEditStudentModal(username) {
+      if (!activeSelectedGroup) return;
+      const std = activeSelectedGroup.students.find(s => s.username === username);
+      if (!std) return;
+
+      document.getElementById('editOldUsername').value = std.username;
+      document.getElementById('editStudentName').value = std.name;
+      document.getElementById('editStudentUser').value = std.username;
+      document.getElementById('editStudentPass').value = std.password;
+      document.getElementById('modalEditStudent').classList.remove('hidden');
+    }
+
+    function closeEditStudentModal() {
+      document.getElementById('modalEditStudent').classList.add('hidden');
+    }
+
+    async function handleSaveEditedStudent() {
+      const oldUsername = document.getElementById('editOldUsername').value;
+      const name = document.getElementById('editStudentName').value.trim();
+      const username = document.getElementById('editStudentUser').value.trim();
+      const password = document.getElementById('editStudentPass').value.trim();
+
+      if (!name || !username) return alert("Nama dan Username tidak boleh kosong!");
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "updateStudentInGroup",
+            groupId: activeSelectedGroup.groupId,
+            oldUsername,
+            hostUsername: currentUser.username,
+            newStudent: { name, username, password }
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          activeSelectedGroup.students = d.students;
+          renderClassStudentsTable(d.students);
+          closeEditStudentModal();
+        } else {
+          alert(d.message);
+        }
+      } catch(e) {
+        alert("Ralat mengemaskini maklumat murid.");
+      }
+    }
+
+    async function handleDeleteStudent(username) {
+      if (!confirm(`Adakah anda pasti ingin memadam murid '${username}' dari kelas ini?`)) return;
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "deleteStudentFromGroup",
+            groupId: activeSelectedGroup.groupId,
+            hostUsername: currentUser.username,
+            username
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          activeSelectedGroup.students = d.students;
+          activeSelectedGroup.totalStudents = d.students.length;
+          document.getElementById('detailClassCount').innerText = `${d.students.length}/50 Murid`;
+          renderClassStudentsTable(d.students);
+        } else {
+          alert(d.message);
+        }
+      } catch(e) {
+        alert("Ralat memadam murid.");
+      }
+    }
+
+    async function handleDeleteGroup(groupId) {
+      if (!confirm("Adakah anda pasti ingin memadam keseluruhan kelas ini?")) return;
+
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "deleteGroup", groupId, hostUsername: currentUser.username })
+        });
+        const d = await res.json();
+        if (d.success) {
+          loadExistingGroups();
+        } else {
+          alert(d.message);
+        }
+      } catch(e) {
+        alert("Ralat memadam kumpulan.");
+      }
+    }
+
+    function exportClassStudentCredentialsXlsx() {
+      if (!activeSelectedGroup || !activeSelectedGroup.students || activeSelectedGroup.students.length === 0) {
+        return alert("Tiada murid dalam kelas ini untuk dieksport.");
+      }
+
+      const exportData = [
+        ["SENARAI AKAUN & KATA LALUAN LOG MASUK MURID"],
+        ["Nama Kelas:", activeSelectedGroup.groupName],
+        ["Jenis:", activeSelectedGroup.groupType],
+        ["Guru / Kapten:", currentUser.username],
+        ["Tarikh Cetakan:", new Date().toLocaleDateString("ms-MY")],
+        [],
+        ["Bil", "Nama Penuh Murid", "Nama Pengguna (Username)", "Kata Laluan (Password)"]
+      ];
+
+      activeSelectedGroup.students.forEach((s, idx) => {
+        exportData.push([idx + 1, s.name, s.username, s.password]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(exportData);
+      ws['!cols'] = [{ wch: 8 }, { wch: 30 }, { wch: 20 }, { wch: 18 }];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Kredensial_Murid");
+      XLSX.writeFile(wb, `Kredensial_${activeSelectedGroup.groupName.replace(/\s+/g, '_')}.xlsx`);
     }
 
     async function handleCreateTournament() {
@@ -2169,9 +2487,6 @@
           document.getElementById('activeTourneyCard').classList.remove('hidden');
           document.getElementById('activeTourneyCode').innerText = "KOD: " + tId;
           document.getElementById('activeTourneyTitle').innerText = title;
-
-          const baseUrl = window.location.href.split('?')[0];
-          const joinUrl = `${baseUrl}?tournament=${tId}`;
 
           startHostTourneyPolling(tId);
         } else {
@@ -2717,6 +3032,25 @@
               </div>
               <p class="text-[11px] text-slate-500 font-bold leading-tight mt-0.5">${b.desc}</p>
               <span class="text-[10px] text-sky-600 font-black mt-1 inline-block">Syarat: ${b.req}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      TOP_10_BADGES.forEach(t => {
+        const isHeld = (userNationalRank === t.rank);
+        top10Container.innerHTML += `
+          <div class="p-3 rounded-2xl border-2 flex items-center space-x-3 ${isHeld ? 'bg-purple-50 border-purple-500 shadow-md ring-2 ring-purple-300' : 'bg-white'}">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner ${isHeld ? 'bg-gradient-to-tr from-purple-600 to-amber-500 text-white shadow-lg' : 'bg-purple-100 text-purple-700'}">
+              ${t.icon}
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center space-x-1.5">
+                <h5 class="font-black text-xs text-purple-900">${t.title}</h5>
+                ${isHeld ? '<span class="text-[9px] bg-purple-600 text-white px-1.5 py-0.2 rounded-full font-black">MILIK ANDA</span>' : ''}
+              </div>
+              <p class="text-[11px] text-slate-500 font-bold leading-tight mt-0.5">${t.desc}</p>
+              <span class="text-[10px] text-purple-600 font-black mt-1 inline-block">Syarat: Kedudukan #${t.rank} di Peringkat Master Malaysia</span>
             </div>
           </div>
         `;
