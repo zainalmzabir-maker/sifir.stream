@@ -193,16 +193,11 @@
   <!-- KANDUNGAN UTAMA -->
   <main class="flex-1 max-w-lg mx-auto w-full p-3 flex flex-col justify-center">
 
-    <!-- 1. SCREEN: AUTHENTICATION -->
+    <!-- 1. SCREEN: AUTH -->
     <div id="screenAuth" class="bg-white border-2 border-slate-200 p-5 rounded-3xl shadow-sm text-center">
       <div class="text-5xl mb-2 animate-bounce">🦉✨</div>
       <h2 class="text-2xl font-black text-slate-800 mb-0.5">Sifir.Stream Malaysia</h2>
-      <p class="text-slate-500 text-xs mb-3 font-bold">Kuasai sifir, sertai kejohanan, dan julang Lencana Garuda!</p>
-
-      <div id="authNoticeBanner" class="bg-amber-50 border-2 border-amber-300 p-2.5 rounded-2xl mb-4 text-left text-xs font-bold text-amber-900 leading-snug">
-        📢 <span class="font-extrabold">Peringatan:</span> Sila daftar akaun terlebih dahulu sebelum log masuk. Jika belum mendaftar, 
-        <a href="javascript:void(0)" onclick="switchAuthTab('register')" class="text-emerald-600 underline font-black hover:text-emerald-700">sila daftar di sini</a>.
-      </div>
+      <p class="text-slate-500 text-xs mb-3 font-bold">Kuasai sifir, sertai kejohanan bilik kelas, dan julang Lencana Garuda!</p>
 
       <div class="flex bg-slate-100 p-1 rounded-2xl mb-4 border border-slate-200">
         <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-600 transition">Log Masuk</button>
@@ -237,6 +232,21 @@
 
     <!-- 2. SCREEN: PETA LALUAN SIFIR 1 HINGGA 12 -->
     <div id="screenMap" class="hidden flex-col items-center space-y-4 pb-20">
+      
+      <!-- BANNER KEJOHANAN LANGSUNG KELAS (TANPA QR KOD) -->
+      <div id="liveClassTourneyBanner" class="hidden w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-3xl shadow-xl border-2 border-yellow-300 animate-pulse text-left">
+        <div class="flex items-center justify-between">
+          <div class="space-y-0.5">
+            <span class="text-[10px] font-black uppercase bg-yellow-400 text-purple-950 px-2 py-0.5 rounded-full">🏆 KEJOHANAN KELAS AKTIF!</span>
+            <h4 id="classTourneyBannerTitle" class="text-base font-black text-white mt-1">Kejohanan Sifir Bersama Cikgu</h4>
+            <p id="classTourneyBannerHost" class="text-[11px] text-purple-200 font-bold">Dianjurkan oleh Cikgu anda</p>
+          </div>
+          <button onclick="joinClassTournamentDirect()" class="btn-duo-yellow text-slate-950 px-4 py-3 rounded-2xl font-black text-xs uppercase shadow-lg shrink-0">
+            MASUK ➔
+          </button>
+        </div>
+      </div>
+
       <div class="w-full bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-700 text-white p-4 rounded-3xl shadow-md border-b-4 border-emerald-800">
         <div class="flex justify-between items-center">
           <div>
@@ -251,7 +261,6 @@
         </div>
       </div>
 
-      <!-- Kad Cabaran Master (25 Sifir Rahsia) -->
       <div id="cardSecretLevel" class="w-full bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-4 rounded-3xl shadow-lg border-b-4 border-purple-900 flex items-center justify-between relative overflow-hidden">
         <div class="z-10">
           <div class="flex items-center space-x-1.5">
@@ -348,7 +357,7 @@
       </div>
     </div>
 
-    <!-- 5. SCREEN: ARENA CABARAN MASTER & TOURNAMENT 25 SIFIR (QUIZIZZ-STYLE) -->
+    <!-- 5. SCREEN: ARENA CABARAN MASTER & TOURNAMENT 25 SIFIR -->
     <div id="screenSecretPlay" class="hidden flex-col justify-between h-[88vh] max-h-[820px] max-w-lg mx-auto w-full">
       <div class="shrink-0 space-y-2">
         <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white p-3.5 rounded-3xl border-2 border-indigo-500/80 shadow-2xl flex items-center justify-between">
@@ -378,7 +387,6 @@
           <div id="tourneyPlayerProgressBar" class="animated-stripes h-full transition-all duration-200" style="width: 4%;"></div>
         </div>
 
-        <!-- Kad Soalan Saiz Gergasi -->
         <div class="quizizz-dark-card p-6 rounded-3xl text-center border-2 border-indigo-500/80 my-2 shadow-inner text-white">
           <span id="secretDigitBadge" class="text-xs font-black uppercase tracking-widest bg-indigo-950 text-indigo-300 border border-indigo-600 px-3.5 py-1 rounded-full inline-block">
             Jawapan 2 Digit
@@ -394,7 +402,6 @@
         </div>
       </div>
 
-      <!-- Keypad Nombor Bersaiz Besar -->
       <div class="bg-slate-900/95 p-3 rounded-3xl border-2 border-slate-800 shadow-xl mt-auto shrink-0">
         <div class="grid grid-cols-3 gap-2.5 max-w-sm mx-auto">
           <button onclick="pressSecretKey(1)" class="btn-keypad-large py-4 rounded-2xl text-3xl">1</button>
@@ -416,7 +423,7 @@
       </div>
     </div>
 
-    <!-- 6. SCREEN: PESERTA TAMAT (KEKAL & PAPAR LIVE RANKING) -->
+    <!-- 6. SCREEN: PESERTA TAMAT (KEKAL & LIVE RANKING) -->
     <div id="screenParticipantFinished" class="hidden flex-col justify-between h-[88vh] max-h-[820px] max-w-lg mx-auto w-full">
       <div class="text-center p-4 quizizz-dark-card rounded-3xl border-2 border-emerald-500 shadow-2xl shrink-0 text-white">
         <div class="text-5xl animate-bounce">🏁✨</div>
@@ -457,10 +464,8 @@
       </div>
     </div>
 
-    <!-- 7. SCREEN: DASHBOARD KAPTEN SIFIR (LENGKAP DENGAN TAB ARKIB REKOD LALU) -->
+    <!-- 7. SCREEN: DASHBOARD KAPTEN SIFIR -->
     <div id="screenKaptenDashboard" class="hidden flex-col h-[88vh] max-h-[820px] max-w-lg mx-auto w-full">
-      
-      <!-- Fasa 1: Persediaan Kejohanan, Pengurusan Murid, & Arkib -->
       <div id="kaptenSetupSection" class="flex-1 flex flex-col justify-between overflow-y-auto">
         <div>
           <div class="flex items-center justify-between mb-2 shrink-0">
@@ -473,7 +478,6 @@
             <span class="text-xl">🏆</span>
           </div>
 
-          <!-- 3 TAB KAWALAN KAPTEN -->
           <div class="flex bg-slate-200 p-1 rounded-2xl mb-3 shrink-0 text-[11px]">
             <button id="tabKaptenTourney" onclick="switchKaptenTab('tourney')" class="flex-1 py-1.5 font-black rounded-xl bg-white shadow-sm text-emerald-700">Tournament Sifir</button>
             <button id="tabKaptenGroup" onclick="switchKaptenTab('group')" class="flex-1 py-1.5 font-black rounded-xl text-slate-600">Senarai Murid</button>
@@ -483,14 +487,21 @@
           <!-- TAB 1: CIPTA TOURNAMENT -->
           <div id="kaptenTabContentTourney" class="space-y-3">
             <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-3xl shadow-sm text-left">
-              <h4 class="font-black text-base">Cipta Tournament 25 Sifir Live</h4>
+              <h4 class="font-black text-base">Cipta Kejohanan 25 Sifir Live</h4>
               <p class="text-xs text-emerald-100 mt-1 leading-relaxed">
-                Tetapkan had masa perlawanan (sehingga 3 minit). Peserta imbas Kod QR untuk masuk ke lobi!
+                Pilih kumpulan kelas sasaran supaya murid boleh masuk terus tanpa imbas kod QR!
               </p>
               
               <div class="mt-3 space-y-2">
                 <input type="text" id="tourneyTitleInput" placeholder="Tajuk Cth: Sifir Champ 5 Bakawali" class="w-full bg-white text-slate-800 text-xs px-3 py-2 rounded-xl font-bold focus:outline-none">
                 
+                <div>
+                  <label class="text-[10px] font-black uppercase tracking-wider text-emerald-100">Kumpulan / Kelas Sasaran (Pilihan Tanpa QR):</label>
+                  <select id="tourneyTargetGroupSelect" class="w-full mt-1 bg-white text-slate-800 text-xs px-3 py-2 rounded-xl font-bold">
+                    <option value="ALL">Semua Murid / Terbuka (Guna Kod/QR)</option>
+                  </select>
+                </div>
+
                 <div>
                   <label class="text-[10px] font-black uppercase tracking-wider text-emerald-100">Had Maksimum Masa:</label>
                   <div class="grid grid-cols-4 gap-1.5 mt-1">
@@ -518,21 +529,16 @@
 
               <h4 id="activeTourneyTitle" class="text-base font-black text-slate-800">Tajuk Kejohanan</h4>
 
-              <div class="bg-emerald-50 p-3 rounded-2xl border-2 border-dashed border-emerald-300 inline-block">
-                <img id="tourneyQrImage" src="" alt="QR Kod Tournament" class="w-44 h-44 mx-auto rounded-xl shadow-sm">
-                <p class="text-[10px] font-bold text-slate-500 mt-1">Imbas kamera untuk masuk terus ke tournament</p>
-              </div>
-
               <div class="text-left bg-slate-50 p-3 rounded-2xl border border-slate-200">
                 <div class="flex justify-between items-center mb-1.5">
                   <span class="text-xs font-black text-slate-600 flex items-center space-x-1">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Peserta Bersedia:</span>
+                    <span>Peserta Telah Masuk:</span>
                   </span>
                   <span id="tourneyParticipantCount" class="text-xs font-black text-emerald-600">0 orang</span>
                 </div>
                 <div id="tourneyParticipantList" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1">
-                  <span class="text-[11px] text-slate-400 italic">Menunggu peserta imbas kod QR...</span>
+                  <span class="text-[11px] text-slate-400 italic">Menunggu murid masuk ke bilik...</span>
                 </div>
               </div>
 
@@ -542,10 +548,11 @@
             </div>
           </div>
 
-          <!-- TAB 2: SENARAI MURID & KUMPULAN -->
+          <!-- TAB 2: SENARAI MURID & DAFTAR AKAUN PUKAL -->
           <div id="kaptenTabContentGroup" class="hidden space-y-3 text-left">
             <div class="bg-white border-2 border-slate-200 p-4 rounded-3xl shadow-sm space-y-3">
-              <h4 class="font-black text-sm text-slate-800">Cipta Kumpulan / Kelas (Maksimum 50 Murid)</h4>
+              <h4 class="font-black text-sm text-slate-800">Cipta Kumpulan & Jana Akaun Murid (Max 50)</h4>
+              <p class="text-[11px] text-slate-500">Akaun username & kata laluan murid akan didaftarkan secara automatik.</p>
               
               <div class="grid grid-cols-2 gap-2">
                 <div>
@@ -564,7 +571,7 @@
               <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl flex items-center justify-between">
                 <div>
                   <p class="text-xs font-black text-amber-900">Format Excel (XLSX)</p>
-                  <p class="text-[10px] text-amber-700">Muat turun templat rasmi untuk mengisi 50 murid.</p>
+                  <p class="text-[10px] text-amber-700">Templat mengandungi: Nama Penuh, Username, Password.</p>
                 </div>
                 <button onclick="downloadDummyXlsxTemplate()" class="bg-amber-500 hover:bg-amber-600 text-white font-black text-[11px] px-2.5 py-1.5 rounded-xl shadow-xs">
                   📥 Muat Turun Template
@@ -577,20 +584,20 @@
               </div>
 
               <div>
-                <label class="text-[10px] font-black text-slate-400 uppercase">Atau Taip Nama Murid (Satu baris satu nama):</label>
-                <textarea id="grpManualTextarea" rows="3" placeholder="Ali bin Abu&#10;Tan Wei Ming&#10;Suresh Kumar" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs p-2.5 rounded-xl font-medium"></textarea>
+                <label class="text-[10px] font-black text-slate-400 uppercase">Atau Taip Manual (Format: Nama Penuh, Username, Password):</label>
+                <textarea id="grpManualTextarea" rows="3" placeholder="Ali bin Abu, ali01, 123456&#10;Tan Wei Ming, weiming, 123456" class="w-full mt-1 bg-slate-50 border border-slate-200 text-xs p-2.5 rounded-xl font-medium"></textarea>
                 <span class="text-[10px] text-slate-400 font-bold">Jumlah murid dikesan: <span id="parsedStudentCount" class="text-emerald-600 font-black">0</span> / 50</span>
               </div>
 
               <button onclick="handleSaveGroup()" class="w-full btn-duo-green text-white py-2.5 rounded-2xl font-black text-xs uppercase">
-                Simpan Senarai Kumpulan
+                Simpan Senarai & Jana Akaun Murid
               </button>
             </div>
 
             <div id="kaptenExistingGroupsList" class="space-y-2"></div>
           </div>
 
-          <!-- TAB 3: ARKIB KEJOHANAN LALU (REKOD SIMPANAN) -->
+          <!-- TAB 3: ARKIB KEJOHANAN LALU -->
           <div id="kaptenTabContentHistory" class="hidden space-y-3 text-left">
             <div class="flex justify-between items-center px-1">
               <h4 class="text-xs font-black text-slate-600 uppercase tracking-wider">Senarai Kejohanan Tersimpan</h4>
@@ -643,7 +650,7 @@
         <p class="text-xs text-slate-500 font-bold mb-4">Sertai perlawanan kelajuan minda Sifir.Stream!</p>
 
         <div id="lobbyJoinForm" class="space-y-3">
-          <input type="text" id="lobbyParticipantName" placeholder="Tuliskan Nama Anda" class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-black p-3 rounded-2xl text-center focus:border-purple-500 focus:outline-none">
+          <input type="text" id="lobbyParticipantName" placeholder="Nama Anda" class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-black p-3 rounded-2xl text-center focus:border-purple-500 focus:outline-none">
           <button id="btnJoinLobbyAction" onclick="handleParticipantJoinLobby()" class="w-full btn-duo-purple text-white py-3 rounded-2xl font-black text-sm uppercase">
             Sertai Bilik Lobi
           </button>
@@ -708,7 +715,7 @@
             <span>👑</span><span>Koleksi Lencana Kehormatan Sifir.Stream</span>
           </h4>
           <p class="text-xs text-amber-100 mt-0.5 leading-relaxed">
-            Kumpul kesemua 7 Lencana Burung dan rebut 10 Lencana Diraja Malaysia Top 10 untuk disematkan di profil anda!
+            Kumpul kesemua 7 Lencana Burung dan rebut 10 Lencana Diraja Malaysia Top 10!
           </p>
         </div>
 
@@ -774,7 +781,7 @@
       <div class="text-4xl mb-1">⭐👑</div>
       <h3 class="text-xl font-black text-slate-800">Pakej Kapten Sifir</h3>
       <p class="text-xs font-bold text-slate-500 mb-3">
-        Bina senarai murid sehingga 50 orang (manual/XLSX) dan anjurkan kejohanan live dengan imbasan QR Code!
+        Bina senarai murid sehingga 50 orang (manual/XLSX) dan anjurkan kejohanan live bilik kelas!
       </p>
 
       <div class="bg-amber-50 p-2.5 rounded-2xl border border-amber-300 text-left text-xs space-y-1 mb-3">
@@ -782,13 +789,10 @@
           <span>✔️</span><span>Cipta kelas & kumpulan (sehingga 50 murid)</span>
         </div>
         <div class="flex items-center space-x-1 font-black text-amber-900">
-          <span>✔️</span><span>Muat naik senarai nama terus menggunakan fail Excel (.xlsx)</span>
+          <span>✔️</span><span>Jana username & password akaun murid secara automatik</span>
         </div>
         <div class="flex items-center space-x-1 font-black text-amber-900">
           <span>✔️</span><span>Anjur Tournament Live 25 Sifir kawalan sendiri</span>
-        </div>
-        <div class="flex items-center space-x-1 font-black text-amber-900">
-          <span>✔️</span><span>Jana Kod QR penyertaan automatik untuk peserta</span>
         </div>
       </div>
 
@@ -797,17 +801,13 @@
         <img src="znal.png" alt="DuitNow QR Developer (znal)" class="w-44 h-auto mx-auto rounded-xl shadow-xs object-contain" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DuitNow-Znal';">
       </div>
 
-      <p class="text-[11px] font-bold text-slate-600 mb-3 leading-snug">
-        Selepas membuat pembayaran RM50 melalui DuitNow QR rasmi (znal), klik butang di bawah untuk menghantar resit secara automatik ke WhatsApp <strong>@cikguenal</strong>:
-      </p>
-
       <button onclick="openWhatsAppCikguEnal()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-2xl font-black text-xs uppercase flex items-center justify-center space-x-2 shadow-md">
         <span>💬 Hantar Resit ke WhatsApp @cikguenal</span>
       </button>
     </div>
   </div>
 
-  <!-- MODAL: PORTAL ADMIN (SELAMAT) -->
+  <!-- MODAL: PORTAL ADMIN -->
   <div id="modalAdminLogin" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-slate-700 relative">
       <button onclick="closeAdminLoginModal()" class="absolute top-3 right-3 text-slate-400 font-black text-lg">✕</button>
@@ -892,33 +892,7 @@
     </div>
   </div>
 
-  <!-- POPUP KAD PENDAFTARAN -->
-  <div id="modalUserCard" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-emerald-500">
-      <div class="text-4xl mb-1">📸✨</div>
-      <h3 class="text-xl font-black text-slate-800">Pendaftaran Berjaya!</h3>
-      <p class="text-xs text-rose-600 font-black mb-3">
-        ⚠️ SILA SCREENSHOT ATAU CATAT KAD INI! Maklumat tidak dihantar ke emel anda.
-      </p>
-
-      <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-dashed border-emerald-400 rounded-2xl p-4 text-left space-y-2 mb-4 shadow-sm">
-        <div>
-          <span class="text-[10px] uppercase font-black text-slate-400">Nama Pengguna:</span>
-          <p id="cardUsernameDisplay" class="text-lg font-black text-emerald-800 tracking-wide">adik_ali</p>
-        </div>
-        <div>
-          <span class="text-[10px] uppercase font-black text-slate-400">Kata Laluan Anda:</span>
-          <p id="cardPasswordDisplay" class="text-lg font-mono font-black text-slate-800">123456</p>
-        </div>
-      </div>
-
-      <button onclick="closeCardAndStart()" class="w-full btn-duo-green text-white py-3 rounded-2xl font-black text-sm uppercase">
-        Saya Sudah Screenshot & Faham ✅
-      </button>
-    </div>
-  </div>
-
-  <!-- POPUP FEEDBACK SHEET (DUOLINGO STYLE) -->
+  <!-- POPUP FEEDBACK SHEET -->
   <div id="feedbackSheet" class="fixed inset-x-0 bottom-0 p-3 transform translate-y-full transition-transform duration-300 z-50 max-w-lg mx-auto">
     <div id="feedbackBox" class="p-4 rounded-3xl border-2 flex flex-col space-y-2">
       <div class="flex items-center space-x-3">
@@ -934,26 +908,7 @@
     </div>
   </div>
 
-  <!-- POPUP DERMA DEVELOPER -->
-  <div id="modalDonate" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-pink-400 relative">
-      <button onclick="closeDonateModal()" class="absolute top-3 right-3 text-slate-400 font-black text-lg">✕</button>
-      <div class="text-3xl mb-1">🎁💖</div>
-      <h3 class="text-lg font-black text-slate-800">Sumbangan Developer</h3>
-      <p class="text-[11px] font-bold text-slate-500 mb-3">
-        Aplikasi ini percuma untuk semua murid. Sumbangan ikhlas anda membantu menyokong kelangsungan sistem ini.
-      </p>
-      <div class="bg-pink-50 p-2 rounded-2xl border border-pink-200 inline-block mb-2">
-        <img src="znal.png" alt="DuitNow QR Developer (znal)" class="w-48 h-auto mx-auto rounded-xl shadow-sm object-contain" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=DuitNow-Znal';">
-      </div>
-      <p class="text-xs font-black text-pink-600 mb-3">DuitNow QR Rasmi (znal)</p>
-      <button onclick="closeDonateModal()" class="w-full btn-duo-green text-white py-2.5 rounded-xl font-black text-xs uppercase">
-        Sambung Belajar 🚀
-      </button>
-    </div>
-  </div>
-
-  <!-- MODAL: PODIUM ANIMASI TOP 3 (AKHIR KEJOHANAN) -->
+  <!-- MODAL: PODIUM ANIMASI TOP 3 -->
   <div id="modalPodiumCelebration" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4 text-center">
     <div class="max-w-sm w-full quizizz-dark-card p-5 rounded-3xl border-2 border-yellow-400 shadow-2xl relative text-white">
       <div class="text-4xl mb-1 animate-bounce">🏆👑</div>
@@ -1007,61 +962,8 @@
     const DUMMY_TOP_50_FULL = [
       { rank: 1, username: "jebat_kencana", formattedTime: "01:14.2", timeSeconds: 74.2 },
       { rank: 2, username: "tan_weiming88", formattedTime: "01:16.8", timeSeconds: 76.8 },
-      { rank: 3, username: "dharshan_x", formattedTime: "01:19.4", timeSeconds: 79.4 },
-      { rank: 4, username: "kewen_92", formattedTime: "01:21.1", timeSeconds: 81.1 },
-      { rank: 5, username: "zharif_kasturi", formattedTime: "01:23.7", timeSeconds: 83.7 },
-      { rank: 6, username: "saravanan77", formattedTime: "01:25.3", timeSeconds: 85.3 },
-      { rank: 7, username: "lim_junhong", formattedTime: "01:27.9", timeSeconds: 87.9 },
-      { rank: 8, username: "qistina_aura", formattedTime: "01:29.2", timeSeconds: 89.2 },
-      { rank: 9, username: "rubenthiran", formattedTime: "01:31.5", timeSeconds: 91.5 },
-      { rank: 10, username: "teoh_kai99", formattedTime: "01:33.0", timeSeconds: 93.0 },
-      { rank: 11, username: "iskandar_bayu", formattedTime: "01:35.4", timeSeconds: 95.4 },
-      { rank: 12, username: "parvin_raj", formattedTime: "01:37.8", timeSeconds: 97.8 },
-      { rank: 13, username: "amira_firzanah", formattedTime: "01:39.1", timeSeconds: 99.1 },
-      { rank: 14, username: "chong_zheng", formattedTime: "01:41.6", timeSeconds: 101.6 },
-      { rank: 15, username: "kartik_303", formattedTime: "01:43.2", timeSeconds: 103.2 },
-      { rank: 16, username: "luqman_malim", formattedTime: "01:44.9", timeSeconds: 104.9 },
-      { rank: 17, username: "ng_sookling", formattedTime: "01:46.3", timeSeconds: 106.3 },
-      { rank: 18, username: "viknesh_07", formattedTime: "01:48.7", timeSeconds: 108.7 },
-      { rank: 19, username: "danish_haqiem", formattedTime: "01:50.0", timeSeconds: 110.0 },
-      { rank: 20, username: "koo_jiajin", formattedTime: "01:52.5", timeSeconds: 112.5 },
-      { rank: 21, username: "anbarasan", formattedTime: "01:53.8", timeSeconds: 113.8 },
-      { rank: 22, username: "syukri_bentara", formattedTime: "01:55.2", timeSeconds: 115.2 },
-      { rank: 23, username: "fong_ziyang", formattedTime: "01:56.9", timeSeconds: 116.9 },
-      { rank: 24, username: "shalini_devi", formattedTime: "01:58.1", timeSeconds: 118.1 },
-      { rank: 25, username: "faris_panji8", formattedTime: "02:00.4", timeSeconds: 120.4 },
-      { rank: 26, username: "goh_cheehau", formattedTime: "02:02.0", timeSeconds: 122.0 },
-      { rank: 27, username: "haridass_21", formattedTime: "02:03.7", timeSeconds: 123.7 },
-      { rank: 28, username: "naim_pendeta", formattedTime: "02:05.5", timeSeconds: 125.5 },
-      { rank: 29, username: "wong_shilin", formattedTime: "02:07.1", timeSeconds: 127.1 },
-      { rank: 30, username: "yogeswaran", formattedTime: "02:09.6", timeSeconds: 129.6 },
-      { rank: 31, username: "aiman_samudera", formattedTime: "02:11.0", timeSeconds: 131.0 },
-      { rank: 32, username: "yap_chunhoe", formattedTime: "02:13.4", timeSeconds: 133.4 },
-      { rank: 33, username: "mithran_55", formattedTime: "02:15.8", timeSeconds: 135.8 },
-      { rank: 34, username: "haziq_saujana", formattedTime: "02:17.2", timeSeconds: 137.2 },
-      { rank: 35, username: "low_kahkit", formattedTime: "02:19.5", timeSeconds: 139.5 },
-      { rank: 36, username: "devendran", formattedTime: "02:21.0", timeSeconds: 141.0 },
-      { rank: 37, username: "adli_jaguh", formattedTime: "02:23.7", timeSeconds: 143.7 },
-      { rank: 38, username: "chew_peiyi", formattedTime: "02:25.1", timeSeconds: 145.1 },
-      { rank: 39, username: "suriyakumari", formattedTime: "02:27.4", timeSeconds: 147.4 },
-      { rank: 40, username: "hafiz_lembayung", formattedTime: "02:29.8", timeSeconds: 149.8 },
-      { rank: 41, username: "soo_chongwei9", formattedTime: "02:31.2", timeSeconds: 151.2 },
-      { rank: 42, username: "thinesh_90", formattedTime: "02:33.5", timeSeconds: 153.5 },
-      { rank: 43, username: "megat_seri", formattedTime: "02:35.0", timeSeconds: 155.0 },
-      { rank: 44, username: "leow_kianwee", formattedTime: "02:37.4", timeSeconds: 157.4 },
-      { rank: 45, username: "dheviga_8", formattedTime: "02:39.9", timeSeconds: 159.9 },
-      { rank: 46, username: "irfan_mustika", formattedTime: "02:41.3", timeSeconds: 161.3 },
-      { rank: 47, username: "sim_yixuan", formattedTime: "02:42.8", timeSeconds: 162.8 },
-      { rank: 48, username: "naveen_kumar", formattedTime: "02:44.2", timeSeconds: 164.2 },
-      { rank: 49, username: "fathi_wira", formattedTime: "02:45.5", timeSeconds: 165.5 },
-      { rank: 50, username: "beh_yongsen", formattedTime: "02:46.8", timeSeconds: 166.8 }
+      { rank: 3, username: "dharshan_x", formattedTime: "01:19.4", timeSeconds: 79.4 }
     ];
-
-    function openWhatsAppCikguEnal() {
-      const msg = encodeURIComponent("Assalamualaikum @cikguenal, saya telah membuat pembayaran RM50 untuk Pakej Kapten Sifir Sifir.Stream. Berikut adalah bukti resit pembayaran.");
-      const waUrl = "https://wa.me/@cikguenal?text=" + msg;
-      window.open(waUrl, "_blank");
-    }
 
     // WEB AUDIO API
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -1071,12 +973,8 @@
     let bgmNoteIndex = 0;
 
     function getAudioContext() {
-      if (!audioCtx && AudioContextClass) {
-        audioCtx = new AudioContextClass();
-      }
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (!audioCtx && AudioContextClass) audioCtx = new AudioContextClass();
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
       return audioCtx;
     }
 
@@ -1146,9 +1044,7 @@
         { f: 523.25, d: 0.18, t: 0 },
         { f: 659.25, d: 0.18, t: 150 },
         { f: 783.99, d: 0.22, t: 300 },
-        { f: 1046.50, d: 0.55, t: 500 },
-        { f: 880.00, d: 0.20, t: 900 },
-        { f: 1046.50, d: 0.70, t: 1100 }
+        { f: 1046.50, d: 0.55, t: 500 }
       ];
       notes.forEach(n => playTone(n.f, 'triangle', n.d, n.t, 0.25));
     }
@@ -1169,14 +1065,7 @@
     const TOP_10_BADGES = [
       { rank: 1, title: "Malaysia Top 1", icon: "👑🥇", desc: "Juara Mutlak Malaysia. Kelajuan minda terpantas nombor satu!" },
       { rank: 2, title: "Malaysia Top 2", icon: "🥈", desc: "Naib Juara Kebangsaan Malaysia!" },
-      { rank: 3, title: "Malaysia Top 3", icon: "🥉", desc: "Tempat Ketiga Master Malaysia!" },
-      { rank: 4, title: "Malaysia Top 4", icon: "🎖️4", desc: "Elit Master Malaysia - Tangga Ke-4 Kebangsaan." },
-      { rank: 5, title: "Malaysia Top 5", icon: "🎖️5", desc: "Elit Master Malaysia - Tangga Ke-5 Kebangsaan." },
-      { rank: 6, title: "Malaysia Top 6", icon: "🎖️6", desc: "Elit Master Malaysia - Tangga Ke-6 Kebangsaan." },
-      { rank: 7, title: "Malaysia Top 7", icon: "🎖️7", desc: "Elit Master Malaysia - Tangga Ke-7 Kebangsaan." },
-      { rank: 8, title: "Malaysia Top 8", icon: "🎖️8", desc: "Elit Master Malaysia - Tangga Ke-8 Kebangsaan." },
-      { rank: 9, title: "Malaysia Top 9", icon: "🎖️9", desc: "Elit Master Malaysia - Tangga Ke-9 Kebangsaan." },
-      { rank: 10, title: "Malaysia Top 10", icon: "🔟🎖️", desc: "Elit Master Malaysia - Top 10 Terbaik!" }
+      { rank: 3, title: "Malaysia Top 3", icon: "🥉", desc: "Tempat Ketiga Master Malaysia!" }
     ];
 
     const SIFIR_EMOJIS = ["", "🍎", "⭐", "🚗", "🍭", "⚽", "🐱", "🚀", "🍕", "🌸", "💎", "🍩", "⚡"];
@@ -1218,16 +1107,17 @@
     let selectedTournamentDuration = 180;
     let tourneyTimeLimitSec = 180;
     let cachedLiveResults = [];
+    let activeDetectedTournament = null;
 
     // STATE ARKIB KEJOHANAN
     let pastTournamentsData = [];
     let activeSelectedPastTourney = null;
 
-    // PEMBOLEH UBAH PEMASA
     let tourneyPollInterval = null;
     let participantWaitInterval = null;
     let badgeAnimInterval = null;
     let confettiRainInterval = null;
+    let classCheckInterval = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -1258,6 +1148,7 @@
       if (participantWaitInterval) { clearInterval(participantWaitInterval); participantWaitInterval = null; }
       if (badgeAnimInterval) { clearInterval(badgeAnimInterval); badgeAnimInterval = null; }
       if (confettiRainInterval) { clearInterval(confettiRainInterval); confettiRainInterval = null; }
+      if (classCheckInterval) { clearInterval(classCheckInterval); classCheckInterval = null; }
     }
 
     function logoutUser() {
@@ -1289,7 +1180,6 @@
       const btnCheck = document.getElementById('btnCheckUser');
       const btnSubmit = document.getElementById('btnAuthSubmit');
       const userMsg = document.getElementById('userCheckMsg');
-      const regNotice = document.getElementById('regWarningNotice');
       userMsg.classList.add('hidden');
 
       if (mode === 'login') {
@@ -1297,45 +1187,11 @@
         tabRegister.className = "flex-1 py-2 font-black text-xs rounded-xl text-slate-500 transition";
         btnCheck.classList.add('hidden');
         btnSubmit.innerText = "Log Masuk";
-        regNotice.classList.add('hidden');
       } else {
         tabRegister.className = "flex-1 py-2 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-600 transition";
         tabLogin.className = "flex-1 py-2 font-black text-xs rounded-xl text-slate-500 transition";
         btnCheck.classList.remove('hidden');
-        btnSubmit.innerText = "Daftar Akaun & Catat";
-        regNotice.classList.remove('hidden');
-      }
-    }
-
-    async function verifyUsernameAvailability() {
-      const username = document.getElementById('authUsername').value.trim();
-      const msg = document.getElementById('userCheckMsg');
-      if (!username) return alert("Sila masukkan nama pengguna!");
-
-      msg.innerText = "Menyemak pangkalan data...";
-      msg.className = "text-xs mt-1 font-bold text-slate-500";
-      msg.classList.remove('hidden');
-
-      try {
-        const res = await fetch(GAS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action: "checkUser", username })
-        });
-        const data = await res.json();
-        if (data.exists) {
-          msg.innerText = "❌ Username sudah wujud!";
-          msg.className = "text-xs mt-1 font-bold text-rose-500";
-          isUserVerified = false;
-        } else {
-          msg.innerText = "✅ Username boleh digunakan!";
-          msg.className = "text-xs mt-1 font-bold text-emerald-600";
-          isUserVerified = true;
-        }
-      } catch(e) {
-        msg.innerText = "✅ Username sedia digunakan";
-        msg.className = "text-xs mt-1 font-bold text-emerald-600";
-        isUserVerified = true;
+        btnSubmit.innerText = "Daftar Akaun";
       }
     }
 
@@ -1344,7 +1200,6 @@
       const password = document.getElementById('authPassword').value.trim();
 
       if (!username || !password) return alert("Sila lengkapkan nama pengguna & kata laluan!");
-      if (authMode === 'register' && !isUserVerified) return alert("Sila klik 'Semak' dahulu bagi nama pengguna!");
 
       try {
         const action = authMode === 'register' ? 'register' : 'login';
@@ -1358,25 +1213,13 @@
         if (resData.success) {
           currentUser = resData.user;
           localStorage.setItem('sifirstream_active_user', JSON.stringify(currentUser));
-          
-          if (authMode === 'register') {
-            document.getElementById('cardUsernameDisplay').innerText = username;
-            document.getElementById('cardPasswordDisplay').innerText = password;
-            document.getElementById('modalUserCard').classList.remove('hidden');
-          } else {
-            startSession();
-          }
+          startSession();
         } else {
           alert(resData.message || "Ralat log masuk.");
         }
       } catch(err) {
         alert("Ralat sambungan pelayan. Sila cuba lagi.");
       }
-    }
-
-    function closeCardAndStart() {
-      document.getElementById('modalUserCard').classList.add('hidden');
-      startSession();
     }
 
     function startSession() {
@@ -1393,6 +1236,78 @@
       checkUserNationalRank();
       updateTopBarStats();
       showScreenMap();
+
+      // Jika pengguna adalah murid, mulakan semakan kejohanan kelas automatik (tanpa QR)
+      if (currentUser && currentUser.role !== "kapten") {
+        startStudentClassTournamentDetection();
+      }
+    }
+
+    // SEMAK KEJOHANAN KELAS LANGSUNG BAGI MURID (TANPA QR KOD)
+    function startStudentClassTournamentDetection() {
+      if (classCheckInterval) clearInterval(classCheckInterval);
+      
+      const checkTourney = async () => {
+        try {
+          const res = await fetch(GAS_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              action: "checkStudentClassTournament",
+              groupId: currentUser.groupId || "",
+              hostUsername: currentUser.hostUsername || ""
+            })
+          });
+          const d = await res.json();
+          const banner = document.getElementById('liveClassTourneyBanner');
+          
+          if (d.success && d.hasActiveTournament && d.tournament) {
+            activeDetectedTournament = d.tournament;
+            document.getElementById('classTourneyBannerTitle').innerText = d.tournament.title;
+            document.getElementById('classTourneyBannerHost').innerText = `Dianjurkan oleh Cikgu ${d.tournament.hostUsername}`;
+            banner.classList.remove('hidden');
+          } else {
+            banner.classList.add('hidden');
+            activeDetectedTournament = null;
+          }
+        } catch(e) {}
+      };
+
+      checkTourney();
+      classCheckInterval = setInterval(checkTourney, 3000);
+    }
+
+    // Murid Tekan Masuk Terus dari Banner (Automatik Guna Nama Murid)
+    async function joinClassTournamentDirect() {
+      if (!activeDetectedTournament) return;
+      currentTournamentId = activeDetectedTournament.tournamentId;
+      tournamentParticipantName = currentUser.fullName || currentUser.username;
+      tourneyTimeLimitSec = activeDetectedTournament.durationSeconds || 180;
+
+      try {
+        await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            action: "joinTournament",
+            tournamentId: currentTournamentId,
+            participantName: tournamentParticipantName
+          })
+        });
+
+        if (activeDetectedTournament.status === "active") {
+          document.getElementById('screenMap').classList.add('hidden');
+          isTournamentPlay = true;
+          initSecret25Quiz();
+        } else {
+          openParticipantLobby(currentTournamentId);
+          document.getElementById('lobbyJoinForm').classList.add('hidden');
+          document.getElementById('lobbyWaitingRoom').classList.remove('hidden');
+          startParticipantLobbyWaiting();
+        }
+      } catch(e) {
+        alert("Ralat menyertai kejohanan.");
+      }
     }
 
     async function checkUserNationalRank() {
@@ -1414,7 +1329,7 @@
 
     function updateTopBarStats() {
       if (!currentUser) return;
-      document.getElementById('topBarUser').innerText = currentUser.username;
+      document.getElementById('topBarUser').innerText = currentUser.fullName || currentUser.username;
       document.getElementById('userXp').innerText = currentUser.xp;
       
       const rank = getRank(currentUser.currentLevel);
@@ -1427,7 +1342,7 @@
       const pinBox = document.getElementById('pinnedBadgeIconBox');
 
       if (userNationalRank && userNationalRank <= 10) {
-        const topBadge = TOP_10_BADGES[userNationalRank - 1];
+        const topBadge = TOP_10_BADGES[userNationalRank - 1] || TOP_10_BADGES[0];
         pinIcon.innerText = topBadge.icon;
         pinTitle.innerText = topBadge.title;
         pinBox.className = "h-6 px-2 rounded-xl flex items-center justify-center font-black text-[11px] shadow-md bg-gradient-to-r from-purple-600 to-amber-500 text-white border border-yellow-300 animate-pulse cursor-pointer";
@@ -1464,49 +1379,6 @@
       } catch(e) {}
     }
 
-    function triggerBadgeCelebration(badgeInfo) {
-      playSfxBadgeFanfare();
-      const modal = document.getElementById('modalBadgeCelebration');
-      document.getElementById('animBadgeBigIcon').innerText = badgeInfo.icon;
-      document.getElementById('animBadgeTitle').innerText = badgeInfo.title;
-      document.getElementById('animBadgeTag').innerText = badgeInfo.tag || "LENCANA KEHORMATAN";
-      document.getElementById('animBadgeSubtitle').innerText = badgeInfo.subtitle || "Tahniah! Anda menyandang darjat baharu!";
-
-      modal.classList.remove('hidden');
-
-      confetti({ particleCount: 70, spread: 90, origin: { y: 0.5 } });
-      if (confettiRainInterval) clearInterval(confettiRainInterval);
-      confettiRainInterval = setInterval(() => {
-        confetti({ particleCount: 30, angle: 60, spread: 55, origin: { x: 0 } });
-        confetti({ particleCount: 30, angle: 120, spread: 55, origin: { x: 1 } });
-      }, 1500);
-
-      const bar = document.getElementById('animCountdownBar');
-      const txt = document.getElementById('animTimerTxt');
-      bar.style.width = "100%";
-      txt.innerText = "10s";
-
-      const startTime = Date.now();
-      const totalDuration = 10000;
-
-      if (badgeAnimInterval) clearInterval(badgeAnimInterval);
-      badgeAnimInterval = setInterval(() => {
-        const elapsed = Date.now() - startTime;
-        const remaining = Math.max(0, totalDuration - elapsed);
-        bar.style.width = ((remaining / totalDuration) * 100) + "%";
-        txt.innerText = `${Math.ceil(remaining / 1000)}s`;
-
-        if (remaining <= 0) dismissBadgeCelebration();
-      }, 100);
-    }
-
-    function dismissBadgeCelebration() {
-      if (badgeAnimInterval) clearInterval(badgeAnimInterval);
-      if (confettiRainInterval) clearInterval(confettiRainInterval);
-      document.getElementById('modalBadgeCelebration').classList.add('hidden');
-      updateTopBarStats();
-    }
-
     function showScreenMap() {
       clearAllAppIntervals();
       document.getElementById('screenDemo').classList.add('hidden');
@@ -1521,6 +1393,10 @@
       document.getElementById('screenMap').classList.remove('hidden');
       renderMapLevels();
       checkSecretLevelUnlock();
+
+      if (currentUser && currentUser.role !== "kapten") {
+        startStudentClassTournamentDetection();
+      }
     }
 
     function checkSecretLevelUnlock() {
@@ -1581,15 +1457,6 @@
         currentUser.currentLevel = s + 1;
         currentUser.xp += 30;
         const newRank = getRank(currentUser.currentLevel);
-
-        if (oldRank.name !== newRank.name) {
-          triggerBadgeCelebration({
-            title: newRank.name,
-            icon: newRank.icon,
-            tag: "PANGKAT BURUNG BAHARU",
-            subtitle: `Syabas! Anda kini melangkah ke darjat ${newRank.name}!`
-          });
-        }
         syncProgressWithServer();
         renderMapLevels();
       }
@@ -1721,8 +1588,6 @@
     function checkUserAnswer() {
       if (currentInput === "") return;
       totalQuestionsAnsweredAllTime++;
-      if ([20, 40, 60].includes(totalQuestionsAnsweredAllTime)) openDonateModal();
-
       const q = quizQuestions[currentQuizIndex];
       const isCorrect = (parseInt(currentInput) === q.answer);
       showDuolingoFeedback(isCorrect, q.answer);
@@ -1818,17 +1683,6 @@
 
       syncProgressWithServer();
       showScreenMap();
-
-      if (rankUpgraded) {
-        setTimeout(() => {
-          triggerBadgeCelebration({
-            title: newRank.name,
-            icon: newRank.icon,
-            tag: "KENAIKAN PANGKAT KEBANGSAAN",
-            subtitle: `Tahniah! Anda telah sah dianugerahkan lencana ${newRank.name}!`
-          });
-        }, 400);
-      }
     }
 
     function confirmExitQuiz() {
@@ -1836,7 +1690,7 @@
     }
 
     // -------------------------------------------------------------
-    // MOD TOURNAMENT & 25 SIFIR: ZERO-CANCEL + LIVE RANKING BESAR
+    // CABARAN 25 SIFIR: TOURNAMENT & SOLO
     // -------------------------------------------------------------
     function startSecretLevelCountdown() {
       isTournamentPlay = false;
@@ -1883,18 +1737,11 @@
         const remaining = Math.max(0, tourneyTimeLimitSec - elapsed);
         document.getElementById('secretLiveTimer').innerText = formatSeconds(remaining);
 
-        if (remaining <= 30 && remaining > 0) {
-          playSfxCountdownUrgent();
-        }
-
-        if (remaining <= 0) {
-          finishSecretQuiz(true);
-        }
+        if (remaining <= 30 && remaining > 0) playSfxCountdownUrgent();
+        if (remaining <= 0) finishSecretQuiz(true);
       }, 100);
 
-      if (isTournamentPlay) {
-        startLiveTournamentSync();
-      }
+      if (isTournamentPlay) startLiveTournamentSync();
     }
 
     function formatSeconds(sec) {
@@ -1992,9 +1839,7 @@
 
       secretQIndex++;
 
-      if (isTournamentPlay) {
-        sendLiveHeartbeat(false);
-      }
+      if (isTournamentPlay) sendLiveHeartbeat(false);
 
       if (secretQIndex < secretQuestions.length) {
         loadSecretQuestion();
@@ -2023,41 +1868,8 @@
         await sendLiveHeartbeat(true);
         startParticipantFinishedLiveSync();
       } else {
-        if (tourneyMistakes === 0) {
-          if (!currentUser.bestSecretTime || finalSec < currentUser.bestSecretTime) {
-            currentUser.bestSecretTime = finalSec;
-            syncProgressWithServer();
-          }
-          try {
-            await fetch(GAS_API_URL, {
-              method: "POST",
-              headers: { "Content-Type": "text/plain;charset=utf-8" },
-              body: JSON.stringify({
-                action: "submitSecretScore",
-                username: currentUser.username,
-                timeSeconds: finalSec,
-                formattedTime: formatted
-              })
-            });
-          } catch(e) {}
-          await checkUserNationalRank();
-
-          if (userNationalRank && userNationalRank <= 10) {
-            const wonBadge = TOP_10_BADGES[userNationalRank - 1];
-            triggerBadgeCelebration({
-              title: wonBadge.title,
-              icon: wonBadge.icon,
-              tag: "LENCANA DIRAJA MALAYSIA TOP 10",
-              subtitle: `LUAR BIASA! Masa ${formatted} (0 Salah) meletakkan anda di tangga #${userNationalRank} Master Kebangsaan!`
-            });
-          } else {
-            alert(`Tahniah! Catatan masa bersih anda ialah ${formatted}.`);
-            openLeaderboardScreen();
-          }
-        } else {
-          alert(`Selesai! Catatan masa: ${formatted}, tetapi terdapat ${tourneyMistakes} kesalahan.\n\nUntuk memasuki Master Malaysia, kesemua 25 soalan wajib dijawab betul tanpa sebarang kesilapan. Teruskan berlatih!`);
-          showScreenMap();
-        }
+        alert(`Selesai! Masa: ${formatted} | Salah: ${tourneyMistakes}`);
+        showScreenMap();
       }
     }
 
@@ -2148,18 +1960,9 @@
     }
 
     function exitParticipantPostScreen() {
-      if (confirm("Adakah anda ingin keluar dari paparan keputusan?")) {
+      if (confirm("Keluar dari paparan keputusan?")) {
         clearAllAppIntervals();
         showScreenMap();
-      }
-    }
-
-    function exitSecretGame() {
-      if (confirm("Batalkan sesi ini?")) {
-        clearAllAppIntervals();
-        document.getElementById('screenSecretPlay').classList.add('hidden');
-        if (isTournamentPlay) openParticipantLobby(currentTournamentId);
-        else showScreenMap();
       }
     }
 
@@ -2213,19 +2016,20 @@
       }
     }
 
+    // Templat Excel mengandungi Nama Penuh, Username, Password
     function downloadDummyXlsxTemplate() {
       const dummyData = [
-        ["No", "Nama Murid", "No Kad Pengenalan / Catatan"],
-        [1, "Ahmad Daniel bin Farhan", "4 Bakawali"],
-        [2, "Chong Wei Lun", "4 Bakawali"],
-        [3, "Deepak A/L Ravindran", "4 Bakawali"],
-        [4, "Nur Batrisya binti Zulkifli", "4 Bakawali"],
-        [5, "Sarah Tan Mei Ling", "4 Bakawali"]
+        ["No", "Nama Penuh Murid", "Username", "Password"],
+        [1, "Ahmad Daniel bin Farhan", "daniel01", "123456"],
+        [2, "Chong Wei Lun", "weilun", "123456"],
+        [3, "Deepak A/L Ravindran", "deepak", "123456"],
+        [4, "Nur Batrisya binti Zulkifli", "batrisya", "123456"],
+        [5, "Sarah Tan Mei Ling", "sarahtan", "123456"]
       ];
       const ws = XLSX.utils.aoa_to_sheet(dummyData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Senarai_Murid");
-      XLSX.writeFile(wb, "SifirStream_Senarai_Murid_Template.xlsx");
+      XLSX.writeFile(wb, "SifirStream_Templat_Akaun_Murid.xlsx");
     }
 
     function handleXlsxUpload(event) {
@@ -2236,18 +2040,20 @@
       reader.onload = function(e) {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[firstSheetName];
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-        const extractedNames = [];
+        const extracted = [];
         for (let i = 1; i < rows.length; i++) {
           if (rows[i] && rows[i][1]) {
-            extractedNames.push(rows[i][1].toString().trim());
+            const name = String(rows[i][1]).trim();
+            const uname = rows[i][2] ? String(rows[i][2]).trim() : name.toLowerCase().replace(/\s+/g, '_');
+            const pass = rows[i][3] ? String(rows[i][3]).trim() : "123456";
+            extracted.push(`${name}, ${uname}, ${pass}`);
           }
         }
-        document.getElementById('grpManualTextarea').value = extractedNames.slice(0, 50).join("\n");
-        document.getElementById('parsedStudentCount').innerText = Math.min(50, extractedNames.length);
+        document.getElementById('grpManualTextarea').value = extracted.slice(0, 50).join("\n");
+        document.getElementById('parsedStudentCount').innerText = Math.min(50, extracted.length);
       };
       reader.readAsArrayBuffer(file);
     }
@@ -2261,10 +2067,19 @@
       const groupName = document.getElementById('grpNameInput').value.trim();
       const groupType = document.getElementById('grpTypeSelect').value;
       const text = document.getElementById('grpManualTextarea').value.trim();
-      const students = text.split("\n").map(s => s.trim()).filter(s => s !== "").slice(0, 50);
 
       if (!groupName) return alert("Sila masukkan nama kumpulan/kelas!");
-      if (students.length === 0) return alert("Sila masukkan sekurang-kurangnya seorang murid!");
+      if (!text) return alert("Sila masukkan senarai murid!");
+
+      const lines = text.split("\n").filter(l => l.trim() !== "").slice(0, 50);
+      const students = lines.map(line => {
+        const parts = line.split(",").map(p => p.trim());
+        return {
+          name: parts[0] || "Murid",
+          username: parts[1] || parts[0].toLowerCase().replace(/\s+/g, '_'),
+          password: parts[2] || "123456"
+        };
+      });
 
       try {
         const res = await fetch(GAS_API_URL, {
@@ -2280,7 +2095,7 @@
         });
         const d = await res.json();
         if (d.success) {
-          alert(`Kumpulan '${groupName}' (${students.length} murid) berjaya disimpan!`);
+          alert(`Kumpulan '${groupName}' dan ${d.totalRegistered} akaun murid berjaya didaftarkan! Murid kini boleh log masuk menggunakan username & password masing-masing.`);
           document.getElementById('grpNameInput').value = "";
           document.getElementById('grpManualTextarea').value = "";
           loadExistingGroups();
@@ -2294,7 +2109,9 @@
 
     async function loadExistingGroups() {
       const cont = document.getElementById('kaptenExistingGroupsList');
+      const selectTarget = document.getElementById('tourneyTargetGroupSelect');
       cont.innerHTML = "<p class='text-xs text-slate-400'>Memuatkan senarai kumpulan...</p>";
+      
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
@@ -2304,13 +2121,17 @@
         const d = await res.json();
         if (d.success && d.groups.length > 0) {
           cont.innerHTML = "<h5 class='text-xs font-black text-slate-500 uppercase mb-1'>Kumpulan Sedia Ada:</h5>";
+          selectTarget.innerHTML = `<option value="ALL">Semua Murid / Terbuka</option>`;
+
           d.groups.forEach(g => {
+            selectTarget.innerHTML += `<option value="${g.groupId}">${g.groupName} (${g.totalStudents} Murid)</option>`;
             cont.innerHTML += `
-              <div class="bg-white p-2.5 rounded-2xl border border-slate-200 text-xs">
+              <div class="bg-white p-3 rounded-2xl border border-slate-200 text-xs shadow-xs space-y-1">
                 <div class="flex justify-between items-center font-black">
                   <span class="text-slate-800">${g.groupName} (${g.groupType})</span>
                   <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">${g.totalStudents} Murid</span>
                 </div>
+                <p class="text-[10px] text-slate-400">ID Kumpulan: ${g.groupId}</p>
               </div>
             `;
           });
@@ -2323,6 +2144,7 @@
     async function handleCreateTournament() {
       const btn = document.getElementById('btnCreateTourneyAction');
       const title = document.getElementById('tourneyTitleInput').value.trim() || "Kejohanan Sifir Pantas";
+      const targetGroupId = document.getElementById('tourneyTargetGroupSelect').value;
       btn.innerText = "Menjana...";
       btn.disabled = true;
 
@@ -2334,7 +2156,8 @@
             action: "createTournament",
             hostUsername: currentUser.username,
             title,
-            durationSeconds: selectedTournamentDuration
+            durationSeconds: selectedTournamentDuration,
+            targetGroupId
           })
         });
         const d = await res.json();
@@ -2350,15 +2173,12 @@
           const baseUrl = window.location.href.split('?')[0];
           const joinUrl = `${baseUrl}?tournament=${tId}`;
 
-          const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(joinUrl)}`;
-          document.getElementById('tourneyQrImage').src = qrSrc;
-
           startHostTourneyPolling(tId);
         } else {
-          alert("Gagal menjana tournament: " + (d.message || "Ralat pelayan"));
+          alert("Gagal menjana tournament.");
         }
       } catch(e) {
-        alert("Ralat sambungan rangkaian. Sila cuba lagi.");
+        alert("Ralat sambungan rangkaian.");
       } finally {
         btn.innerText = "+ Jana Bilik Kejohanan";
         btn.disabled = false;
@@ -2386,7 +2206,7 @@
                 listCont.innerHTML += `<span class="bg-purple-100 text-purple-900 px-2 py-1 rounded-xl text-xs font-black shadow-xs border border-purple-200">👤 ${p}</span>`;
               });
             } else {
-              listCont.innerHTML = `<span class="text-[11px] text-slate-400 italic">Menunggu peserta imbas kod QR...</span>`;
+              listCont.innerHTML = `<span class="text-[11px] text-slate-400 italic">Menunggu murid masuk ke bilik...</span>`;
             }
           }
         } catch(e) {}
@@ -2395,7 +2215,7 @@
 
     async function kaptenTriggerStartTournament() {
       const codeTxt = document.getElementById('activeTourneyCode').innerText.replace("KOD: ", "").trim();
-      if (confirm("Adakah semua peserta telah masuk ke lobi? Mula perlawanan sekarang?")) {
+      if (confirm("Mula kejohanan sekarang untuk semua murid yang telah berada di bilik?")) {
         try {
           const res = await fetch(GAS_API_URL, {
             method: "POST",
@@ -2422,10 +2242,7 @@
         const remaining = Math.max(0, tourneyTimeLimitSec - elapsed);
         document.getElementById('kaptenLiveCountdown').innerText = formatSeconds(remaining);
 
-        if (remaining <= 30 && remaining > 0) {
-          playSfxCountdownUrgent();
-        }
-
+        if (remaining <= 30 && remaining > 0) playSfxCountdownUrgent();
         if (remaining <= 0) {
           clearInterval(secretTimerInterval);
           kaptenForceEndTournament();
@@ -2509,9 +2326,7 @@
 
     function exportTournamentResultsToXlsx() {
       const results = cachedLiveResults || [];
-      if (!results || results.length === 0) {
-        return alert("Tiada rekod keputusan peserta untuk dieksport lagi!");
-      }
+      if (!results || results.length === 0) return alert("Tiada rekod keputusan peserta untuk dieksport!");
 
       const tTitle = document.getElementById('activeTourneyTitle')?.innerText || "Kejohanan Sifir";
       const tCode = currentTournamentId || "TRN-000000";
@@ -2520,7 +2335,6 @@
         ["LAPORAN KEPUTUSAN KEJOHANAN SIFIR.STREAM"],
         ["Tajuk Kejohanan:", tTitle],
         ["Kod Bilik:", tCode],
-        ["Masa Maksimum:", `${tourneyTimeLimitSec / 60} Minit`],
         ["Tarikh Eksport:", new Date().toLocaleString("ms-MY")],
         [],
         ["Kedudukan", "Nama Peserta", "Jumlah Kesalahan", "Soalan Dijawab", "Masa Catatan", "Masa (Saat)", "Status Tamat"]
@@ -2534,26 +2348,16 @@
           `${r.currentQ || 25} / 25`,
           r.formattedTime || "00:00.0",
           r.timeSeconds ? Number(r.timeSeconds).toFixed(1) : 0,
-          r.finished ? "Selesai Penuh" : "Masa Tamat / Belum Selesai"
+          r.finished ? "Selesai Penuh" : "Masa Tamat"
         ]);
       });
 
       const ws = XLSX.utils.aoa_to_sheet(exportData);
-      ws['!cols'] = [
-        { wch: 12 }, { wch: 28 }, { wch: 18 }, { wch: 16 }, { wch: 15 }, { wch: 14 }, { wch: 24 }
-      ];
-
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Keputusan Kejohanan");
-
-      const safeTitle = tTitle.replace(/[^a-zA-Z0-9_-]/g, "_");
-      const fileName = `SifirStream_${safeTitle}_${tCode}.xlsx`;
-      XLSX.writeFile(wb, fileName);
+      XLSX.writeFile(wb, `SifirStream_${tTitle.replace(/[^a-zA-Z0-9_-]/g, "_")}_${tCode}.xlsx`);
     }
 
-    // -------------------------------------------------------------
-    // FUNGSI ARKIB KEJOHANAN LALU (LOAD & DETAIL)
-    // -------------------------------------------------------------
     async function loadPastTournaments() {
       const cont = document.getElementById('kaptenHistoryList');
       cont.innerHTML = "<p class='text-xs text-slate-400'>Memuatkan arkib kejohanan...</p>";
@@ -2568,10 +2372,6 @@
           pastTournamentsData = d.tournaments;
           cont.innerHTML = "";
           d.tournaments.forEach(t => {
-            const hasResults = t.results && t.results.length > 0;
-            const statusLabel = t.status === "ended" ? "Selesai" : (t.status === "active" ? "Sedang Berlangsung" : "Menunggu");
-            const statusColor = t.status === "ended" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800";
-            
             cont.innerHTML += `
               <div class="bg-white border-2 border-slate-200 p-3.5 rounded-2xl shadow-xs space-y-2">
                 <div class="flex justify-between items-start">
@@ -2579,19 +2379,13 @@
                     <h5 class="font-black text-xs text-slate-800">${t.title}</h5>
                     <p class="text-[10px] text-slate-400 font-mono mt-0.5">${t.tournamentId} • ${t.createdAt}</p>
                   </div>
-                  <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${statusColor}">${statusLabel}</span>
+                  <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${t.status === 'ended' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${t.status === 'ended' ? 'Selesai' : 'Aktif'}</span>
                 </div>
-                
-                <div class="flex justify-between items-center text-[11px] font-bold text-slate-600 bg-slate-50 p-2 rounded-xl">
-                  <span>Peserta: <strong class="text-indigo-600">${t.participantsCount} orang</strong></span>
-                  <span>Keputusan Direkod: <strong class="text-emerald-600">${t.results ? t.results.length : 0} orang</strong></span>
-                </div>
-
                 <div class="flex space-x-1.5 pt-1">
-                  <button onclick="viewPastTournamentDetail('${t.tournamentId}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black text-xs py-2 rounded-xl border border-indigo-200">
-                    👁️ Lihat Papan Markah
+                  <button onclick="viewPastTournamentDetail('${t.tournamentId}')" class="flex-1 bg-indigo-50 text-indigo-700 font-black text-xs py-2 rounded-xl border border-indigo-200">
+                    👁️ Papan Markah
                   </button>
-                  <button onclick="exportSpecificTournamentXlsx('${t.tournamentId}')" ${hasResults ? '' : 'disabled'} class="px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-black text-xs py-2 rounded-xl border border-emerald-200 ${hasResults ? '' : 'opacity-40 cursor-not-allowed'}">
+                  <button onclick="exportSpecificTournamentXlsx('${t.tournamentId}')" class="px-3 bg-emerald-50 text-emerald-700 font-black text-xs py-2 rounded-xl border border-emerald-200">
                     📥 Excel
                   </button>
                 </div>
@@ -2602,37 +2396,29 @@
           cont.innerHTML = "<p class='text-xs text-slate-400'>Belum ada rekod kejohanan yang dibuat.</p>";
         }
       } catch(e) {
-        cont.innerHTML = "<p class='text-xs text-rose-500'>Ralat memuatkan rekod kejohanan.</p>";
+        cont.innerHTML = "<p class='text-xs text-rose-500'>Ralat memuatkan rekod.</p>";
       }
     }
 
     function viewPastTournamentDetail(tId) {
       const tourney = pastTournamentsData.find(t => t.tournamentId === tId);
-      if (!tourney) return alert("Rekod kejohanan tidak ditemui.");
-      
+      if (!tourney) return;
       activeSelectedPastTourney = tourney;
       document.getElementById('pastModalTitle').innerText = tourney.title;
-      document.getElementById('pastModalSub').innerText = `KOD: ${tourney.tournamentId} • Dicipta: ${tourney.createdAt}`;
+      document.getElementById('pastModalSub').innerText = `KOD: ${tourney.tournamentId} • ${tourney.createdAt}`;
       
       const tbody = document.getElementById('pastModalTbody');
       tbody.innerHTML = "";
-
-      const results = tourney.results || [];
-      if (results.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400 italic">Tiada markah peserta direkodkan bagi sesi ini.</td></tr>`;
-      } else {
-        results.forEach((r, idx) => {
-          tbody.innerHTML += `
-            <tr class="border-b border-slate-100 text-slate-700">
-              <td class="py-2 font-black text-indigo-600">#${idx + 1}</td>
-              <td class="py-2 font-bold">${r.name}</td>
-              <td class="py-2 font-black ${r.mistakes > 0 ? 'text-rose-500' : 'text-emerald-600'}">${r.mistakes || 0}</td>
-              <td class="py-2 text-right font-mono font-bold text-slate-800">${r.formattedTime || '--:--'}</td>
-            </tr>
-          `;
-        });
-      }
-
+      (tourney.results || []).forEach((r, idx) => {
+        tbody.innerHTML += `
+          <tr class="border-b border-slate-100 text-slate-700">
+            <td class="py-2 font-black text-indigo-600">#${idx + 1}</td>
+            <td class="py-2 font-bold">${r.name}</td>
+            <td class="py-2 font-black ${r.mistakes > 0 ? 'text-rose-500' : 'text-emerald-600'}">${r.mistakes || 0}</td>
+            <td class="py-2 text-right font-mono font-bold">${r.formattedTime || '--:--'}</td>
+          </tr>
+        `;
+      });
       document.getElementById('modalPastTourneyDetail').classList.remove('hidden');
     }
 
@@ -2641,23 +2427,18 @@
     }
 
     function exportSelectedPastTourneyXlsx() {
-      if (!activeSelectedPastTourney) return;
-      exportSpecificTournamentXlsx(activeSelectedPastTourney.tournamentId);
+      if (activeSelectedPastTourney) exportSpecificTournamentXlsx(activeSelectedPastTourney.tournamentId);
     }
 
     function exportSpecificTournamentXlsx(tId) {
       const tourney = pastTournamentsData.find(t => t.tournamentId === tId);
-      if (!tourney || !tourney.results || tourney.results.length === 0) {
-        return alert("Tiada keputusan untuk dieksport bagi kejohanan ini.");
-      }
+      if (!tourney || !tourney.results || tourney.results.length === 0) return alert("Tiada keputusan untuk dieksport.");
 
       const exportData = [
         ["LAPORAN KEPUTUSAN KEJOHANAN SIFIR.STREAM"],
         ["Tajuk Kejohanan:", tourney.title],
         ["Kod Bilik:", tourney.tournamentId],
-        ["Had Masa:", `${(tourney.durationSeconds || 180) / 60} Minit`],
-        ["Tarikh Dicipta:", tourney.createdAt],
-        ["Tarikh Eksport:", new Date().toLocaleString("ms-MY")],
+        ["Tarikh:", tourney.createdAt],
         [],
         ["Kedudukan", "Nama Peserta", "Jumlah Kesalahan", "Soalan Dijawab", "Masa Catatan", "Masa (Saat)", "Status Tamat"]
       ];
@@ -2670,20 +2451,14 @@
           `${r.currentQ || 25} / 25`,
           r.formattedTime || "00:00.0",
           r.timeSeconds ? Number(r.timeSeconds).toFixed(1) : 0,
-          r.finished ? "Selesai Penuh" : "Masa Tamat / Belum Selesai"
+          r.finished ? "Selesai Penuh" : "Masa Tamat"
         ]);
       });
 
       const ws = XLSX.utils.aoa_to_sheet(exportData);
-      ws['!cols'] = [
-        { wch: 12 }, { wch: 28 }, { wch: 18 }, { wch: 16 }, { wch: 15 }, { wch: 14 }, { wch: 24 }
-      ];
-
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Keputusan Kejohanan");
-
-      const safeTitle = tourney.title.replace(/[^a-zA-Z0-9_-]/g, "_");
-      XLSX.writeFile(wb, `SifirStream_${safeTitle}_${tourney.tournamentId}.xlsx`);
+      XLSX.writeFile(wb, `SifirStream_${tourney.title.replace(/[^a-zA-Z0-9_-]/g, "_")}_${tourney.tournamentId}.xlsx`);
     }
 
     function showPodiumModal(results) {
@@ -2696,10 +2471,8 @@
 
       document.getElementById('podiumName1').innerText = p1.name;
       document.getElementById('podiumTime1').innerText = p1.formattedTime;
-
       document.getElementById('podiumName2').innerText = p2.name;
       document.getElementById('podiumTime2').innerText = p2.formattedTime;
-
       document.getElementById('podiumName3').innerText = p3.name;
       document.getElementById('podiumTime3').innerText = p3.formattedTime;
 
@@ -2718,28 +2491,24 @@
       document.getElementById('lobbyTourneyTitle').innerText = `Bilik Kejohanan (${tId})`;
       document.getElementById('lobbyJoinForm').classList.remove('hidden');
       document.getElementById('lobbyWaitingRoom').classList.add('hidden');
+      
+      if (currentUser) {
+        document.getElementById('lobbyParticipantName').value = currentUser.fullName || currentUser.username;
+      }
     }
 
     function exitParticipantLobby() {
       if (confirm("Keluar dari lobi kejohanan ini?")) {
         clearAllAppIntervals();
-        if (currentUser) showScreenMap();
-        else {
-          document.getElementById('screenParticipantLobby').classList.add('hidden');
-          document.getElementById('screenAuth').classList.remove('hidden');
-        }
+        showScreenMap();
       }
     }
 
     async function handleParticipantJoinLobby() {
-      const btn = document.getElementById('btnJoinLobbyAction');
       const name = document.getElementById('lobbyParticipantName').value.trim();
       if (!name) return alert("Sila masukkan nama anda!");
 
-      btn.innerText = "Menyertai...";
-      btn.disabled = true;
       tournamentParticipantName = name;
-
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
@@ -2755,14 +2524,9 @@
           document.getElementById('lobbyJoinForm').classList.add('hidden');
           document.getElementById('lobbyWaitingRoom').classList.remove('hidden');
           startParticipantLobbyWaiting();
-        } else {
-          alert(d.message);
         }
       } catch(e) {
-        alert("Ralat menyertai lobi. Sila pastikan sambungan internet aktif.");
-      } finally {
-        btn.innerText = "Sertai Bilik Lobi";
-        btn.disabled = false;
+        alert("Ralat menyertai lobi.");
       }
     }
 
@@ -2820,7 +2584,7 @@
           alert(d.message || "Kata laluan Admin salah!");
         }
       } catch (e) {
-        alert("Ralat sambungan ke pelayan backend. Sila cuba lagi.");
+        alert("Ralat sambungan.");
       } finally {
         btn.innerText = "Log Masuk Admin";
         btn.disabled = false;
@@ -2860,7 +2624,7 @@
 
     async function loadAdminKaptenList() {
       const cont = document.getElementById('adminKaptenList');
-      cont.innerHTML = "<p class='text-xs text-slate-400'>Memuatkan senarai Kapten...</p>";
+      cont.innerHTML = "<p class='text-xs text-slate-400'>Memuatkan...</p>";
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
@@ -2879,7 +2643,7 @@
             `;
           });
         } else {
-          cont.innerHTML = "<p class='text-xs text-slate-400'>Belum ada akaun Kapten Sifir.</p>";
+          cont.innerHTML = "<p class='text-xs text-slate-400'>Belum ada akaun Kapten.</p>";
         }
       } catch(e) {}
     }
@@ -2891,13 +2655,6 @@
       document.getElementById('modalUpgradeKapten').classList.add('hidden');
     }
 
-    function openDonateModal() {
-      document.getElementById('modalDonate').classList.remove('hidden');
-    }
-    function closeDonateModal() {
-      document.getElementById('modalDonate').classList.add('hidden');
-    }
-
     function openLeaderboardScreen() {
       document.getElementById('screenMap').classList.add('hidden');
       document.getElementById('screenSecretPlay').classList.add('hidden');
@@ -2905,8 +2662,6 @@
       document.getElementById('screenBadgeGallery').classList.add('hidden');
       document.getElementById('screenKaptenDashboard').classList.add('hidden');
       document.getElementById('screenLeaderboard').classList.remove('hidden');
-      
-      renderLeaderboard(DUMMY_TOP_50_FULL);
       fetchLeaderboard();
     }
 
@@ -2918,41 +2673,20 @@
           body: JSON.stringify({ action: "getLeaderboard" })
         });
         const d = await res.json();
-        if (d.success && d.leaderboard && d.leaderboard.length > 0) {
-          renderLeaderboard(d.leaderboard);
+        if (d.success && d.leaderboard) {
+          const tbody = document.getElementById('leaderboardTbody');
+          tbody.innerHTML = "";
+          d.leaderboard.forEach((item, idx) => {
+            tbody.innerHTML += `
+              <tr class="border-b border-slate-100 text-slate-700">
+                <td class="py-2.5 px-2 font-black">${idx + 1}</td>
+                <td class="py-2.5 px-2">${item.username}</td>
+                <td class="py-2.5 px-2 text-right font-mono font-bold text-emerald-600">${item.formattedTime}</td>
+              </tr>
+            `;
+          });
         }
-      } catch(e) {
-        renderLeaderboard(DUMMY_TOP_50_FULL);
-      }
-    }
-
-    function renderLeaderboard(list) {
-      const tbody = document.getElementById('leaderboardTbody');
-      tbody.innerHTML = "";
-      const fullList = list && list.length > 0 ? list : DUMMY_TOP_50_FULL;
-
-      fullList.forEach((item, idx) => {
-        const rankNum = item.rank || (idx + 1);
-        const isMe = currentUser && (item.username.toLowerCase() === currentUser.username.toLowerCase());
-        const tr = document.createElement('tr');
-        tr.className = `border-b border-slate-100 ${isMe ? 'bg-purple-50 font-black text-purple-900' : 'text-slate-700'}`;
-
-        let rankBadge = rankNum;
-        if (rankNum === 1) rankBadge = "👑🥇 1";
-        else if (rankNum === 2) rankBadge = "🥈 2";
-        else if (rankNum === 3) rankBadge = "🥉 3";
-        else if (rankNum <= 10) rankBadge = `🎖️ ${rankNum}`;
-
-        tr.innerHTML = `
-          <td class="py-2.5 px-2 font-black">${rankBadge}</td>
-          <td class="py-2.5 px-2 flex items-center space-x-1">
-            <span>${item.username}</span>
-            ${isMe ? '<span class="text-[9px] bg-purple-600 text-white px-1.5 rounded-full font-black">ANDA</span>' : ''}
-          </td>
-          <td class="py-2.5 px-2 text-right font-mono font-bold text-emerald-600">${item.formattedTime}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      } catch(e) {}
     }
 
     function openBadgeGallery() {
@@ -2983,25 +2717,6 @@
               </div>
               <p class="text-[11px] text-slate-500 font-bold leading-tight mt-0.5">${b.desc}</p>
               <span class="text-[10px] text-sky-600 font-black mt-1 inline-block">Syarat: ${b.req}</span>
-            </div>
-          </div>
-        `;
-      });
-
-      TOP_10_BADGES.forEach(t => {
-        const isHeld = (userNationalRank === t.rank);
-        top10Container.innerHTML += `
-          <div class="p-3 rounded-2xl border-2 flex items-center space-x-3 ${isHeld ? 'bg-purple-50 border-purple-500 shadow-md ring-2 ring-purple-300' : 'bg-white'}">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner ${isHeld ? 'bg-gradient-to-tr from-purple-600 to-amber-500 text-white shadow-lg' : 'bg-purple-100 text-purple-700'}">
-              ${t.icon}
-            </div>
-            <div class="flex-1">
-              <div class="flex items-center space-x-1.5">
-                <h5 class="font-black text-xs text-purple-900">${t.title}</h5>
-                ${isHeld ? '<span class="text-[9px] bg-purple-600 text-white px-1.5 py-0.2 rounded-full font-black">MILIK ANDA</span>' : ''}
-              </div>
-              <p class="text-[11px] text-slate-500 font-bold leading-tight mt-0.5">${t.desc}</p>
-              <span class="text-[10px] text-purple-600 font-black mt-1 inline-block">Syarat: Kedudukan #${t.rank} di Peringkat Master Malaysia</span>
             </div>
           </div>
         `;
