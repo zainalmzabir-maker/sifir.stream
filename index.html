@@ -193,7 +193,7 @@
   <!-- KANDUNGAN UTAMA -->
   <main class="flex-1 max-w-lg mx-auto w-full p-3 flex flex-col justify-center">
 
-    <!-- 1. SCREEN: AUTH -->
+    <!-- 1. SCREEN: AUTHENTICATION -->
     <div id="screenAuth" class="bg-white border-2 border-slate-200 p-5 rounded-3xl shadow-sm text-center">
       <div class="text-5xl mb-2 animate-bounce">🦉✨</div>
       <h2 class="text-2xl font-black text-slate-800 mb-0.5">Sifir.Stream Malaysia</h2>
@@ -211,7 +211,7 @@
 
       <div class="space-y-3 text-left">
         <div id="regWarningNotice" class="hidden bg-rose-50 border border-rose-300 p-2 rounded-xl text-[11px] font-bold text-rose-800 leading-tight">
-          🔒 <span class="font-black">PENTING:</span> Username & kata laluan anda tidak dihantar ke pihak luar. Sila catat atau screenshot maklumat anda selepas pendaftaran!
+          🔒 <span class="font-black">PENTING:</span> Username & kata laluan anda tidak dihantar ke pihak luar. Sila catat maklumat anda selepas pendaftaran!
         </div>
 
         <div>
@@ -239,7 +239,7 @@
       </div>
     </div>
 
-    <!-- 2. SCREEN: PETA PEMBELAJARAN SIFIR 1 HINGGA 12 -->
+    <!-- 2. SCREEN: PETA LALUAN SIFIR 1 HINGGA 12 -->
     <div id="screenMap" class="hidden flex-col items-center space-y-4 pb-20">
       <div class="w-full bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-700 text-white p-4 rounded-3xl shadow-md border-b-4 border-emerald-800">
         <div class="flex justify-between items-center">
@@ -277,11 +277,10 @@
         <button onclick="openBadgeGallery()" class="text-xs font-black text-amber-600 underline">🎖️ Lihat Semua Badge</button>
       </div>
 
-      <!-- Senarai Tahap Sifir 1 hingga 12 -->
       <div id="levelsContainer" class="w-full flex flex-col items-center space-y-3"></div>
     </div>
 
-    <!-- 3. SCREEN: DEMO PEMBELAJARAN BERGANDA BERANIMASI -->
+    <!-- 3. SCREEN: DEMO PEMBELAJARAN BERGANDA -->
     <div id="screenDemo" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full overflow-hidden">
       <div class="flex items-center justify-between shrink-0 mb-1">
         <button onclick="exitToMap()" class="text-slate-400 font-black text-xl hover:text-slate-600">✕</button>
@@ -309,7 +308,7 @@
       </div>
     </div>
 
-    <!-- 4. SCREEN: KUIZ BIASA & CHECKPOINT DENGAN KEYPAD -->
+    <!-- 4. SCREEN: KUIZ BIASA & CHECKPOINT -->
     <div id="screenQuiz" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full">
       <div class="shrink-0">
         <div class="flex items-center justify-between mb-2">
@@ -353,7 +352,7 @@
       </div>
     </div>
 
-    <!-- 5. SCREEN: ARENA CABARAN MASTER & TOURNAMENT 25 SIFIR (QUIZIZZ-STYLE & FONT GERGASI) -->
+    <!-- 5. SCREEN: ARENA CABARAN MASTER & TOURNAMENT 25 SIFIR (QUIZIZZ-STYLE) -->
     <div id="screenSecretPlay" class="hidden flex-col justify-between h-[88vh] max-h-[820px] max-w-lg mx-auto w-full">
       <div class="shrink-0 space-y-2">
         <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white p-3.5 rounded-3xl border-2 border-indigo-500/80 shadow-2xl flex items-center justify-between">
@@ -421,7 +420,7 @@
       </div>
     </div>
 
-    <!-- 6. SCREEN: PESERTA TAMAT (KEKAL & PAPAR LEADERBOARD MASA NYATA) -->
+    <!-- 6. SCREEN: PESERTA TAMAT (KEKAL & PAPAR LIVE RANKING) -->
     <div id="screenParticipantFinished" class="hidden flex-col justify-between h-[88vh] max-h-[820px] max-w-lg mx-auto w-full">
       <div class="text-center p-4 quizizz-dark-card rounded-3xl border-2 border-emerald-500 shadow-2xl shrink-0 text-white">
         <div class="text-5xl animate-bounce">🏁✨</div>
@@ -465,7 +464,7 @@
     <!-- 7. SCREEN: DASHBOARD KAPTEN SIFIR -->
     <div id="screenKaptenDashboard" class="hidden flex-col h-[88vh] max-h-[820px] max-w-lg mx-auto w-full">
       
-      <!-- Fasa 1: Persediaan Kejohanan & Pengurusan Kelas -->
+      <!-- Fasa 1: Persediaan Kejohanan & Senarai Murid -->
       <div id="kaptenSetupSection" class="flex-1 flex flex-col justify-between overflow-y-auto">
         <div>
           <div class="flex items-center justify-between mb-2 shrink-0">
@@ -487,7 +486,7 @@
             <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-3xl shadow-sm text-left">
               <h4 class="font-black text-base">Cipta Tournament 25 Sifir Live</h4>
               <p class="text-xs text-emerald-100 mt-1 leading-relaxed">
-                Tetapkan had masa kejohanan (sehingga 3 minit). Peserta imbas Kod QR untuk masuk ke lobi!
+                Tetapkan had masa perlawanan (sehingga 3 minit). Peserta imbas Kod QR untuk masuk ke lobi!
               </p>
               
               <div class="mt-3 space-y-2">
@@ -593,7 +592,7 @@
         </div>
       </div>
 
-      <!-- Fasa 2: ARENA PERLAWANAN KAPTEN (FOKUS LEADERBOARD SELEPAS START) -->
+      <!-- Fasa 2: ARENA PERLAWANAN KAPTEN LANGSUNG -->
       <div id="kaptenLiveArenaSection" class="hidden flex-1 flex flex-col justify-between overflow-hidden">
         <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-indigo-950 text-white p-3.5 rounded-3xl border-2 border-indigo-500 flex items-center justify-between shrink-0 shadow-2xl">
           <div>
@@ -761,7 +760,7 @@
     </div>
   </div>
 
-  <!-- MODAL: PORTAL ADMIN -->
+  <!-- MODAL: PORTAL ADMIN (SELAMAT) -->
   <div id="modalAdminLogin" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl border-4 border-slate-700 relative">
       <button onclick="closeAdminLoginModal()" class="absolute top-3 right-3 text-slate-400 font-black text-lg">✕</button>
@@ -771,7 +770,7 @@
 
       <div class="space-y-3 text-left">
         <input type="password" id="adminPasswordInput" placeholder="Kata Laluan Admin" class="w-full bg-slate-50 border-2 border-slate-200 text-sm font-bold p-3 rounded-2xl focus:outline-none focus:border-slate-600">
-        <button onclick="handleAdminLoginSubmit()" class="w-full bg-slate-900 hover:bg-black text-white py-3 rounded-2xl font-black text-xs uppercase tracking-wider">
+        <button id="btnAdminLoginSubmit" onclick="handleAdminLoginSubmit()" class="w-full bg-slate-900 hover:bg-black text-white py-3 rounded-2xl font-black text-xs uppercase tracking-wider">
           Log Masuk Admin
         </button>
       </div>
@@ -1451,8 +1450,8 @@
     }
 
     function dismissBadgeCelebration() {
-      if (badgeAnimInterval) { clearInterval(badgeAnimInterval); badgeAnimInterval = null; }
-      if (confettiRainInterval) { clearInterval(confettiRainInterval); confettiRainInterval = null; }
+      if (badgeAnimInterval) clearInterval(badgeAnimInterval);
+      if (confettiRainInterval) clearInterval(confettiRainInterval);
       document.getElementById('modalBadgeCelebration').classList.add('hidden');
       updateTopBarStats();
     }
@@ -2332,7 +2331,6 @@
       }, 1200);
     }
 
-    // Kapten Tekan Mula -> Bertukar Serta-merta ke Paparan Penuh Quizizz Arena
     async function kaptenTriggerStartTournament() {
       const codeTxt = document.getElementById('activeTourneyCode').innerText.replace("KOD: ", "").trim();
       if (confirm("Adakah semua peserta telah masuk ke lobi? Mula perlawanan sekarang?")) {
@@ -2606,6 +2604,10 @@
       const pass = document.getElementById('adminPasswordInput').value.trim();
       if (!pass) return alert("Sila masukkan kata laluan admin!");
 
+      const btn = document.getElementById('btnAdminLoginSubmit');
+      btn.innerText = "Mengesahkan...";
+      btn.disabled = true;
+
       try {
         const res = await fetch(GAS_API_URL, {
           method: "POST",
@@ -2614,18 +2616,17 @@
         });
         const d = await res.json();
         if (d.success) {
+          document.getElementById('adminPasswordInput').value = "";
           closeAdminLoginModal();
           openAdminDashboard();
         } else {
-          alert(d.message);
+          alert(d.message || "Kata laluan Admin salah!");
         }
-      } catch(e) {
-        if (pass === "A@t021286") {
-          closeAdminLoginModal();
-          openAdminDashboard();
-        } else {
-          alert("Kata laluan Admin salah!");
-        }
+      } catch (e) {
+        alert("Ralat sambungan ke pelayan backend. Sila cuba lagi.");
+      } finally {
+        btn.innerText = "Log Masuk Admin";
+        btn.disabled = false;
       }
     }
 
