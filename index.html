@@ -210,10 +210,6 @@
       </div>
 
       <div class="space-y-3 text-left">
-        <div id="regWarningNotice" class="hidden bg-rose-50 border border-rose-300 p-2 rounded-xl text-[11px] font-bold text-rose-800 leading-tight">
-          🔒 <span class="font-black">PENTING:</span> Username & kata laluan anda tidak dihantar ke pihak luar. Sila catat maklumat anda selepas pendaftaran!
-        </div>
-
         <div>
           <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider">Nama Pengguna (Username)</label>
           <div class="flex mt-1">
@@ -280,7 +276,7 @@
       <div id="levelsContainer" class="w-full flex flex-col items-center space-y-3"></div>
     </div>
 
-    <!-- 3. SCREEN: DEMO PEMBELAJARAN BERGANDA -->
+    <!-- 3. SCREEN: DEMO BERGANDA -->
     <div id="screenDemo" class="hidden flex-col justify-between h-[88vh] max-h-[750px] max-w-lg mx-auto w-full overflow-hidden">
       <div class="flex items-center justify-between shrink-0 mb-1">
         <button onclick="exitToMap()" class="text-slate-400 font-black text-xl hover:text-slate-600">✕</button>
@@ -461,10 +457,10 @@
       </div>
     </div>
 
-    <!-- 7. SCREEN: DASHBOARD KAPTEN SIFIR -->
+    <!-- 7. SCREEN: DASHBOARD KAPTEN SIFIR (LENGKAP DENGAN TAB ARKIB REKOD LALU) -->
     <div id="screenKaptenDashboard" class="hidden flex-col h-[88vh] max-h-[820px] max-w-lg mx-auto w-full">
       
-      <!-- Fasa 1: Persediaan Kejohanan & Senarai Murid -->
+      <!-- Fasa 1: Persediaan Kejohanan, Pengurusan Murid, & Arkib -->
       <div id="kaptenSetupSection" class="flex-1 flex flex-col justify-between overflow-y-auto">
         <div>
           <div class="flex items-center justify-between mb-2 shrink-0">
@@ -477,11 +473,14 @@
             <span class="text-xl">🏆</span>
           </div>
 
-          <div class="flex bg-slate-200 p-1 rounded-2xl mb-3 shrink-0">
-            <button id="tabKaptenTourney" onclick="switchKaptenTab('tourney')" class="flex-1 py-1.5 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-700">Tournament Sifir</button>
-            <button id="tabKaptenGroup" onclick="switchKaptenTab('group')" class="flex-1 py-1.5 font-black text-xs rounded-xl text-slate-600">Senarai Murid (Max 50)</button>
+          <!-- 3 TAB KAWALAN KAPTEN -->
+          <div class="flex bg-slate-200 p-1 rounded-2xl mb-3 shrink-0 text-[11px]">
+            <button id="tabKaptenTourney" onclick="switchKaptenTab('tourney')" class="flex-1 py-1.5 font-black rounded-xl bg-white shadow-sm text-emerald-700">Tournament Sifir</button>
+            <button id="tabKaptenGroup" onclick="switchKaptenTab('group')" class="flex-1 py-1.5 font-black rounded-xl text-slate-600">Senarai Murid</button>
+            <button id="tabKaptenHistory" onclick="switchKaptenTab('history')" class="flex-1 py-1.5 font-black rounded-xl text-slate-600">📚 Arkib Kejohanan</button>
           </div>
 
+          <!-- TAB 1: CIPTA TOURNAMENT -->
           <div id="kaptenTabContentTourney" class="space-y-3">
             <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-3xl shadow-sm text-left">
               <h4 class="font-black text-base">Cipta Tournament 25 Sifir Live</h4>
@@ -543,6 +542,7 @@
             </div>
           </div>
 
+          <!-- TAB 2: SENARAI MURID & KUMPULAN -->
           <div id="kaptenTabContentGroup" class="hidden space-y-3 text-left">
             <div class="bg-white border-2 border-slate-200 p-4 rounded-3xl shadow-sm space-y-3">
               <h4 class="font-black text-sm text-slate-800">Cipta Kumpulan / Kelas (Maksimum 50 Murid)</h4>
@@ -588,6 +588,17 @@
             </div>
 
             <div id="kaptenExistingGroupsList" class="space-y-2"></div>
+          </div>
+
+          <!-- TAB 3: ARKIB KEJOHANAN LALU (REKOD SIMPANAN) -->
+          <div id="kaptenTabContentHistory" class="hidden space-y-3 text-left">
+            <div class="flex justify-between items-center px-1">
+              <h4 class="text-xs font-black text-slate-600 uppercase tracking-wider">Senarai Kejohanan Tersimpan</h4>
+              <button onclick="loadPastTournaments()" class="text-xs font-black text-emerald-600 hover:underline">🔄 Muat Semula</button>
+            </div>
+            <div id="kaptenHistoryList" class="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
+              <p class="text-xs text-slate-400">Memuatkan arkib kejohanan...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -719,6 +730,42 @@
     </div>
 
   </main>
+
+  <!-- MODAL: BUTIRAN KEJOHANAN LALU (ARKIB DETAIL) -->
+  <div id="modalPastTourneyDetail" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border-4 border-indigo-600 relative max-h-[92vh] flex flex-col text-left">
+      <div class="flex justify-between items-center border-b pb-2 mb-3 shrink-0">
+        <div>
+          <h3 id="pastModalTitle" class="text-base font-black text-slate-800">Tajuk Kejohanan</h3>
+          <p id="pastModalSub" class="text-xs text-indigo-600 font-bold">KOD: TRN-000000 • Tarikh</p>
+        </div>
+        <button onclick="closePastTourneyModal()" class="text-slate-400 font-black text-lg">✕</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto mb-3 pr-1">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b-2 border-slate-200 text-[10px] text-slate-400 uppercase font-black">
+              <th class="py-1">No</th>
+              <th>Nama Murid</th>
+              <th>Salah</th>
+              <th class="text-right">Masa Catatan</th>
+            </tr>
+          </thead>
+          <tbody id="pastModalTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="shrink-0 space-y-2 pt-2 border-t">
+        <button id="btnExportPastXlsx" onclick="exportSelectedPastTourneyXlsx()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-2xl text-xs uppercase flex items-center justify-center space-x-1.5 shadow">
+          <span>📥 Eksport Kejohanan Ini ke Excel (.xlsx)</span>
+        </button>
+        <button onclick="closePastTourneyModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-black py-2 rounded-2xl text-xs uppercase">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: LANGGAN PAKEJ KAPTEN SIFIR -->
   <div id="modalUpgradeKapten" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -1171,6 +1218,10 @@
     let selectedTournamentDuration = 180;
     let tourneyTimeLimitSec = 180;
     let cachedLiveResults = [];
+
+    // STATE ARKIB KEJOHANAN
+    let pastTournamentsData = [];
+    let activeSelectedPastTourney = null;
 
     // PEMBOLEH UBAH PEMASA
     let tourneyPollInterval = null;
@@ -2113,7 +2164,7 @@
     }
 
     // -------------------------------------------------------------
-    // FUNGSI KAPTEN SIFIR: TOURNAMENT & KUMPULAN
+    // FUNGSI KAPTEN SIFIR: TOURNAMENT, KUMPULAN & ARKIB
     // -------------------------------------------------------------
     function openKaptenDashboard() {
       document.getElementById('screenMap').classList.add('hidden');
@@ -2135,19 +2186,30 @@
     function switchKaptenTab(tab) {
       const tabT = document.getElementById('tabKaptenTourney');
       const tabG = document.getElementById('tabKaptenGroup');
+      const tabH = document.getElementById('tabKaptenHistory');
+
       const contT = document.getElementById('kaptenTabContentTourney');
       const contG = document.getElementById('kaptenTabContentGroup');
+      const contH = document.getElementById('kaptenTabContentHistory');
+
+      tabT.className = "flex-1 py-1.5 font-black rounded-xl text-slate-600";
+      tabG.className = "flex-1 py-1.5 font-black rounded-xl text-slate-600";
+      tabH.className = "flex-1 py-1.5 font-black rounded-xl text-slate-600";
+
+      contT.classList.add('hidden');
+      contG.classList.add('hidden');
+      contH.classList.add('hidden');
 
       if (tab === 'tourney') {
-        tabT.className = "flex-1 py-1.5 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-700";
-        tabG.className = "flex-1 py-1.5 font-black text-xs rounded-xl text-slate-600";
+        tabT.className = "flex-1 py-1.5 font-black rounded-xl bg-white shadow-sm text-emerald-700";
         contT.classList.remove('hidden');
-        contG.classList.add('hidden');
-      } else {
-        tabG.className = "flex-1 py-1.5 font-black text-xs rounded-xl bg-white shadow-sm text-emerald-700";
-        tabT.className = "flex-1 py-1.5 font-black text-xs rounded-xl text-slate-600";
+      } else if (tab === 'group') {
+        tabG.className = "flex-1 py-1.5 font-black rounded-xl bg-white shadow-sm text-emerald-700";
         contG.classList.remove('hidden');
-        contT.classList.add('hidden');
+      } else if (tab === 'history') {
+        tabH.className = "flex-1 py-1.5 font-black rounded-xl bg-white shadow-sm text-emerald-700";
+        contH.classList.remove('hidden');
+        loadPastTournaments();
       }
     }
 
@@ -2487,6 +2549,141 @@
       const safeTitle = tTitle.replace(/[^a-zA-Z0-9_-]/g, "_");
       const fileName = `SifirStream_${safeTitle}_${tCode}.xlsx`;
       XLSX.writeFile(wb, fileName);
+    }
+
+    // -------------------------------------------------------------
+    // FUNGSI ARKIB KEJOHANAN LALU (LOAD & DETAIL)
+    // -------------------------------------------------------------
+    async function loadPastTournaments() {
+      const cont = document.getElementById('kaptenHistoryList');
+      cont.innerHTML = "<p class='text-xs text-slate-400'>Memuatkan arkib kejohanan...</p>";
+      try {
+        const res = await fetch(GAS_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "getHostTournaments", hostUsername: currentUser.username })
+        });
+        const d = await res.json();
+        if (d.success && d.tournaments && d.tournaments.length > 0) {
+          pastTournamentsData = d.tournaments;
+          cont.innerHTML = "";
+          d.tournaments.forEach(t => {
+            const hasResults = t.results && t.results.length > 0;
+            const statusLabel = t.status === "ended" ? "Selesai" : (t.status === "active" ? "Sedang Berlangsung" : "Menunggu");
+            const statusColor = t.status === "ended" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800";
+            
+            cont.innerHTML += `
+              <div class="bg-white border-2 border-slate-200 p-3.5 rounded-2xl shadow-xs space-y-2">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h5 class="font-black text-xs text-slate-800">${t.title}</h5>
+                    <p class="text-[10px] text-slate-400 font-mono mt-0.5">${t.tournamentId} • ${t.createdAt}</p>
+                  </div>
+                  <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${statusColor}">${statusLabel}</span>
+                </div>
+                
+                <div class="flex justify-between items-center text-[11px] font-bold text-slate-600 bg-slate-50 p-2 rounded-xl">
+                  <span>Peserta: <strong class="text-indigo-600">${t.participantsCount} orang</strong></span>
+                  <span>Keputusan Direkod: <strong class="text-emerald-600">${t.results ? t.results.length : 0} orang</strong></span>
+                </div>
+
+                <div class="flex space-x-1.5 pt-1">
+                  <button onclick="viewPastTournamentDetail('${t.tournamentId}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-black text-xs py-2 rounded-xl border border-indigo-200">
+                    👁️ Lihat Papan Markah
+                  </button>
+                  <button onclick="exportSpecificTournamentXlsx('${t.tournamentId}')" ${hasResults ? '' : 'disabled'} class="px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-black text-xs py-2 rounded-xl border border-emerald-200 ${hasResults ? '' : 'opacity-40 cursor-not-allowed'}">
+                    📥 Excel
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+        } else {
+          cont.innerHTML = "<p class='text-xs text-slate-400'>Belum ada rekod kejohanan yang dibuat.</p>";
+        }
+      } catch(e) {
+        cont.innerHTML = "<p class='text-xs text-rose-500'>Ralat memuatkan rekod kejohanan.</p>";
+      }
+    }
+
+    function viewPastTournamentDetail(tId) {
+      const tourney = pastTournamentsData.find(t => t.tournamentId === tId);
+      if (!tourney) return alert("Rekod kejohanan tidak ditemui.");
+      
+      activeSelectedPastTourney = tourney;
+      document.getElementById('pastModalTitle').innerText = tourney.title;
+      document.getElementById('pastModalSub').innerText = `KOD: ${tourney.tournamentId} • Dicipta: ${tourney.createdAt}`;
+      
+      const tbody = document.getElementById('pastModalTbody');
+      tbody.innerHTML = "";
+
+      const results = tourney.results || [];
+      if (results.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400 italic">Tiada markah peserta direkodkan bagi sesi ini.</td></tr>`;
+      } else {
+        results.forEach((r, idx) => {
+          tbody.innerHTML += `
+            <tr class="border-b border-slate-100 text-slate-700">
+              <td class="py-2 font-black text-indigo-600">#${idx + 1}</td>
+              <td class="py-2 font-bold">${r.name}</td>
+              <td class="py-2 font-black ${r.mistakes > 0 ? 'text-rose-500' : 'text-emerald-600'}">${r.mistakes || 0}</td>
+              <td class="py-2 text-right font-mono font-bold text-slate-800">${r.formattedTime || '--:--'}</td>
+            </tr>
+          `;
+        });
+      }
+
+      document.getElementById('modalPastTourneyDetail').classList.remove('hidden');
+    }
+
+    function closePastTourneyModal() {
+      document.getElementById('modalPastTourneyDetail').classList.add('hidden');
+    }
+
+    function exportSelectedPastTourneyXlsx() {
+      if (!activeSelectedPastTourney) return;
+      exportSpecificTournamentXlsx(activeSelectedPastTourney.tournamentId);
+    }
+
+    function exportSpecificTournamentXlsx(tId) {
+      const tourney = pastTournamentsData.find(t => t.tournamentId === tId);
+      if (!tourney || !tourney.results || tourney.results.length === 0) {
+        return alert("Tiada keputusan untuk dieksport bagi kejohanan ini.");
+      }
+
+      const exportData = [
+        ["LAPORAN KEPUTUSAN KEJOHANAN SIFIR.STREAM"],
+        ["Tajuk Kejohanan:", tourney.title],
+        ["Kod Bilik:", tourney.tournamentId],
+        ["Had Masa:", `${(tourney.durationSeconds || 180) / 60} Minit`],
+        ["Tarikh Dicipta:", tourney.createdAt],
+        ["Tarikh Eksport:", new Date().toLocaleString("ms-MY")],
+        [],
+        ["Kedudukan", "Nama Peserta", "Jumlah Kesalahan", "Soalan Dijawab", "Masa Catatan", "Masa (Saat)", "Status Tamat"]
+      ];
+
+      tourney.results.forEach((r, idx) => {
+        exportData.push([
+          idx + 1,
+          r.name || "Peserta",
+          r.mistakes || 0,
+          `${r.currentQ || 25} / 25`,
+          r.formattedTime || "00:00.0",
+          r.timeSeconds ? Number(r.timeSeconds).toFixed(1) : 0,
+          r.finished ? "Selesai Penuh" : "Masa Tamat / Belum Selesai"
+        ]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(exportData);
+      ws['!cols'] = [
+        { wch: 12 }, { wch: 28 }, { wch: 18 }, { wch: 16 }, { wch: 15 }, { wch: 14 }, { wch: 24 }
+      ];
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Keputusan Kejohanan");
+
+      const safeTitle = tourney.title.replace(/[^a-zA-Z0-9_-]/g, "_");
+      XLSX.writeFile(wb, `SifirStream_${safeTitle}_${tourney.tournamentId}.xlsx`);
     }
 
     function showPodiumModal(results) {
